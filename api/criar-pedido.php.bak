@@ -1,0 +1,76 @@
+<?php
+// Endpoint para criar um novo pedido no PostgreSQL
+require_once 'db.php';
+
+header('Content-Type: application/json; charset=utf-8');
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Apenas aceitar pedidos POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['sucesso' => false, 'erro' => 'Método não permitido.']);
+    exit;
+}
+
+// Verificar se utilizador está logado
+if (empty($_SESSION['arms_logado']) || empty($_SESSION['arms_user_id'])) {
+    echo json_encode(['sucesso' => false, 'erro' => 'Não autenticado.']);
+    exit;
+}
+
+// Ler os dados JSON do corpo do pedido
+$input = json_decode(file_get_contents('php://input'), true);
+
+// Validar campos obrigatórios
+$campos = ['titulo', 'descricao', 'area_id', 'client_id', 'client_email', 'deadline'];
+foreach ($campos as $campo) {
+    if (empty($input[$campo])) {
+        echo json_encode(['sucesso' => false, 'erro' => "O campo '$campo' é obrigatório."]);
+        exit;
+    }
+}
+
+try {
+    $createdBy = $_SESSION['arms_user_id'];
+    
+    // Se o prazo vier apenas como data (YYYY-MM-DD), adicionar a hora 23:59:59
+    // para garantir que o limite é o final do dia, passando na verificação (deadline_at >= created_at)
+    $deadline = $input['deadline'];
+    if (strlen($deadline) === 10) {
+        $deadline .= ' 23:59:59';
+    }
+
+    // Inserir o pedido na tabela request (o reference é gerado automaticamente pela função next_request_reference)
+    $stmt = $pdo->prepare("
+        INSERT INTO arms.request (title, description, area_id, client_id, client_email, created_by, deadline_at)
+        VALUES (:titulo, :descricao, :area_id, :client_id, :client_email, :created_by, :deadline)
+        RETURNING id, reference, status, to_char(created_at, 'DD/MM/YYYY') as date
+    ");
+
+    $stmt->execute([
+        'titulo'       => $input['titulo'],
+        'descricao'    => $input['descricao'],
+        'area_id'      => $input['area_id'],
+        'client_id'    => $input['client_id'],
+        'client_email' => $input['client_email'],
+        'created_by'   => $createdBy,
+        'deadline'     => $deadline
+    ]);
+
+    $novoPedido = $stmt->fetch();
+
+    echo json_encode([
+        'sucesso' => true,
+        'mensagem' => 'Pedido criado com sucesso!',
+        'pedido' => $novoPedido
+    ]);
+
+} catch (Exception $e) {
+    echo json_encode([
+        'sucesso' => false,
+        'erro' => $e->getMessage()
+    ]);
+}
+?>

@@ -1,0 +1,46 @@
+// Estou a colar um escuteiro (ouvido) na aplicação toda, para que os comandos só se comecem a comportar após todas as paredes e móveis estarem no chão (O conteúdo do DOM todo montadinho). Respeito pelas janelas Aksanti
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Estou a focar atenções e procurar na página qual é aquele retângulo preto enorme onde moram as listas laterais (a Barra Lateral)
+    const barraLateral = document.getElementById('barra-lateral');
+    // Estou a pegar e a investigar aquele nosso famoso botonezinho negro para a esquerda, o que tem as listinhas com linhas paralelas da gaveta telemóvel (Menu Hamburguer Mobile)
+    const btnMenuMobile = document.getElementById('btn-menu-mobile');
+
+    // Estou a averiguar a frio se tal botão do hambúrguer até mora de facto por onde andas na app ou não 
+    if (btnMenuMobile) {
+        // Estou a pendurar mais ouvidos nestes cantinhos exatos nos "Cliques de botão": Sempre que no ecrã tátil alguém colocar cá com os seus toques do dedo... 
+        btnMenuMobile.addEventListener('click', () => {
+            // Estou a atuar na transição! Digo-lhe (com um super útil toggle): 'Ó Caixa Preta das laterais, se te encontrares escondida no armário atira-te para fora, senão regressa!'  Esta classe escorrega nos CSS.
+            barraLateral.classList.toggle('aberta');
+        });
+    }
+
+    // Estou a estar pendurado à Coca-cola no meio e ouvindo em "Tudo e num cantinho ao Clique", observando as batidas no ecrã do Utilizador na zona inteira por onde passe no computador 
+    document.addEventListener('click', (evento) => {
+        // Estou a confirmar várias verdades num If: O nosso telefone aliás andará ligado/pequeno nas janelas em menos de 1024 pixéis (Móvel?) A tua preta "Barra Lateral" tem a nossa luz acesa? E tem ela aquele rótulo da classe a estar "aberta"? Se tem tudo e isso está a acontecer..
+        if (window.innerWidth <= 1024 && barraLateral && barraLateral.classList.contains('aberta')) {
+            // Estou a fechar uma aposta se: Se aquilo que a tua ponta do dedo tocou afinal de contas.. NUNCA andou lá perto a bater em zona nossa nas laterais da lista de Gaveta preta ou lá nos próprios cantos dos hamburguers a carregar no botão ao clique nas áreas neutras 
+            if (!barraLateral.contains(evento.target) && !btnMenuMobile.contains(evento.target)) {
+                // Estou a varrer ou meter de volta nas paredes as estantes, porque no fundo tiveste um clique errante, tu não estás com vontade do Menu preto então e querias apenas olhar onde bates as letras num cartão! Fechamos num estrondo no fechar sem dor com o remover ("Remove").
+                barraLateral.classList.remove('aberta');
+            }
+        }
+    });
+
+    // Estou a ir atrás nos corredores tentar buscar pela plataforma em volta todas as tuas escolhas e cliques dos botões nos painéis nas esquerdas, com os painéis em caixas para poder marcar com Ouros quem estiver bem focadinho
+    const linksDaSidebar = document.querySelectorAll('.menu-item');
+    // Estou a pedir no exato mapa a janela URL por onde os nós viajamos nas vias (qual dos documentos estamos afinal na realidade - ex: em clientes.html!) e meto no papel 
+    const caminhoDaNossaPaginaAtual = window.location.pathname;
+
+    // Estou a correr num círculo infinito num ciclo da caça do "para todos" na lista (O "ForEach" dos Links nas Barras laterais!) e observar um a um na caixa inteira ali do teu lado escuro!
+    linksDaSidebar.forEach(link => {
+        // Estou a confrontar quem se gaba ali e tem de "Dizer de si por si mesmo qual das vias tu traçaste neste botão para ires ter href!", e após me cuspir no ar o seu link ali... vamos nós indagar se tal via no meio está realmente nesta tela aberta das vistas 
+        if (link.getAttribute('href') && caminhoDaNossaPaginaAtual.includes(link.getAttribute('href'))) {
+            // Estou a coroar quem triunfou de facto no caminho percorrido nas listagens como "Esta página sou mesmo euzinho sim senhor!", atirando-lhe classes de brilhar dos Gold-Aksanti, focando e injetando cor Dourada ("Classe activo no CSS") no botão da página presente!
+            link.classList.add('activo');
+        } else {
+            // Estou a esfregar a borracha nas outras caras que são más línguas. Os menus do passado morrem ali nos cinzentos escuros onde outrora foram abas, limpos e extirpados (a remover a nossa laranja de destaque). Para que nunca brilhe quem já nada lá faz naquela página presente.
+            link.classList.remove('activo');
+        }
+    });
+});

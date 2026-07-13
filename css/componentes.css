@@ -1,0 +1,348 @@
+/* Estou a desenhar o molde mestre de todos os botões simples do sistema, ditando uma forma regular e de aparência coesa. Uma fábrica onde todo o "botão" terá estas matrizes */
+.btn {
+    /* Estou a adicionar algum espaço interno e confortável nas letras e ícones do nosso próprio botão - onde com um toque e clique num polegar se consegue sem esforço - nos ecrãs */
+    padding: 10px 20px;
+    /* Estou a suavizar as pontas aguçadas nos ângulos dos quatro cantos e dar as propriedades das moedas, amigável como uma borracha pequena, onde as formas nas laterais estão todas mais polidas no teu botão */
+    border-radius: var(--raio-borda);
+    /* Estou a pôr e dizer "Não partas no meio com ícones! Fica uma linha num botão perfeito e de braço dado na fila - ícone e palavras juntinhos num Flex na caixa!" no teu lado sem os desmanchares. Alinhados e perfeitos */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Estou a impor aquela barreira invisível, o afastar entre o desenho que está de facto no botão e na tua mensagem dele, com uma pequena pausa nas letras do teu lado (gap - fenda de distância) no seu meio! Exemplo ícone salvar -> espaço -> "Salvar"   */
+    gap: 8px;
+    /* Estou a dar poder e "firmeza gorda" à tinta, no nosso desenho / ou na espessura / do traçado dessa nossa letra para dar ordem forte visual e convencer a tua pessoa no painel a que ele "Carregue!". Letras mais gordinhas */
+    font-weight: 500;
+    /* Estou a garantir, no transitar que quando puserem rato, ou tirarem os focos do painel e os dedos dali - não haja os cortes abruptos da tua imagem ou dos botões a entrarem ou piscarem repentino de um botão! Uma mudança que decorre duma animação em tons sedosos  */
+    transition: var(--transicao);
+    /* Estou a obrigar a ter a mesma forma do teu corpo nos textos (da fonte definida), fazendo um site de um profissional sem 10 letreiros nas palavras diferentes e com fontes alheias que tornariam o painel das letras um circo aos teus cliques  */
+    font-family: var(--fonte-corpo);
+}
+
+/* Estou a fabricar a "tinta Aksanti Gold" que vai mergulhar todas aquelas nossas maiores ações do ecrã das páginas dos teus utilizadores (exemplo salvar) o chamar de Ação Gold Premium do Aksanti que brilha por ser muito essencial à esquerda ou na ponta da tua App */
+.btn-primario {
+    /* Estou a passar as caldas com a tinta viva da marca, as belas notas nas tuas "Aksantis Douradas/Ambar", chamando com uma seta do olhar, do utilizador daquela janela. As coisas mais caras a fazer em Ouro - os submeter ou fazer um pedido  */
+    background-color: var(--aksanti-gold);
+    /* Estou a usar e colocar brancos absolutos nos dizeres nos teus botões amarelos cor de laranja, como o ouro não daria nada à tua leitura, um forte brilho faz o teu aviso ao botão do "Criar novo Pedido"! Uma clara cor branca limpa */
+    color: white;
+}
+
+/* Estou a dizer e a mostrar que ele, quando passa uma sombra nas janelas com um rato no botão da "Nova Mensagem", que deves escurecer em tons na Gold-Hover o tom da ação para avisar na plataforma: O botão sente-te a passar nele por agora */
+.btn-primario:hover {
+    /* Estou a escurecer os Dourados numa camada em sombras sem estar negro mas num amarelo sujo como ouro mais no fundo a dizer: Este mesmo o botão focado que procuravas para clicar! Confirma o apontador. Confiança de facto. */
+    background-color: var(--aksanti-gold-hover);
+    /* Estou a aplicar a magia e bruxaria do botão ISAF: O teu botão Dourado dá agora um leve e adorável salto para cima na vertical a -3px e inclina-se à maluca 1 grau no ecrã para dar vida orgânica ao teu clique! */
+    transform: translateY(-3px) rotate(-1deg);
+    /* Estou a empurrar a sombra mais para baixo e espalhada pelas esquinas (deixando-a translúcida e suave 0.3) para intensificar a ilusão que o botão da Aksanti voou e saltou mesmo em 3D da tela das folhas HTML! */
+    box-shadow: 0 10px 20px rgba(229, 138, 19, 0.3);
+}
+
+/* Estou a definir o nosso principal bloco visual: a "Card" - O cartão onde mostramos a maioria de todas as peças e informações como peças lego no puzzle no corpo da zona num site (As janelas nos meios, os teus KPI ou Estatísticas das janelas brancas no grande cinza de tela lateral! ) */
+.card {
+    /* Estou a usar branco de pureza na card para ser um objecto bem cortado / afiado nos fundos (que são a cor cinza parda "Off-white" no corpo). Para estar bem limpa como um cartão numa mesa branca de um gestor de projeto sem distrações nos papéis */
+    background-color: var(--bg-card);
+    /* Estou a limar os bordos todos nas tuas caixas nos lados na parte afiada de todos eles, num suave redondo nas formas das partes aos lados nas linhas, um luxo como botões (mas nas peças num ecrã maior!). Para harmonizar e nada ser bruto e cortante nas caixas ao lado de nada na tua janela de interface com a tua "Aksanti" */
+    border-radius: var(--raio-borda);
+    /* Estou a encher essa zona livre no ecrã e empurrar as tuas bordas na janela a ficar bem afastadas do limite com "estofo de recheio". Deste modo tudo na sua parte na Card respira nas informações ali que nós mandamos num cartão branco a quem gerir, não foca de lado a parede esmagando, os painéis do nosso site são amplos nas linhas a falar nas janelas e letras lá dentro */
+    padding: 24px;
+    /* Estou a colocar uma leve sombra que dá uma ideia tridimensional nas frentes num ecrã plano que tens nas janelas e com uma perspetiva subtil de flutuar na parede para dar um bocado a diferença de elevação do nosso fundo para as janelas na frente em perspetiva nas vistas (dando estilo 3D de premium aos cartões brancos no lado!)  */
+    box-shadow: var(--sombra-card);
+    /* Estou a ligar os motores super rápidos e velozes da transição no cartão. Quando a animação de passar o teu rato começar e for disparada, a magia acontece com o delay em ease e cubic-bezier limpo da base de CSS para o topo! */
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+/* Estou a reproduzir à risca o efeito louco da gravidade de elevação elegante e levitação para os nossos grandes cartões, logo quando o teu grande gestor Aksanti lhes encostar ali o apontador de rato ao lado! */
+.card:hover {
+    /* Estou a mandar o teu humilde cartão branco das informações levantar-se do chão suavemente uns meros mas intensos milímetros ao infinito do cimo (Eixo Y a bater os fantásticos -8px) parecendo que o vento a flutua por baixo e a desafiar as velhas leis da gravidade do Apple ou PC */
+    transform: translateY(-8px);
+    /* Estou a escurecer à bruta a sombra que se formou e desenhou debaixo da caixa flutuante, a forçar a sombra ao cimentar num plano da frente na mente da pessoa a forte e tremenda ilusão das alturas nos milagres do 3D do Ecrã! */
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+}
+
+/* Cartões mais compactos no dashboard para evitar transbordamento */
+.card.compacto {
+    padding: 16px;
+}
+
+/* estilo específico para KPI boxes (reduzir altura e centralizar conteúdo) */
+.kpi-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px;
+}
+.kpi-box .icone {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Área de KPIs mais compacta e centralizada */
+.kpi-area {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1000px;
+    margin: 0 auto 24px;
+}
+
+.kpi-card {
+    flex: 0 1 240px;
+    max-width: 260px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #f1f5f9;
+    box-sizing: border-box;
+}
+
+.kpi-card .kpi-icone {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+
+.kpi-card .kpi-titulo {
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: var(--texto-secundario);
+}
+
+.kpi-card .kpi-valor {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* Estou a configurar e a fazer o emblema ou as medalhas de estado das tuas tabelas de base (exemplo Rascunhos ou as Ações Aceite / etc.) nas tabelas ou aos detalhes para marcar o tom duma tarefa ou status num ecrã à esquerda. As Badges! Etiquetas pequenas  */
+.badge {
+    /* Estou a fazer o espaço bem diminuto na fenda da parte do interior, achatando na base nas letras da etiqueta com cuidado e fechando nas frentes laterais da medalha a ser apenas um adereço à lista. Como se fosse um selo postal que mostramos no topo ao fechar as coisas do botão com cor no pequeno título, uma cápsula com as pontinhas coloridas. Um botão miúdo! */
+    padding: 4px 12px;
+    /* Estou a deformar na beira como numa esfera comprida / como pílulas no redondo com 20 píxeis das nossas abas nos cartões e a ser muito escorregadiço num botão em que tem a forma e feitio num todo super esférico de pílulas. Distinto do que as nossas caixas normais que apenas cortam na ponta nos bordos! Isto tem redondos profundos em volta. */
+    border-radius: 20px;
+    /* Estou a emagrecer a tua mensagem na letra ao pequeno, a falar na tua caixa à mesma onde se possa focar à primeira e sem distrair em grande e tirar os holofotes na zona aos textos como quem lê com mais as informações dos cabeçalhos. Menos, mas sempre nas tuas cores a explicar em miúdo a mensagem das notas da cápsula, pequeno tamanho! */
+    font-size: 0.85rem;
+    /* Estou a por a palavra numa leve tinta no negrito "médio" num 500 no foco a destacar a legibilidade na letra menor de todas que pomos nesse painel nas etiquetas (para os óculos na base, porque a cor já fala - assim fica óbvia e bem focado sem esticar as palavras no gordinho grande!) - foco!  */
+    font-weight: 500;
+}
+
+/* Estou a carregar a arma colorida na tinta que vamos a pintar com os verdes nas notas de que um cliente aceitou a encomenda nas janelas do teu painel Aksanti ("Pedidos Aceite") - a etiqueta verde do SUCESSO! É bom!   */
+.badge-sucesso {
+    /* Estou a tingir no verde quase translúcido na cor do interior no teu espaço do crachá, como quem passou no papel o marca-texto verde a dizer "sim!". Brilhante luz suave com base a 10% do verde! Fica como de fora sem a caixa pintada de um tijolo cimento.  */
+    background-color: rgba(16, 185, 129, 0.1);
+    /* Estou a mergulhar a frase no exato e o autêntico grande verde vivo. Verde claro com tinta verde brilhante dentro numa bola! Isto sim! Diz Aceite ao longe numa janela a metros duma tela a olhar num canto com os avisos! SUCESSO. */
+    color: var(--cor-sucesso);
+}
+
+/* Estou a misturar a cor Vermelha e criar a classe em alertas de Erro. Para quando as tuas ações têm um cancelado, rejeitado num estado "Chumbaste no Pedido" ou as recusas da Aksanti na mensagem ao teu funcionário - badge Perigo - Red  */
+.badge-perigo {
+    /* Estou a preparar e pintar no cor-de-rosa claríssimo quase branco que só brilha pelo reflexo num vidro - para um suporte na pequena etiqueta de erros "rejeitados", dando aos teus crachás aquele ar macio transparente - onde só foca as letras vermelhas.  */
+    background-color: rgba(239, 68, 68, 0.1);
+    /* Estou a obrigar a letra ser um tom encarnado num vermelho perigo como sinais numa zona onde proíbe e avisa com muita dor na cara. Para avisos perigosos. REJEITADO - vermelho escarlate  */
+    color: var(--cor-perigo);
+}
+
+/* Estou a cozinhar aquele tom para avisos na espera: Quando os clientes não aceitaram, e ou estão a dormir! Pedido Em Pausa, Em Processo de Espera no envio ou algo no Rascunho das tuas mensagens na tua BD (tabelas pendentes do painel). Badge Aviso Laranja  */
+.badge-aviso {
+    /* Estou a dar um banho a amarelo com branco sujo como o sol a dar no amarelo por um vidro baço e translúcido. A ampolinha transparente do nosso laranja - aviso das coisas! Uma caixinha com base amarelada super clara a apenas marcar do meio sem agressividade das letras vermelhas ou dos verdes - apenas pendentes!  */
+    background-color: rgba(245, 158, 11, 0.1);
+    /* Estou a colocar a tinta no amarelo âmbar, forte que usamos para avisar os rascunhos. É a tua cor "Aviso ou Cuidado". Amarelo escuro forte a chamar nas letras na caixa para o lado da pendência das informações  */
+    color: var(--cor-aviso);
+}
+
+/* Estou a preparar o teu tom nas classes de informação: o neutro das acções para onde algo aconteceu mas "nem foi mau - Rejeitado" e "não foi o fim com a conclusão de SUCESSO"! Por exemplo na fase azulão "O seu cliente Respondeu" - apenas isso - informa na caixa de azul.  */
+.badge-info {
+    /* Estou a desenhar nas cores do cimento pálido translúcido na água azul da etiqueta na cor do botão e que aponta luzinhas como todas as três cápsulas com as mesmas proporções - apenas troca na base. Este pinta nas laterais translúcidas azuis para não gritar azul na tela aos nossos painéis brancos - Azul suave e transparente na cor  */
+    background-color: rgba(59, 130, 246, 0.1);
+    /* Estou a forçar as tuas letras a estar pintadas da pura tinta daquela cor a forte: Azulão na linha a falar nas palavras "O cliente de facto Respondeu!".  */
+    color: var(--cor-info);
+}
+
+/* Estou a fechar uma cerca no grupo das perguntas no preenchimento de palavras, na tua secção ao cliente em campos textuais. O contentor em caixa para arrumarmos a pergunta nas caixas acima, para se ver os textos nas perguntas, num grande contentor em pilhas de campos num Formulário das janelas - tipo um Nome e a sua própria janela do nome em Flex  */
+.input-grupo {
+    /* Estou a arrumar este campo aos andares como nos andares num prédio e fazer uma flexibilidade da caixa e não as linhas de texto "esmagando e perdendo noutros ao pé das caixas em linhas juntas horizontais.   */
+    display: flex;
+    flex-direction: column;
+    /* Estou a separar os buracos de responder na caixa à letra "Diz aqui o teu nome do campo:" com o pequeno buraco com margens num fosso "gap" no meio das 2 coisas a afastar a pergunta das suas linhas cinza na caixa  */
+    gap: 8px;
+    /* Estou a precaver as próximas conversas ou os campos nos formulários com distanciamentos lá num andar no fundo em vez de um texto e formulário e formulário seguinte sem distinção onde cada pergunta para e passa ao seguinte, damos margem de descanso nas vistas para debaixo da tua próxima pergunta ao teu cliente nos painéis do Ecrã - Margin-bottom  */
+    margin-bottom: 20px;
+}
+
+/* Estou a colocar uma ênfase nas palavras da pergunta "Insira aqui as palavras a pesquisar", para o título onde as perguntas estão das caixas - a tua label. A legenda da nossa janela da caixa.   */
+.input-grupo label {
+    /* Estou a fortificar a frase do texto explicativo dando autoridade onde pedes no campo "Por Favor" ou o título com um negrito no tamanho certo! Fica firme  */
+    font-weight: 500;
+    /* Estou a impor uma legibilidade nas perguntas usando o Preto Forte Principal da Aksanti como as cor de toda a questão para contrastar  */
+    color: var(--texto-principal);
+}
+
+/* Estou a fabricar do zero as zonas brancas vazias com uma caixa num cinzento nas pontas das arestas, os campos que vamos usar para "Pesquisar nome do ficheiro", a linha para "Títulos" onde escreve as palavras - Os controlos / Campos do teclado nas inputs   */
+.input-controlo {
+    /* Estou a encher essa parte com almofadas de ambos os lados - em esquerda no começo nas caixas vazias para as palavras começarem afastadas e dar largura da letra nos botões nas nossas inserções do texto nas palavras do formulário (que podes carregar agora na Aksanti e digitar), um espaço livre onde não escreves nos buracos do princípio ao canto sem margem de onde tocar. Mais limpas na janela do fundo a respirar ao preencher  */
+    padding: 12px 16px;
+    /* Estou a desenhar nas pontas de cada janela um bordo a cinza como um limite fino de onde os buracos do campo input na Aksanti de onde vês, deitando a bordar um fio ligeiro onde delimita o fundo da cor mais branca! Sem um rebordo de cinza o teclado perde-se no grande cartão (onde usamos apenas os pretos nos bordos no painel Aksanti nas sombras, sem limites óbvios para o teu dedo sem o rebordo)   */
+    border: 1px solid #e4e4e7;
+    /* Estou a meter ao jeito que já foi falado um formato muito curvo e fofo nas peças retangulares (mesmas nos inputs da BD da Aksanti como botões da tua Aksanti Gold) e o canto num botão nas tuas caixas brancas também usa "os ângulos dos redondos perfeitos (raios). Uma estética de 100% igual ao geral do teu site premium.   */
+    border-radius: var(--raio-borda);
+    /* Estou a usar e garantir a toda força que usaste para ler (a tipografia Inter no Painel) para escrever as palavras lá na caixas aos olhos dos funcionários, e a não usar fontes ridículas ao introduzir os teus textos ou no teclado de lá do browser num padrão feioso - Fonte Corpo da página do teu Aksanti "Inter" */
+    font-family: var(--fonte-corpo);
+    /* Estou a pintar tudo o que escreves na BD (quando no teu momento da Aksanti no ecrã de lá o introduz) nas tintas super escuras (no nosso preto que é legível a olho para todos os utilizadores ao sol), não deixando as palavras acanhadas em letras ou um cinzento pálido e com contrastes mortos sem sentido. A cor da AKSANTI.     */
+    color: var(--texto-principal);
+    /* Estou a suavizar as luzes "Laranja Douradas" de focos, ao entrar com um tab do teclado de lá (ao picar na entrada). Num "transitar num estado" a focar ou "passar as páginas da caixas que as linhas douradas brilham devagar ao lado para o foco da letra no centro onde picar a seguir (transições da velocidade e suaves da mudança das cores!)    */
+    transition: var(--transicao);
+    /* Estou a esticar o tecido deste teclado ao comprido preenchendo todos e 100% dos teus limiares laterais e de espaços das larguras do teu contentor em cima ou lado ao topo nas caixas sem faltar as metades ou bocados. Estão nos tamanhos na larga de ecrãs de largura e de telemóvel! */
+    width: 100%;
+}
+
+/* Estou a preparar aquele grande espetáculo no css e com elegância a dar aquele sinal do ecrã e um efeito à pessoa: Quando no foco do clique num sítio das janelinhas à esquerda (Focus Input), dás brilho dourado e sabes qual o que se seleciona, o "contorno aceso e brilhante na Laranja de ouro/âmbar Aksanti " que sinaliza o campo activo de momento  */
+.input-controlo:focus {
+    /* Estou a retirar qualquer linha feia "Azulão e azul sujo" nas bases normais nas configurações dos exploradores (as normais nos Chrome nas cores azuis do outline) quando foca, tiramos as definições normais dos pontinhos e azul-safira nas coisas sem personalidade a retirar de cena o padrão do painel visual sem limites normais do foco a aparecer (apagado "None"  */
+    outline: none;
+    /* Estou a invocar o grandioso ouro nos lados ao bordar onde ficas, nos teus cliques para entrar. A caixa do campo a cinzenta de rebordo troca tudo ao Aksanti e os lados em redor estão na Aksanti-gold Douradas a mostrar-lhe ao teu dedo ou ao mouse qual lugar que domina de facto naquele ecrã - Destaque!    */
+    border-color: var(--aksanti-gold);
+    /* Estou a rodear as janelas de cor na zona inteira por trás de todas com sombra em ouro (com transparência e laranja/ambar Aksanti!) na exata caixa que tocas, com brilhos a projetar-se no fundo e uma bela chama nas laterais (para os cliques ficarem mais lindos nas janelas de painel da BD Aksanti a flutuar iluminadas). Foco Supremo da Aksanti   */
+    box-shadow: 0 0 0 3px rgba(229, 138, 19, 0.15);
+}
+
+/* Modal reutilizavel */
+.modal-fundo-aksanti {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    min-height: 100vh;
+    padding: 24px;
+    overflow-y: auto;
+    background: rgba(26, 26, 26, 0.56);
+    animation: entrarSuave 0.25s ease forwards;
+    box-sizing: border-box;
+}
+
+.modal-caixa-aksanti {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, var(--modal-largura, 520px));
+    max-height: min(88vh, 760px);
+    overflow: hidden;
+    background: var(--bg-card);
+    border: 1px solid #eceff3;
+    border-radius: var(--raio-borda);
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+    animation: entrarSuave 0.25s ease forwards;
+}
+
+.modal-cabecalho-aksanti {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex: 0 0 auto;
+    padding: 22px 28px;
+    border-bottom: 1px solid #eceff3;
+}
+
+.modal-titulo-aksanti {
+    margin: 0;
+    color: var(--texto-principal);
+    font-family: var(--fonte-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.modal-fechar-aksanti {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    color: var(--texto-secundario);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    transition: var(--transicao);
+}
+
+.modal-fechar-aksanti:hover {
+    color: var(--texto-principal);
+    background: #f4f4f5;
+}
+
+.modal-corpo-aksanti {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 24px 28px 28px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.modal-mensagem-fundo {
+    align-items: center;
+}
+
+.modal-mensagem-fundo .modal-caixa-aksanti {
+    max-height: calc(100vh - 48px);
+}
+
+.modal-mensagem-texto {
+    margin: 0;
+    color: var(--texto-secundario);
+    font-size: 0.98rem;
+    line-height: 1.6;
+}
+
+.modal-mensagem-acoes {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+.modal-mensagem-acoes .btn {
+    min-width: 96px;
+}
+
+@media (max-width: 640px) {
+    .modal-fundo-aksanti {
+        align-items: flex-start;
+        padding: 12px;
+    }
+
+    .modal-fundo-aksanti.modal-mensagem-fundo {
+        align-items: center;
+        padding: 16px;
+    }
+
+    .modal-caixa-aksanti {
+        max-height: calc(100vh - 24px);
+        border-radius: 10px;
+    }
+
+    .modal-cabecalho-aksanti,
+    .modal-corpo-aksanti {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+
+    .modal-titulo-aksanti {
+        font-size: 1.1rem;
+    }
+}

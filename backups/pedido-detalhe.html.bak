@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhe do Pedido - ARMS</title>
+    <!-- Script Anti-Flicker: Ocultar imediatamente links admin para clientes usando localStorage antes de renderizar a pgina -->
+    <script>
+        try {
+            var dados = JSON.parse(localStorage.getItem('arms_utilizador_dados'));
+            if (dados && dados.tipo === 'CLIENT') {
+                document.documentElement.classList.add('is-client-role');
+            }
+        } catch(e) {}
+    </script>
+    <style>
+        html.is-client-role .menu-admin-only { display: none !important; }
+    </style>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variaveis.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/componentes.css">
+    <link rel="stylesheet" href="css/formularios.css">
+    <link rel="stylesheet" href="css/tabelas.css">
+    <link rel="stylesheet" href="css/animacoes.css">
+    <link rel="stylesheet" href="css/responsivo.css">
+    <style>
+        .timeline-dot { position: absolute; left: -31px; top: 0; width: 12px; height: 12px; border-radius: 50%; background-color: var(--aksanti-gold); border: 2px solid white; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1); }
+        .timeline-item { position: relative; margin-bottom: 24px; }
+        .timeline-container { border-left: 3px solid var(--aksanti-gold); margin-left: 12px; padding-left: 24px; }
+        .comentario-box { padding: 14px; background: #fafafa; border-radius: 6px; margin-bottom: 12px; border-left: 4px solid #3b82f6; transition: all 0.2s; }
+        .comentario-box:hover { background: #f3f4f6; }
+        .anexo-box { padding: 14px; background: #fafafa; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #10b981; transition: all 0.2s; }
+        .anexo-box:hover { background: #f3f4f6; }
+        .drop-zone { border: 2px dashed #d4d4d8; padding: 32px 24px; text-align: center; border-radius: 6px; cursor: pointer; background: #f9fafb; transition: all 0.3s; }
+        .drop-zone.ativo { background: #fffbeb; border-color: var(--aksanti-gold); }
+        .card-timeline { margin-top: 48px !important; background: linear-gradient(to right, #f0f9ff, #fff) !important; }
+        .card-comentarios { margin-top: 48px !important; background: linear-gradient(to right, #eff6ff, #fff) !important; }
+        .card-anexos { margin-top: 48px !important; background: linear-gradient(to right, #ecfdf5, #fff) !important; }
+        .titulo-secao { font-size: 1.25rem; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; }
+        .titulo-timeline { color: #f59e0b; }
+        .titulo-comentarios { color: #3b82f6; }
+        .titulo-anexos { color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="layout-principal">
+        <aside class="barra-lateral" id="barra-lateral">
+            <div class="barra-lateral-logo">
+                <img src="img/logo.svg" alt="ARMS" class="logo-svg">
+            </div>
+            <nav style="display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
+                <a href="dashboard.html" class="menu-item"><span>Painel de Controlo</span></a>
+                <a href="pedidos.html" class="menu-item activo"><span>Pedidos</span></a>
+                <a href="clientes.html" class="menu-item menu-admin-only"><span>Clientes</span></a>
+                <a href="areas.html" class="menu-item menu-admin-only"><span>Departamentos</span></a>
+                <hr style="border-color: #333; margin: 16px 0;">
+                <a href="admin-utilizadores.html" class="menu-item menu-admin-only"><span>Administração</span></a>
+                <a href="#" class="menu-item" style="color: #ef4444;" id="btn-sair"><span>Terminar Sessão</span></a>
+            </nav>
+        </aside>
+
+        <main class="area-conteudo" style="min-width: 0; overflow-x: hidden;">
+            <header class="cabecalho-principal">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <a href="pedidos.html" style="color: var(--texto-secundario); text-decoration: none;">&larr; Voltar</a>
+                    <h2 style="font-size: 1.25rem;">Detalhe do Pedido</h2>
+                </div>
+                <div class="cabecalho-acoes" style="display: flex; align-items: center; gap: 16px;">
+                    <a href="notificacoes.html" style="color: var(--texto-secundario); width: 40px; height: 40px; background: #f4f4f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none;">ão</a>
+                    <a href="perfil.html" style="width: 40px; height: 40px; background: var(--aksanti-gold); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; text-decoration: none;">PA</a>
+                </div>
+            </header>
+
+            <div class="conteudo-pagina">
+                <!-- CART?O PRINCIPAL -->
+                <div class="card deslizar-cima-isaf">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e4e4e7;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                <h2 style="font-family: var(--fonte-display); font-size: 1.5rem; margin: 0;" id="pedido-ref">Carregando...</h2>
+                                <span class="badge badge-aviso" id="pedido-status">?</span>
+                            </div>
+                            <p style="color: var(--texto-secundario);" id="pedido-data">?</p>
+                        </div>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn btn-secundario" id="btn-editar-pedido">Editar</button>
+                            <button class="btn btn-primario" id="btn-enviar-pedido">Enviar</button>
+                        </div>
+                    </div>
+
+                    <div class="formulario-grid">
+                        <div>
+                            <label style="display: block; color: var(--texto-secundario); font-size: 0.85rem; margin-bottom: 4px;">Cliente</label>
+                            <p style="font-weight: 500;" id="pedido-cliente">?</p>
+                        </div>
+                        <div>
+                            <label style="display: block; color: var(--texto-secundario); font-size: 0.85rem; margin-bottom: 4px;">Área</label>
+                            <p style="font-weight: 500;" id="pedido-area">?</p>
+                        </div>
+                        <div>
+                            <label style="display: block; color: var(--texto-secundario); font-size: 0.85rem; margin-bottom: 4px;">Criado Por</label>
+                            <p style="font-weight: 500;" id="pedido-criado-por">?</p>
+                        </div>
+                        <div>
+                            <label style="display: block; color: var(--texto-secundario); font-size: 0.85rem; margin-bottom: 4px;">Email</label>
+                            <p style="font-weight: 500;" id="pedido-email">?</p>
+                        </div>
+                        <div class="largura-total">
+                            <label style="display: block; color: var(--texto-secundario); font-size: 0.85rem; margin-bottom: 4px;">Descrição</label>
+                            <div id="pedido-descricao" style="padding: 16px; background-color: #f4f4f5; border-radius: 6px; line-height: 1.6;">?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAINEL DE DECIS?O FORMAL DO CLIENTE (Visóvel Apenas para Cliente quando pendente) -->
+                <div id="painel-decisao-cliente" class="card deslizar-cima-isaf" style="display: none; margin-top: 24px; border-left: 4px solid var(--aksanti-gold); background: #fffbeb;">
+                    <h3 style="font-size: 1.1rem; color: #b45309; margin-bottom: 12px; font-weight: 600;">ão Requer a Sua Aprovação Formal</h3>
+                    <p style="color: #92400e; font-size: 0.95rem; margin-bottom: 16px;">Por favor, analise as condiãoes e detalhes deste pedido e registe a sua decisão oficial abaixo.</p>
+                    <textarea id="texto-decisao" class="input-controlo" rows="2" placeholder="Justificação ou mensagem adicional..."></textarea>
+                    <div style="margin-top: 16px; display: flex; gap: 12px;">
+                        <button class="btn" style="background: #ef4444; color: white;" onclick="submeterDecisao('REJECTED')">Rejeitar</button>
+                        <button class="btn" style="background: #f59e0b; color: white;" onclick="submeterDecisao('PENDING')">Pedir Alteração</button>
+                        <button class="btn" style="background: #10b981; color: white;" onclick="submeterDecisao('ACCEPTED')">Aceitar Oficialmente</button>
+                    </div>
+                </div>
+
+                <!-- HIST?RICO DE RESPOSTAS FORMAIS -->
+                <div id="historico-respostas" style="display: none; margin-top: 24px;"></div>
+
+                <!-- TIMELINE -->
+                <div class="card card-timeline deslizar-cima-isaf" style="animation-delay: 0.1s;">
+                    <h3 class="titulo-secao titulo-timeline">ão Timeline</h3>
+                    <div class="timeline-container" id="timeline-container">
+                        <p style="color: var(--texto-secundario);">Carregando...</p>
+                    </div>
+                </div>
+
+                <!-- COMENT?RIOS -->
+                <div class="card card-comentarios deslizar-cima-isaf" style="animation-delay: 0.15s;">
+                    <h3 class="titulo-secao titulo-comentarios">ão Coment?rios</h3>
+                    <div style="margin-bottom: 24px; padding: 16px; background: #f4f4f5; border-radius: 6px;">
+                        <textarea id="novo-comentario" class="input-controlo" rows="3" placeholder="Escreva um coment?rio..."></textarea>
+                        <div style="margin-top: 12px; display: flex; gap: 12px; justify-content: flex-end;">
+                            <button class="btn btn-secundario" id="btn-cancelar-comentario">Cancelar</button>
+                            <button class="btn btn-primario" id="btn-enviar-comentario">Enviar</button>
+                        </div>
+                    </div>
+                    <div id="lista-comentarios">
+                        <p style="color: var(--texto-secundario);">Carregando...</p>
+                    </div>
+                </div>
+
+                <!-- ANEXOS -->
+                <div class="card card-anexos deslizar-cima-isaf" style="animation-delay: 0.2s;">
+                    <h3 class="titulo-secao titulo-anexos">ão Anexos</h3>
+                    <div class="drop-zone" id="drop-zone">
+                        <p style="font-weight: 500; margin: 0;">Arraste arquivos aqui ou clique para selecionar</p>
+                        <p style="font-size: 0.85rem; color: var(--texto-secundario); margin: 0;">M?x 50MB por arquivo</p>
+                        <input type="file" id="input-arquivo" style="display: none;" multiple>
+                    </div>
+                    <div id="lista-anexos" style="margin-top: 24px;">
+                        <p style="color: var(--texto-secundario);">Carregando...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/tempo-real.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        let pedidoAtual = null;
+        let usuarioId = null;
+        try { const ud = JSON.parse(localStorage.getItem('arms_utilizador_dados') || '{}'); usuarioId = ud.id || null; } catch(e) {}
+
+        function formatarBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function renderTimeline(data) {
+            const container = document.getElementById('timeline-container');
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="color: var(--texto-secundario);">Sem eventos</p>';
+                return;
+            }
+            let html = '<div class="timeline-container">';
+            data.forEach(evt => {
+                html += '<div class="timeline-item"><div class="timeline-dot"></div><strong>' + (evt.to_status || '?') + '</strong><p style="margin:4px 0; font-size:0.9rem; color:#666;">' + evt.actor_name + ' é ' + evt.data_hora + '</p></div>';
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function renderComentarios(data) {
+            const container = document.getElementById('lista-comentarios');
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="color: var(--texto-secundario);">Nenhum coment?rio</p>';
+                return;
+            }
+            let html = '';
+            data.forEach(c => {
+                html += '<div class="comentario-box"><strong>' + c.author_name + '</strong><p style="margin:4px 0; font-size:0.9rem; word-break:break-word;">' + c.body + '</p><small style="color:#999;">' + c.data_hora + '</small></div>';
+            });
+            container.innerHTML = html;
+        }
+
+        function renderAnexos(data) {
+            const container = document.getElementById('lista-anexos');
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="color: var(--texto-secundario);">Nenhum anexo</p>';
+                return;
+            }
+            let html = '';
+            data.forEach(a => {
+                html += '<div class="anexo-box"><div><strong>' + a.file_name + '</strong><p style="margin:4px 0; font-size:0.9rem; color:#666;">' + formatarBytes(a.size_bytes) + ' é ' + a.uploaded_by_name + ' é ' + a.data_hora + '</p></div><a href="api/anexo-download.php?id=' + a.id + '" class="btn btn-pequeno">? Baixar</a></div>';
+            });
+            container.innerHTML = html;
+        }
+
+        function renderRespostasFormais(data) {
+            const container = document.getElementById('historico-respostas');
+            if (!data || data.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = 'block';
+            let html = '<h3 class="titulo-secao" style="color: var(--aksanti-gold);">ão Histórico de Decisóes</h3>';
+            data.forEach(r => {
+                let cor = '#f59e0b';
+                let txt = 'Pendente / Informação';
+                if (r.status_decision === 'ACCEPTED') { cor = '#10b981'; txt = 'Aceitou Oficialmente'; }
+                if (r.status_decision === 'REJECTED') { cor = '#ef4444'; txt = 'Rejeitou'; }
+
+                html += `<div style="padding: 16px; background: #fff; border: 1px solid #e4e4e7; border-left: 4px solid ${cor}; border-radius: 6px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong>${r.responded_by_name} <span style="color: ${cor}; margin-left: 8px;">(${txt})</span></strong>
+                                <small style="color: #999;">${r.data_hora}</small>
+                            </div>
+                            <p style="margin: 0; font-size: 0.95rem; color: #444;">${r.message || '<i>Sem coment?rios adicionais.</i>'}</p>
+                         </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function submeterDecisao(decisaoStr) {
+            confirmarAcao('Confirmar Decisóo', 'Tem a certeza que deseja submeter esta decisão formalá', () => {
+                const msg = document.getElementById('texto-decisao').value.trim();
+                
+                fetch('api/pedido-responder.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reference: pedidoAtual.reference, decisao: decisaoStr, mensagem: msg })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.sucesso) {
+                        abrirModal('Sucesso', '<p style="color: var(--texto-secundario); padding-bottom: 24px;">Decisóo registada com sucesso!</p>');
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        abrirModal('Erro de Sistema', '<p style="color: #ef4444; padding-bottom: 24px;">' + data.erro + '</p>');
+                    }
+                })
+                .catch(err => abrirModal('Erro de Ligação', '<p style="color: #ef4444; padding-bottom: 24px;">Ocorreu um erro ao contactar o servidor.</p>'));
+            });
+        }
+
+        function carregarPedido(ref) {
+            fetch('api/pedido-detalhe.php?ref=' + encodeURIComponent(ref))
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.sucesso) {
+                        alert('Erro: ' + data.erro);
+                        return;
+                    }
+                    const p = data.dados;
+                    pedidoAtual = p;
+
+                    document.getElementById('pedido-ref').textContent = p.reference;
+                    document.getElementById('pedido-data').textContent = 'Criado: ' + p.date;
+                    document.getElementById('pedido-cliente').textContent = p.client_name || '?';
+                    document.getElementById('pedido-area').textContent = p.area_name || '?';
+                    document.getElementById('pedido-criado-por').textContent = p.created_by_name || '?';
+                    document.getElementById('pedido-email').textContent = p.client_email || '?';
+                    document.getElementById('pedido-descricao').textContent = p.description || '?';
+
+                    const statusEl = document.getElementById('pedido-status');
+                    statusEl.textContent = p.status;
+                    if (p.status === 'DRAFT') statusEl.className = 'badge badge-aviso';
+                    else if (p.status === 'SENT') statusEl.className = 'badge badge-info';
+                    else if (p.status === 'RECEIVED') statusEl.className = 'badge badge-info';
+                    else if (p.status === 'ACCEPTED') statusEl.className = 'badge badge-sucesso';
+                    else if (p.status === 'REJECTED') statusEl.className = 'badge badge-perigo';
+                    else if (p.status === 'CLIENT_RESPONDED') statusEl.className = 'badge badge-info';
+                    else if (p.status === 'CLOSED') statusEl.className = 'badge badge-sucesso';
+
+                    renderTimeline(data.timeline);
+                    renderComentarios(data.comentarios);
+                    renderAnexos(data.anexos);
+                    if (data.respostas) renderRespostasFormais(data.respostas);
+
+                    const ud = JSON.parse(localStorage.getItem('arms_utilizador_dados') || '{}');
+                    const isClientRole = ud.tipo === 'CLIENT';
+
+                    const statusEditaveis = ['DRAFT', 'CLIENT_RESPONDED', 'REJECTED'];
+                    if (!statusEditaveis.includes(p.status) || isClientRole) {
+                        document.getElementById('btn-editar-pedido').style.display = 'none';
+                    } else {
+                        document.getElementById('btn-editar-pedido').style.display = 'inline-block';
+                    }
+
+                    if (p.status !== 'DRAFT') {
+                        document.getElementById('btn-enviar-pedido').style.display = 'none';
+                    }
+
+                    // Verifica se o Utilizador logado é o Cliente e se o pedido aguarda decisão
+                    const aguardaDecisao = (p.status === 'SENT' || p.status === 'RECEIVED' || p.status === 'CLIENT_RESPONDED');
+
+                    if (isClientRole && aguardaDecisao) {
+                        document.getElementById('painel-decisao-cliente').style.display = 'block';
+                        
+                        // Atualizar para RECEIVED silenciosamente se estava SENT
+                        if (p.status === 'SENT') {
+                            fetch('api/pedido-atualizar-status.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ reference: p.reference, novo_status: 'RECEIVED' })
+                            });
+                        }
+                    } else {
+                        document.getElementById('painel-decisao-cliente').style.display = 'none';
+                    }
+                })
+                .catch(err => alert('Erro na conexão: ' + err));
+        }
+
+        document.getElementById('btn-enviar-comentario').addEventListener('click', () => {
+            const body = document.getElementById('novo-comentario').value.trim();
+            if (!body) { alert('Escreva algo'); return; }
+            
+            fetch('api/comentario-criar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reference: pedidoAtual.reference, body: body })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.sucesso) {
+                        document.getElementById('novo-comentario').value = '';
+                        carregarPedido(pedidoAtual.reference);
+                    } else alert('Erro: ' + data.erro);
+                });
+        });
+
+        document.getElementById('btn-cancelar-comentario').addEventListener('click', () => {
+            document.getElementById('novo-comentario').value = '';
+        });
+
+
+        document.getElementById('btn-editar-pedido').addEventListener('click', () => {
+            const html = `
+                <div class="grupo-formulario">
+                    <label class="etiqueta-formulario">Título</label>
+                    <input type="text" id="edit-titulo" class="input-controlo" value="${pedidoAtual.title || ''}">
+                </div>
+                <div class="grupo-formulario">
+                    <label class="etiqueta-formulario">Descrição do Pedido</label>
+                    <textarea id="edit-descricao" class="input-controlo" rows="5">${pedidoAtual.description || ''}</textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                    <button class="btn btn-secundario" onclick="fecharModal()">Cancelar</button>
+                    <button class="btn btn-primario" id="btn-salvar-edicao">Guardar Alterações</button>
+                </div>
+            `;
+            
+            abrirModal('Editar Pedido', html, { largura: '600px' });
+            
+            document.getElementById('btn-salvar-edicao').addEventListener('click', () => {
+                const titulo = document.getElementById('edit-titulo').value.trim();
+                const desc = document.getElementById('edit-descricao').value.trim();
+                
+                if(!titulo || !desc) {
+                    alert('Título e Descrição sóo obrigatórios.');
+                    return;
+                }
+                
+                document.getElementById('btn-salvar-edicao').textContent = 'Aguarde...';
+                document.getElementById('btn-salvar-edicao').disabled = true;
+                
+                fetch('api/editar-pedido.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        reference: pedidoAtual.reference,
+                        titulo: titulo,
+                        descricao: desc
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.sucesso) {
+                        fecharModal();
+                        carregarPedido(pedidoAtual.reference);
+                    } else {
+                        alert('Erro: ' + data.erro);
+                        document.getElementById('btn-salvar-edicao').textContent = 'Guardar Alterações';
+                        document.getElementById('btn-salvar-edicao').disabled = false;
+                    }
+                })
+                .catch(err => alert('Erro de ligação.'));
+            });
+        });
+        document.getElementById('btn-enviar-pedido').addEventListener('click', () => {
+            if (!confirm('Enviar este pedido?')) return;
+            fetch('api/pedido-atualizar-status.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reference: pedidoAtual.reference, novo_status: 'SENT' })
+            })
+                .then(r => r.json())
+                .then(data => { if (data.sucesso) window.location.reload(); else alert(data.erro); });
+        });
+
+        const dropZone = document.getElementById('drop-zone');
+        const inputFile = document.getElementById('input-arquivo');
+
+        dropZone.addEventListener('click', () => inputFile.click());
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('ativo'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('ativo'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.classList.remove('ativo');
+            inputFile.files = e.dataTransfer.files;
+            fazerUpload(inputFile.files);
+        });
+
+        inputFile.addEventListener('change', e => fazerUpload(e.target.files));
+
+        function fazerUpload(files) {
+            for (let file of files) {
+                const formData = new FormData();
+                formData.append('arquivo', file);
+                formData.append('reference', pedidoAtual.reference);
+
+                fetch('api/anexo-upload.php', { method: 'POST', body: formData })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.sucesso) carregarPedido(pedidoAtual.reference);
+                        else alert('Erro: ' + data.erro);
+                    });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const ref = params.get('id') || params.get('ref');
+            if (!ref) { alert('Nenhuma referência fornecida'); return; }
+            carregarPedido(ref);
+
+            document.getElementById('btn-sair').addEventListener('click', e => {
+                e.preventDefault();
+                if (typeof ArmsSessao !== 'undefined') {
+                    ArmsSessao.terminar();
+                } else {
+                    localStorage.removeItem('arms_utilizador_logado');
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+

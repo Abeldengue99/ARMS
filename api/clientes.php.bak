@@ -1,0 +1,43 @@
+<?php
+require_once 'db.php';
+
+try {
+    $stmt = $pdo->query("
+        SELECT 
+            c.id, 
+            c.name as company_name, 
+            c.primary_email as contact_email, 
+            c.tax_id,
+            c.location,
+            CASE WHEN c.is_active THEN 'ACTIVE' ELSE 'INACTIVE' END as status,
+            (SELECT full_name FROM arms.client_contact cc WHERE cc.client_id = c.id LIMIT 1) as contact_name
+        FROM arms.client c
+        ORDER BY c.name ASC
+    ");
+    
+    $clientes = $stmt->fetchAll();
+    
+    // Fallback if contact_name, tax_id or location is null
+    foreach ($clientes as &$c) {
+        if (empty($c['tax_id'])) {
+            $c['tax_id'] = '—';
+        }
+        if (empty($c['location'])) {
+            $c['location'] = '—';
+        }
+        if (!$c['contact_name']) {
+            $c['contact_name'] = 'Sem contacto';
+        }
+    }
+    
+    echo json_encode([
+        'sucesso' => true,
+        'dados' => $clientes
+    ]);
+} catch (Exception $e) {
+    echo json_encode([
+        'sucesso' => false,
+        'erro' => $e->getMessage()
+    ]);
+}
+?>

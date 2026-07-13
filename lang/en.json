@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "pedidos": "Requests",
+    "calendario": "Calendar",
+    "clientes": "Clients",
+    "areas": "Departments",
+    "notificacoes": "Notifications",
+    "perfil": "My Profile",
+    "admin": "Administration",
+    "sair": "Sign Out"
+  },
+  "dashboard": {
+    "titulo": "Dashboard",
+    "total_pedidos": "Total Requests",
+    "pedidos_abertos": "Open Requests",
+    "taxa_resposta": "Response Rate",
+    "sla_medio": "Average SLA",
+    "pedidos_recentes": "Recent Requests",
+    "ver_todos": "View All"
+  },
+  "status": {
+    "DRAFT": "Draft",
+    "SENT": "Sent",
+    "RECEIVED": "Received",
+    "CLIENT_RESPONDED": "Client Responded",
+    "ACCEPTED": "Accepted",
+    "REJECTED": "Rejected",
+    "CLOSED": "Closed"
+  },
+  "acoes": {
+    "criar_pedido": "Create New Request",
+    "guardar": "Save Changes",
+    "cancelar": "Cancel",
+    "editar": "Edit",
+    "eliminar": "Delete",
+    "enviar": "Send",
+    "aceitar": "Accept",
+    "rejeitar": "Reject",
+    "ver_detalhes": "View Details"
+  },
+  "tabela": {
+    "referencia": "Reference",
+    "cliente": "Client",
+    "area": "Area",
+    "status": "Status",
+    "data": "Date",
+    "acoes": "Actions"
+  },
+  "moeda": {
+    "AOA": "Kwanza",
+    "USD": "Dollar",
+    "EUR": "Euro"
+  },
+  "login": {
+    "titulo": "Welcome to ARMS",
+    "subtitulo": "Aksanti Request Management System",
+    "email": "Email Address",
+    "senha": "Password",
+    "entrar": "Sign In",
+    "esqueceu_senha": "Forgot your password?"
+  }
+}

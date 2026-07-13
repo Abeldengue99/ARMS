@@ -1,0 +1,61 @@
+<?php
+// Endpoint POST para criar um novo cliente no PostgreSQL
+require_once 'db.php';
+
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['sucesso' => false, 'erro' => 'Método não permitido.']);
+    exit;
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+
+// Validar campos obrigatórios
+if (empty($input['nome']) || empty($input['email'])) {
+    echo json_encode(['sucesso' => false, 'erro' => 'Nome e Email são obrigatórios.']);
+    exit;
+}
+
+try {
+    $stmt = $pdo->prepare("
+        INSERT INTO arms.client (name, primary_email, tax_id, location)
+        VALUES (:nome, :email, :nif, :localizacao)
+        RETURNING id, name, primary_email, tax_id, location, is_active
+    ");
+
+    $stmt->execute([
+        'nome'         => $input['nome'],
+        'email'        => $input['email'],
+        'nif'          => !empty($input['nif']) ? $input['nif'] : null,
+        'localizacao'  => !empty($input['localizacao']) ? $input['localizacao'] : null
+    ]);
+
+    $novoCliente = $stmt->fetch();
+
+    // Se houver contacto, inserir também
+    if (!empty($input['contacto_nome'])) {
+        $stmtContacto = $pdo->prepare("
+            INSERT INTO arms.client_contact (client_id, email, full_name)
+            VALUES (:client_id, :email, :full_name)
+        ");
+        $stmtContacto->execute([
+            'client_id' => $novoCliente['id'],
+            'email'     => $input['email'],
+            'full_name' => $input['contacto_nome']
+        ]);
+    }
+
+    echo json_encode([
+        'sucesso' => true,
+        'mensagem' => 'Cliente criado com sucesso!',
+        'cliente' => $novoCliente
+    ]);
+
+} catch (Exception $e) {
+    echo json_encode([
+        'sucesso' => false,
+        'erro' => $e->getMessage()
+    ]);
+}
+?>

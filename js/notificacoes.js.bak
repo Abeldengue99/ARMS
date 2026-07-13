@@ -1,0 +1,103 @@
+/**
+ * ARMS — Sistema de Notificações em Tempo Real
+ * Atualiza o sininho com a contagem de notificações não lidas em todas as páginas
+ * Polling a cada 15 segundos
+ */
+
+(function() {
+    'use strict';
+
+    const POLL_INTERVAL = 3000; // 3 segundos (reduzido a pedido para ser mais imediato)
+    let ultimaContagem = -1;
+
+    /**
+     * Busca a contagem de notificações não lidas e atualiza todos os badges na página
+     */
+    function atualizarContagemNotificacoes() {
+        fetch('api/notificacoes.php?acao=contar')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.sucesso) return;
+            
+            const count = data.nao_lidas || 0;
+            
+            // Evitar re-renderizar se a contagem não mudou
+            if (count === ultimaContagem) return;
+            ultimaContagem = count;
+
+            // Atualizar todos os badges de notificação na página
+            const badges = document.querySelectorAll('.notif-badge');
+            badges.forEach(badge => {
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.textContent = '';
+                    badge.style.display = 'none';
+                }
+            });
+
+            // Atualizar o título da página com contagem
+            const tituloBase = document.title.replace(/^\(\d+\)\s*/, '');
+            document.title = count > 0 ? `(${count}) ${tituloBase}` : tituloBase;
+        })
+        .catch(() => {}); // Silencioso em caso de erro
+    }
+
+    // Iniciar quando o DOM estiver pronto
+    document.addEventListener('DOMContentLoaded', () => {
+        // Transformar os pontos vermelhos estáticos em badges com contagem
+        injetarBadgesNaSino();
+
+        // Primeira contagem imediata
+        atualizarContagemNotificacoes();
+
+        // Polling periódico
+        setInterval(atualizarContagemNotificacoes, POLL_INTERVAL);
+    });
+
+    /**
+     * Encontra os sinhos de notificação existentes e injeta o badge de contagem
+     */
+    function injetarBadgesNaSino() {
+        // Procurar o link/botão do sininho pelo href ou pelo ícone SVG
+        const sinhos = document.querySelectorAll('a[href="notificacoes.html"]');
+        
+        sinhos.forEach(sinho => {
+            // Tornar posição relativa para o badge absoluto funcionar
+            sinho.style.position = 'relative';
+            
+            // Remover o ponto vermelho antigo (span estático que já lá estava)
+            const pontoAntigo = sinho.querySelector('span');
+            if (pontoAntigo) pontoAntigo.remove();
+
+            // Criar o badge novo com contagem
+            const badge = document.createElement('span');
+            badge.className = 'notif-badge';
+            badge.style.cssText = `
+                position: absolute;
+                top: 4px;
+                right: 2px;
+                min-width: 18px;
+                height: 18px;
+                background-color: #ef4444;
+                color: white;
+                font-size: 0.65rem;
+                font-weight: 700;
+                border-radius: 10px;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                padding: 0 4px;
+                border: 2px solid white;
+                line-height: 1;
+                font-family: var(--fonte-principal), sans-serif;
+            `;
+            sinho.appendChild(badge);
+        });
+    }
+
+    // Expor função para uso externo (ex: após marcar como lida)
+    window.atualizarContagemNotificacoes = atualizarContagemNotificacoes;
+})();
+

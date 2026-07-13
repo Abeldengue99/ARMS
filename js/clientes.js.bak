@@ -1,0 +1,87 @@
+// Estou a mandar aguardar na trincheira para atuar a carga depois da chapa de ecrã estar toda ali solidificada 
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Estou a dar a ordem a este construtor de pintar na vida e desenhar nas celas a tua tabela base dos valentes e grandes clientes da casa Aksanti
+    function renderizarTabelaClientes(clientesFiltrados) {
+        // Estou a puxar das sombras o esqueleto vazio, o corpo de tabela de HTML para onde vamos cuspir os valiosos dados! 
+        const corpoTabela = document.getElementById('tabela-corpo-clientes');
+        // Estou a dizer com força "Aborta os planos e dá meia volta à bota!" caso ele sequer descubra ali estar fora no painel sem existir tal osso na janela inteira 
+        if (!corpoTabela) return;
+
+        // Estou a arrasar a casa, apagando o recheio por dentro a vazio para arrancar tudo do zero com parede lisa! 
+        corpoTabela.innerHTML = '';
+
+        // Estou a descarregar a espiral a dar aos loops do "For Each" em cima do monte de cartões dos teus amigos Clientes Mock da BD
+        clientesFiltrados.forEach(cliente => {
+            
+            // Estou a forjar a cápsula da tua Aksanti à volta da bolinha verde e vermelha com lógicas muito precisas na tua tabela de Postgres
+            let corBadge = 'badge-sucesso'; // O verde das águas que fluem bem (Para estado de ACTIVE)
+            if (cliente.status === 'TERMINATED') corBadge = 'badge-perigo'; // O perigo mortal escarlate (Expulsos ou Suspensos)
+
+            // Estou a escavar no estaleiro as moldes cravadas num Tr limpo (As tuas grandes filas e fardas coladas com cores na TD de HTML da empresa!) 
+            const linhaHTML = `
+                <tr style="border-bottom: 1px solid #f4f4f5; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
+                    <td style="padding: 16px; font-weight: 500; color: var(--texto-principal);">${cliente.company_name}</td>
+                    <td style="padding: 16px;">${cliente.tax_id}</td>
+                    <td style="padding: 16px; color: var(--texto-secundario);">${cliente.location}</td>
+                    <td style="padding: 16px;">
+                        <div style="display: flex; flex-direction: column;">
+                            <span style="font-weight: 500;">${cliente.contact_name}</span>
+                            <span style="font-size: 0.85rem; color: var(--texto-secundario);">${cliente.contact_email}</span>
+                        </div>
+                    </td>
+                    <td style="padding: 16px;">
+                        <span class="badge ${corBadge}">${cliente.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}</span>
+                    </td>
+                    <td style="padding: 16px; text-align: right;">
+                        <a href="#" onclick="abrirEditarCliente('${cliente.id}')" style="color: var(--aksanti-gold); font-weight: 500; font-size: 0.9rem; text-decoration: none;">Editar Conta</a>
+                    </td>
+                </tr>
+            `;
+            // Estou a encher à bruta essa moldura escavada sem dó no HTML da janela, usando os buracos e a mandar a linha para lá à cauda da tua lista
+            corpoTabela.insertAdjacentHTML('beforeend', linhaHTML);
+        });
+    }
+
+    let clientesCarregados = [];
+    let termoAtualPesquisa = '';
+
+    // Buscar os dados reais do nosso PostgreSQL em tempo real
+    if (typeof ArmsTempoReal !== 'undefined') {
+        ArmsTempoReal.iniciar('clientes', (data) => {
+            if (data.clientes) {
+                clientesCarregados = data.clientes;
+                
+                // Se houver pesquisa ativa, manter filtro
+                if (termoAtualPesquisa) {
+                    const filtrados = clientesCarregados.filter(cliente => 
+                        cliente.company_name.toLowerCase().includes(termoAtualPesquisa) || 
+                        cliente.tax_id.toLowerCase().includes(termoAtualPesquisa)
+                    );
+                    renderizarTabelaClientes(filtrados);
+                } else {
+                    renderizarTabelaClientes(clientesCarregados);
+                }
+            }
+        });
+    }
+
+    // Estou a ligar a campainha escondida nas teclas e meter-me à escuta secreta do Input (Na grande caixa das pequisas lá do painel de Clientes) a apanhar a rasto quem lá mexes 
+    const inputFiltro = document.getElementById('filtro-clientes');
+    if (inputFiltro) {
+        // Estou a puxar no ouvinte cada respiro de quando a ponta do teu dedo saltar a descolar das letras na tábua do teu pc (Keyup e não keydown!) 
+        inputFiltro.addEventListener('keyup', (evento) => {
+            // Estou a guardar o termo atual
+            termoAtualPesquisa = evento.target.value.toLowerCase();
+            // Estou a varrer a lista e espremer do sumo, mantendo vivas a respirar na peneira de luxo aquelas contas em cujo grande nome for igual à que teclas sem erros ali à frente nas fuças
+            const filtrados = clientesCarregados.filter(cliente => 
+                cliente.company_name.toLowerCase().includes(termoAtualPesquisa) || 
+                cliente.tax_id.toLowerCase().includes(termoAtualPesquisa)
+            );
+            // Estou a chamar e atirar a lenha dessa peneira de volta para forja! Para ela reescrever no papel apenas e só esses três gajos filtrados!
+            renderizarTabelaClientes(filtrados);
+        });
+    }
+});
+
+

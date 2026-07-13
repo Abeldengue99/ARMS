@@ -1,0 +1,44 @@
+<?php
+require_once 'db.php';
+header('Content-Type: application/json; charset=utf-8');
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (empty($_SESSION['arms_logado']) || empty($_SESSION['arms_user_id'])) {
+    echo json_encode(['sucesso' => false, 'erro' => 'Não autenticado.']);
+    exit;
+}
+
+$data = json_decode(file_get_contents('php://input'), true);
+
+if (!$data || !isset($data['reference']) || !isset($data['body'])) {
+    echo json_encode(['sucesso' => false, 'erro' => 'Dados incompletos']);
+    exit;
+}
+
+$authorId = $_SESSION['arms_user_id'];
+
+try {
+    $stmt = $pdo->prepare("SELECT id FROM arms.request WHERE reference = ?");
+    $stmt->execute([$data['reference']]);
+    $req = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$req) {
+        echo json_encode(['sucesso' => false, 'erro' => 'Pedido não encontrado']);
+        exit;
+    }
+
+    $sql = "INSERT INTO arms.request_comment (request_id, author_id, body, visibility)
+            VALUES (?, ?, ?, 'BOTH') RETURNING id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$req['id'], $authorId, $data['body']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    echo json_encode(['sucesso' => true, 'id' => $result['id']]);
+
+} catch (Exception $e) {
+    echo json_encode(['sucesso' => false, 'erro' => $e->getMessage()]);
+}
+?>

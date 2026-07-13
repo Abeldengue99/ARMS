@@ -1,0 +1,353 @@
+﻿<!DOCTYPE html>
+<!-- Estou a manter as regras lusas de sempre do HTML para abrir a pÃ¡gina das Listagens dos teus Pedidos -->
+<html lang="pt">
+<head>
+    <!-- Estou a chamar os cÃ³digos corretos para as tuas letras nÃ£o ficarem deformadas na tela -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Estou a focar a aba do navegador no nome certo para te orientares: Lista de Pedidos -->
+    <title>Pedidos - ARMS</title>
+    <!-- Script Anti-Flicker: Ocultar imediatamente links admin para clientes usando localStorage antes de renderizar a pÃ¡gina -->
+    <script>
+        try {
+            var dados = JSON.parse(localStorage.getItem('arms_utilizador_dados'));
+            if (dados && dados.tipo === 'CLIENT') {
+                document.documentElement.classList.add('is-client-role');
+            }
+        } catch(e) {}
+    </script>
+    <style>
+        html.is-client-role .menu-admin-only { display: none !important; }
+    </style>
+
+    <!-- Estou a trazer todos os frascos de tintas das outras fases para pintarem a estrutura inteira de igual -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variaveis.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/componentes.css">
+    <link rel="stylesheet" href="css/formularios.css">
+    <link rel="stylesheet" href="css/tabelas.css">
+    <link rel="stylesheet" href="css/animacoes.css">
+    <link rel="stylesheet" href="css/responsivo.css">
+</head>
+<body>
+    
+    <!-- Estou a armar o esqueleto grande da plataforma com o painel e os menus do lado esquerdo -->
+    <div class="layout-principal">
+        
+        <!-- Estou a puxar a tua conhecida Barra Lateral e deix?-la exatamente igual Ã© que jÃ¡ testaste -->
+        <aside class="barra-lateral" id="barra-lateral">
+            <div class="barra-lateral-logo">
+                <img src="img/logo.svg" alt="ARMS" class="logo-svg">
+            </div>
+            
+            <nav style="display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
+                <!-- Estou a ligar o caminho de volta ao painel (tirando-lhe a cor amarela de foco, pois agora jÃ¡ nÃ£o estamos lÃ¡) -->
+                <a href="dashboard.html" class="menu-item">
+                    <span data-i18n="nav.dashboard">Painel de Controlo</span>
+                </a>
+                <!-- Estou a injetar agora a cor Dourada Aksanti ("activo") neste botÃ£o, porque esta Ã© a pÃ¡gina oficial dos Pedidos! -->
+                <a href="pedidos.html" class="menu-item activo">
+                    <span data-i18n="nav.pedidos">Pedidos</span>
+                </a>
+                <!-- Estou a ligar a futura porta dos clientes abaixo -->
+                <a href="clientes.html" class="menu-item menu-admin-only">
+                    <span data-i18n="nav.clientes">Clientes</span>
+                </a>
+                <a href="areas.html" class="menu-item menu-admin-only">
+                    <span data-i18n="nav.areas">Departamentos</span>
+                </a>
+                
+                <hr class="menu-admin-only" style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
+                
+                <a href="admin-utilizadores.html" class="menu-item menu-admin-only">
+                    <span data-i18n="nav.admin">AdministraÃ§Ã£o</span>
+                </a>
+                <a href="#" class="menu-item" style="color: #ef4444;" id="btn-sair">
+                    <span data-i18n="nav.sair">Terminar SessÃ£o</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Estou a puxar a zona branca infinita Ã© tua direita onde vamos desenhar a gigantesca tabela de listagem -->
+        <main class="area-conteudo" style="min-width: 0; overflow-x: hidden;">
+            
+            <!-- Estou a desenhar a tampa da plataforma onde p?es a tua lÃ¡ngua e moeda -->
+            <header class="cabecalho-principal">
+                <div style="display: flex; align-items: center;">
+                    <button id="btn-menu-mobile" class="btn-menu-mobile">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    <h2 style="font-size: 1.25rem;" data-i18n="nav.pedidos">Pedidos</h2>
+                </div>
+
+                <div class="cabecalho-acoes" style="display: flex; align-items: center; gap: 16px;">
+                    <a href="notificacoes.html" style="color: var(--texto-secundario); position: relative; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: #f4f4f5; transition: var(--transicao);" onmouseover="this.style.backgroundColor='#e4e4e7'" onmouseout="this.style.backgroundColor='#f4f4f5'" title="NotificaÃ§Ãµes">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background-color: var(--cor-perigo); border-radius: 50%; border: 2px solid #f4f4f5;"></span>
+                    </a>
+                    
+                    <a href="perfil.html" style="text-decoration: none;" title="O Meu Perfil">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--aksanti-gold); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" data-arms-avatar>PA</div>
+                    </a>
+
+                    <div style="width: 1px; height: 24px; background-color: #e4e4e7; margin: 0 8px;"></div>
+                    <select id="select-idioma-aksanti" class="input-controlo" style="width: auto; padding: 6px 12px;">
+                        <option value="pt">PortuguÃªs</option>
+                        <option value="en">English</option>
+                        <option value="fr">FranÃ§ais</option>
+                    </select>
+                </div>
+            </header>
+
+            <div class="conteudo-pagina">
+                
+                <!-- Estou a colocar no topo o grande letreiro e a caixa de pesquisa antes das tabelas -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="font-size: 1.5rem; color: var(--texto-principal);">GestÃ£o de Pedidos</h2>
+                    <!-- Estou a p?r ali o botÃ£o Dourado a brilhar para poderes criar o teu pedido quando clicares! -->
+                    <button id="btn-criar-pedido" class="btn btn-primario" data-i18n="acoes.criar_pedido">Criar Novo Pedido</button>
+                </div>
+
+                <!-- Estou a reciclar as tuas cartas brancas (Cards) para a grelha de listagem total deslizar perfeitamente no ecrÃ£ com a magia da ISAF Cacimbo (deslizar-cima-isaf) -->
+                <div class="card deslizar-cima-isaf">
+                    
+                    <!-- Estou a injetar os controlos do Filtro: Caixa para procurares os nÃºmeros ou as pessoas, a esticar para a direita num flex limpo -->
+                    <div style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+                        <!-- Estou a meter a tua caixa de input pronta a ler os teus dedos quando teclar no teclado -->
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="display: block; font-size: 0.75rem; color: var(--texto-secundario); margin-bottom: 4px; font-weight: 500;">Pesquisa</label>
+                            <input type="text" id="filtro-pedidos" class="input-controlo" placeholder="ReferÃªncia, Cliente, Estado..." style="width: 100%;">
+                        </div>
+                        <div style="min-width: 160px;">
+                            <label style="display: block; font-size: 0.75rem; color: var(--texto-secundario); margin-bottom: 4px; font-weight: 500;">Estado</label>
+                            <select id="filtro-status" class="input-controlo" style="width: 100%;">
+                                <option value="">Todos</option>
+                                <option value="DRAFT">Rascunho</option>
+                                <option value="SENT">Enviado</option>
+                                <option value="RECEIVED">Recebido</option>
+                                <option value="CLIENT_RESPONDED">Respondido</option>
+                                <option value="ACCEPTED">Aceite</option>
+                                <option value="REJECTED">Rejeitado</option>
+                                <option value="CLOSED">Fechado</option>
+                            </select>
+                        </div>
+                        <div style="min-width: 140px;">
+                            <label style="display: block; font-size: 0.75rem; color: var(--texto-secundario); margin-bottom: 4px; font-weight: 500;">Data De</label>
+                            <input type="date" id="filtro-data-de" class="input-controlo" style="width: 100%;">
+                        </div>
+                        <div style="min-width: 140px;">
+                            <label style="display: block; font-size: 0.75rem; color: var(--texto-secundario); margin-bottom: 4px; font-weight: 500;">Data Até</label>
+                            <input type="date" id="filtro-data-ate" class="input-controlo" style="width: 100%;">
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: flex-end;">
+                            <button id="btn-limpar-filtros" class="btn btn-secundario" style="padding: 8px 16px; white-space: nowrap; font-size: 0.85rem;" title="Limpar Filtros">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Limpar
+                            </button>
+                            <button id="btn-exportar-pdf" class="btn btn-primario" style="padding: 8px 16px; white-space: nowrap; font-size: 0.85rem; background: #1e293b;" title="Exportar Relatório PDF">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg> PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 8px 0; border-bottom: 1px solid #f1f5f9;">
+                        <span id="pedidos-contador" style="font-size: 0.85rem; color: var(--texto-secundario); font-weight: 500;">A carregar...</span>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid #e4e4e7;">
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="tabela.referencia">ReferÃªncia</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="tabela.cliente">Cliente</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="tabela.area">Ãrea</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="tabela.status">Estado</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="tabela.data">Data</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500; text-align: right;" data-i18n="tabela.acoes">AÃ§Ãµes</th>
+                                </tr>
+                            </thead>
+                            <!-- Estou a deitar no meio da tabela um buraco "ID" vazio para que o JavaScript injecte por lÃ¡ as linhas Ã© bruta vindas do banco de dados simulado -->
+                            <tbody id="tabela-corpo-pedidos">
+                                <!-- O JavaScript vai encher este espa?o com os dados mock! -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Estou a meter nos alicerces os idiomas e as moedas -->
+    <script src="js/i18n.js"></script>
+    <!-- moeda.js removed: currency selector removed -->
+    <script src="js/sidebar.js"></script>
+    <script src="js/modal.js"></script>
+    <!-- O C?rebro do Real-Time Engine para a pÃ¡gina de pedidos -->
+    <script src="js/tempo-real.js"></script>
+
+    <!-- Estou a chamar Ã© baila a nossa magia pura que ir? pintar a tabela com a tinta dos dados -->
+    <script src="js/pedidos.js?v=2"></script>
+
+    <!-- Estou a finalizar com o teu boot (o arrancar seguro das rotas falsas) -->
+    <script src="js/notificacoes.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        document.getElementById('btn-sair').addEventListener('click', (evento) => {
+            evento.preventDefault();
+            if (typeof ArmsSessao !== 'undefined') {
+                ArmsSessao.terminar();
+            } else {
+                localStorage.removeItem('arms_utilizador_logado');
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Estou a ligar o botÃ£o de criar pedido ao nosso novo sistema de Modais com dados reais do PostgreSQL
+        const btnCriar = document.getElementById('btn-criar-pedido');
+        if (btnCriar) {
+            btnCriar.addEventListener('click', () => {
+                const formHTML = `
+                    <div class="formulario-grid">
+                        <div class="largura-total">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">TÃ­tulo do Pedido <span style="color: var(--cor-perigo);">*</span></label>
+                            <input type="text" id="campo-titulo" class="input-controlo" placeholder="Ex: Consultoria Fiscal 2026">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Ãrea / Departamento <span style="color: var(--cor-perigo);">*</span></label>
+                            <select id="campo-area" class="input-controlo">
+                                <option value="">A carregar Ãreas...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Cliente <span style="color: var(--cor-perigo);">*</span></label>
+                            <select id="campo-cliente" class="input-controlo">
+                                <option value="">A carregar clientes...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Email do Cliente <span style="color: var(--cor-perigo);">*</span></label>
+                            <input type="email" id="campo-email-cliente" class="input-controlo" placeholder="financas@empresa.co.ao">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Data de Deadline <span style="color: var(--cor-perigo);">*</span></label>
+                            <input type="date" id="campo-deadline" class="input-controlo">
+                        </div>
+                        <div class="largura-total">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">DescriÃ§Ã£o <span style="color: var(--cor-perigo);">*</span></label>
+                            <textarea id="campo-descricao" class="input-controlo-area" placeholder="Descreva os detalhes do pedido..."></textarea>
+                        </div>
+                    </div>
+                    <div id="modal-feedback" style="display:none; padding: 12px 16px; border-radius: var(--raio-borda); margin-top: 16px; font-size: 0.9rem;"></div>
+                    <div class="formulario-acoes">
+                        <button class="btn btn-secundario" onclick="fecharModal()">Cancelar</button>
+                        <button class="btn btn-primario" id="btn-submeter-pedido">Submeter Pedido</button>
+                    </div>
+                `;
+                abrirModal('Criar Novo Pedido', formHTML, { largura: '640px' });
+
+                // Preencher os dropdowns com dados reais do PostgreSQL
+                fetch('api/formulario-dados.php')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.sucesso) {
+                            // Preencher Ãreas
+                            const selArea = document.getElementById('campo-area');
+                            selArea.innerHTML = '<option value="">? Selecionar Ãrea ?</option>';
+                            data.areas.forEach(a => {
+                                selArea.innerHTML += '<option value="' + a.id + '">' + a.name + ' (' + a.code + ')</option>';
+                            });
+
+                            // Preencher clientes
+                            const selCliente = document.getElementById('campo-cliente');
+                            selCliente.innerHTML = '<option value="">? Selecionar Cliente ?</option>';
+                            data.clientes.forEach(c => {
+                                selCliente.innerHTML += '<option value="' + c.id + '" data-email="' + c.primary_email + '">' + c.name + '</option>';
+                            });
+
+                            // Auto-preencher o email quando se seleciona um cliente
+                            selCliente.addEventListener('change', () => {
+                                const opcao = selCliente.options[selCliente.selectedIndex];
+                                const emailInput = document.getElementById('campo-email-cliente');
+                                if (opcao.dataset.email) emailInput.value = opcao.dataset.email;
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Erro no fetch das Ãreas:", err);
+                        document.getElementById('campo-area').innerHTML = '<option value="">Erro! EstÃ¡s a usar o localhost?</option>';
+                        document.getElementById('campo-cliente').innerHTML = '<option value="">Erro de ligaÃ§Ã£o</option>';
+                    });
+
+                // Definir deadline mÃ­nimo como hoje
+                const hoje = new Date().toISOString().split('T')[0];
+                document.getElementById('campo-deadline').min = hoje;
+
+                // Ligar o botÃ£o de submeter Ã© API
+                document.getElementById('btn-submeter-pedido').addEventListener('click', () => {
+                    const feedback = document.getElementById('modal-feedback');
+                    const dados = {
+                        titulo:       document.getElementById('campo-titulo').value.trim(),
+                        descricao:    document.getElementById('campo-descricao').value.trim(),
+                        area_id:      document.getElementById('campo-area').value,
+                        client_id:    document.getElementById('campo-cliente').value,
+                        client_email: document.getElementById('campo-email-cliente').value.trim(),
+                        deadline:     document.getElementById('campo-deadline').value
+                    };
+
+                    // Validar campos
+                    if (!dados.titulo || !dados.descricao || !dados.area_id || !dados.client_id || !dados.client_email || !dados.deadline) {
+                        feedback.style.display = 'block';
+                        feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
+                        feedback.style.color = '#ef4444';
+                        feedback.textContent = 'Preencha todos os campos obrigatÃ³rios.';
+                        return;
+                    }
+
+                    // Enviar para a API
+                    feedback.style.display = 'block';
+                    feedback.style.backgroundColor = 'rgba(229,138,19,0.1)';
+                    feedback.style.color = 'var(--aksanti-gold)';
+                    feedback.textContent = 'A submeter pedido...';
+
+                    fetch('api/criar-pedido.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dados)
+                    })
+                    .then(res => res.json())
+                    .then(resultado => {
+                        if (resultado.sucesso) {
+                            feedback.style.backgroundColor = 'rgba(34,197,94,0.1)';
+                            feedback.style.color = '#22c55e';
+                            feedback.textContent = '? ' + resultado.mensagem + ' Ref: ' + resultado.pedido.reference;
+                            // Recarregar a tabela apÃ³s 1.5s
+                            setTimeout(() => {
+                                fecharModal();
+                                if (typeof ArmsTempoReal !== 'undefined') {
+                                    ArmsTempoReal.forcarAtualizacao();
+                                } else {
+                                    location.reload();
+                                }
+                            }, 1500);
+                        } else {
+                            feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
+                            feedback.style.color = '#ef4444';
+                            feedback.textContent = '? Erro: ' + resultado.erro;
+                        }
+                    })
+                    .catch(err => {
+                        feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
+                        feedback.style.color = '#ef4444';
+                        feedback.textContent = '? Erro de ligaÃ§Ã£o ao servidor.';
+                    });
+                });
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+

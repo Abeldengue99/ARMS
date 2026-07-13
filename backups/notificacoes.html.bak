@@ -1,0 +1,300 @@
+﻿<!DOCTYPE html>
+<!-- Estou a declarar o idioma base em portuguÃªs para a pÃ¡gina de notificaÃ§Ãµes -->
+<html lang="pt">
+<head>
+    <!-- Estou a codificar a pÃ¡gina para suportar acentos -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotificaÃ§Ãµes - ARMS</title>
+    <!-- Script Anti-Flicker: Ocultar imediatamente links admin para clientes usando localStorage antes de renderizar a pÃ¡gina -->
+    <script>
+        try {
+            var dados = JSON.parse(localStorage.getItem('arms_utilizador_dados'));
+            if (dados && dados.tipo === 'CLIENT') {
+                document.documentElement.classList.add('is-client-role');
+            }
+        } catch(e) {}
+    </script>
+    <style>
+        html.is-client-role .menu-admin-only { display: none !important; }
+    </style>
+
+    <!-- Estou a importar todas as regras de estilo da Aksanti -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variaveis.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/componentes.css">
+    <link rel="stylesheet" href="css/animacoes.css">
+    <link rel="stylesheet" href="css/responsivo.css">
+</head>
+<body>
+
+    <!-- Estou a abrir a caixa mestre que guarda toda a plataforma -->
+    <div class="layout-principal">
+
+        <!-- Estou a adicionar a barra de navegaÃ§Ã£o escura que usas para saltar entre pÃ¡ginas -->
+        <aside class="barra-lateral" id="barra-lateral">
+            <div class="barra-lateral-logo">
+                <img src="img/logo.svg" alt="ARMS" class="logo-svg">
+            </div>
+            
+            <nav style="display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
+                <a href="dashboard.html" class="menu-item">
+                    <span data-i18n="nav.dashboard">Painel de Controlo</span>
+                </a>
+                <a href="pedidos.html" class="menu-item">
+                    <span data-i18n="nav.pedidos">Pedidos</span>
+                </a>
+                <a href="clientes.html" class="menu-item menu-admin-only">
+                    <span data-i18n="nav.clientes">Clientes</span>
+                </a>
+                <a href="areas.html" class="menu-item menu-admin-only">
+                    <span data-i18n="nav.areas">Departamentos</span>
+                </a>
+                
+                <hr class="menu-admin-only" style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
+                
+                <a href="admin-utilizadores.html" class="menu-item menu-admin-only">
+                    <span data-i18n="nav.admin">AdministraÃ§Ã£o</span>
+                </a>
+                <a href="#" class="menu-item" style="color: #ef4444;" id="btn-sair">
+                    <span data-i18n="nav.sair">Terminar SessÃ£o</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Estou a preparar o miolo principal do site onde os teus dados v?o estar visÃ³veis -->
+        <main class="area-conteudo" style="min-width: 0; overflow-x: hidden;">
+            
+            <!-- Estou a desenhar a trave do telhado superior -->
+            <header class="cabecalho-principal">
+                <div style="display: flex; align-items: center;">
+                    <button id="btn-menu-mobile" class="btn-menu-mobile">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    <h2 style="font-size: 1.25rem;" data-i18n="nav.notificacoes">NotificaÃ§Ãµes</h2>
+                </div>
+
+                <div class="cabecalho-acoes" style="display: flex; align-items: center; gap: 16px;">
+                    <a href="notificacoes.html" style="color: var(--texto-secundario); position: relative; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: #f4f4f5; transition: var(--transicao);" onmouseover="this.style.backgroundColor='#e4e4e7'" onmouseout="this.style.backgroundColor='#f4f4f5'" title="NotificaÃ§Ãµes">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    </a>
+                    
+                    <a href="perfil.html" style="text-decoration: none;" title="O Meu Perfil">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--aksanti-gold); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" data-arms-avatar>PA</div>
+                    </a>
+
+                    <div style="width: 1px; height: 24px; background-color: #e4e4e7; margin: 0 8px;"></div>
+                    <select id="select-idioma-aksanti" class="input-controlo" style="width: auto; padding: 6px 12px;">
+                        <option value="pt">PortuguÃªs</option>
+                        <option value="en">English</option>
+                        <option value="fr">FranÃ§ais</option>
+                    </select>
+                </div>
+            </header>
+
+            <div class="conteudo-pagina">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h2 style="font-size: 1.5rem; color: var(--texto-principal);" data-i18n="nav.notificacoes">NotificaÃ§Ãµes</h2>
+                        <p id="notif-resumo" style="color: var(--texto-secundario); margin-top: 4px; font-size: 0.9rem;">A carregar...</p>
+                    </div>
+                    <button class="btn btn-secundario" id="btn-marcar-todas" onclick="marcarTodasLidas()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Marcar todas como lidas
+                    </button>
+                </div>
+
+                <!-- Lista de notificaÃ§Ãµes -->
+                <div class="card deslizar-cima-isaf" id="lista-notificacoes" style="padding: 0; overflow: hidden;">
+                    <div style="padding: 40px; text-align: center; color: var(--texto-secundario);">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.4; margin-bottom: 12px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <p>A carregar notificaÃ§Ãµes...</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- TraduÃ§Ãµes -->
+    <script type="application/json" id="lang-pt">
+    {
+        "nav": {"dashboard": "Painel de Controlo", "pedidos": "Pedidos", "clientes": "Clientes", "areas": "Departamentos", "notificacoes": "NotificaÃ§Ãµes", "perfil": "O Meu Perfil", "admin": "AdministraÃ§Ã£o", "sair": "Terminar SessÃ£o"},
+        "moeda": {"AOA": "Kwanza", "USD": "D?lar", "EUR": "Euro"}
+    }
+    </script>
+    <script type="application/json" id="lang-en">
+    {
+        "nav": {"dashboard": "Dashboard", "pedidos": "Requests", "clientes": "Clients", "areas": "Departments", "notificacoes": "Notifications", "perfil": "My Profile", "admin": "Administration", "sair": "Sign Out"},
+        "moeda": {"AOA": "Kwanza", "USD": "Dollar", "EUR": "Euro"}
+    }
+    </script>
+    <script type="application/json" id="lang-fr">
+    {
+        "nav": {"dashboard": "Tableau de Bord", "pedidos": "Demandes", "clientes": "Clients", "areas": "D?partements", "notificacoes": "Notifications", "perfil": "Mon Profil", "admin": "Administration", "sair": "Se D?connecter"},
+        "moeda": {"AOA": "Kwanza", "USD": "Dollar", "EUR": "Euro"}
+    }
+    </script>
+
+    <script src="js/i18n.js"></script>
+    <!-- moeda.js removed: currency selector removed -->
+    <script src="js/sidebar.js"></script>
+    <script src="js/notificacoes.js"></script>
+    <script src="js/tempo-real.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        function carregarNotificacoes() {
+            const lista = document.getElementById('lista-notificacoes');
+            const resumo = document.getElementById('notif-resumo');
+
+            fetch('api/notificacoes.php?acao=listar')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.sucesso) {
+                    lista.innerHTML = '<div style="padding: 32px; text-align: center; color: var(--cor-perigo);">Erro: ' + data.erro + '</div>';
+                    return;
+                }
+
+                const notifs = data.dados;
+                const naoLidas = data.nao_lidas || 0;
+
+                // Resumo
+                if (notifs.length === 0) {
+                    resumo.textContent = 'Nenhuma notificaÃ§Ã£o.';
+                } else {
+                    resumo.textContent = naoLidas > 0 
+                        ? `${naoLidas} nÃ£o lida${naoLidas > 1 ? 's' : ''} de ${notifs.length} total`
+                        : `Todas as ${notifs.length} notificaÃ§Ãµes foram lidas.`;
+                }
+
+                lista.innerHTML = '';
+
+                if (notifs.length === 0) {
+                    lista.innerHTML = `
+                        <div style="padding: 48px; text-align: center; color: var(--texto-secundario);">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.3; margin-bottom: 16px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            <p style="font-size: 1.1rem; font-weight: 500; margin-bottom: 4px;">Tudo limpo!</p>
+                            <p>NÃ£o tem notificaÃ§Ãµes por agora.</p>
+                        </div>`;
+                    return;
+                }
+
+                // Esconder botÃ£o "marcar todas" se nÃ£o houver nÃ£o-lidas
+                document.getElementById('btn-marcar-todas').style.display = naoLidas > 0 ? 'inline-flex' : 'none';
+
+                notifs.forEach(n => {
+                    const bgCor = n.is_read ? 'transparent' : 'rgba(229, 138, 19, 0.06)';
+                    const bordaEstilo = n.is_read ? '' : 'border-left: 4px solid var(--aksanti-gold);';
+                    const pesoTexto = n.is_read ? '400' : '500';
+                    
+                    // ?cone baseado no tipo
+                    let iconeCor = '#3B82F6';
+                    let iconeBg = '#E9F2F9';
+                    if (n.type === 'DEADLINE') { iconeCor = '#F59E0B'; iconeBg = '#FEF3C7'; }
+                    if (n.type === 'STATUS_CHANGE') { iconeCor = '#8B5CF6'; iconeBg = '#EDE9FE'; }
+                    if (n.type === 'NEW_REQUEST') { iconeCor = '#22C55E'; iconeBg = '#DCFCE7'; }
+
+                    const notifHTML = `
+                        <div class="notif-item" data-id="${n.id}" data-lida="${n.is_read}" 
+                             style="padding: 18px 24px; border-bottom: 1px solid #f1f5f9; background-color: ${bgCor}; ${bordaEstilo} display: flex; gap: 16px; align-items: flex-start; transition: all 0.25s; cursor: pointer;"
+                             onmouseover="this.style.backgroundColor='#f8fafc'" 
+                             onmouseout="this.style.backgroundColor='${bgCor}'"
+                             onclick="marcarLida('${n.id}', this, '${n.pedido_ref || ''}')">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: ${iconeBg}; display: flex; align-items: center; justify-content: center; color: ${iconeCor}; flex-shrink: 0;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            </div>
+                            <div style="flex-grow: 1; min-width: 0;">
+                                <p style="margin: 0 0 4px 0; color: var(--texto-principal); font-weight: ${pesoTexto}; line-height: 1.4;">${n.message}</p>
+                                <p style="margin: 0; font-size: 0.82rem; color: var(--texto-secundario);">${n.data_formatada}</p>
+                            </div>
+                            ${!n.is_read ? '<div style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--aksanti-gold); flex-shrink: 0; margin-top: 8px;" title="NÃ£o lida"></div>' : ''}
+                        </div>
+                    `;
+                    lista.insertAdjacentHTML('beforeend', notifHTML);
+                });
+            })
+            .catch(err => {
+                console.error('Erro notificaÃ§Ãµes:', err);
+                lista.innerHTML = '<div style="padding: 32px; text-align: center; color: var(--cor-perigo);">Erro de ligaÃ§Ã£o ao servidor.</div>';
+            });
+        }
+
+        // Marcar UMA notificaÃ§Ã£o como lida
+        function marcarLida(id, elemento, ref) {
+            if (elemento.dataset.lida === 't' || elemento.dataset.lida === 'true') {
+                // Se tiver referÃªncia de pedido, navegar
+                return;
+            }
+
+            fetch('api/notificacoes.php?acao=marcar_lida', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.sucesso) {
+                    // Atualizar visualmente sem recarregar
+                    elemento.style.backgroundColor = 'transparent';
+                    elemento.style.borderLeft = 'none';
+                    elemento.dataset.lida = 'true';
+                    // Remover ponto dourado
+                    const ponto = elemento.querySelector('div[title="NÃ£o lida"]');
+                    if (ponto) ponto.remove();
+                    // Atualizar contagem no sininho
+                    if (typeof atualizarContagemNotificacoes === 'function') {
+                        atualizarContagemNotificacoes();
+                    }
+                    // Atualizar resumo
+                    if (ref) window.location.href = 'pedido-detalhe.htmlÃ¡ref=' + encodeURIComponent(ref);
+                    else carregarNotificacoes();
+                }
+            });
+        }
+
+        // Marcar TODAS como lidas
+        function marcarTodasLidas() {
+            const btn = document.getElementById('btn-marcar-todas');
+            btn.textContent = 'A marcar...';
+            btn.disabled = true;
+
+            fetch('api/notificacoes.php?acao=marcar_todas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.sucesso) {
+                    carregarNotificacoes();
+                    if (typeof atualizarContagemNotificacoes === 'function') {
+                        atualizarContagemNotificacoes();
+                    }
+                }
+                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;"><polyline points="20 6 9 17 4 12"></polyline></svg>Marcar todas como lidas';
+                btn.disabled = false;
+            });
+        }
+
+        // Carregar ao abrir a pÃ¡gina
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarNotificacoes();
+        });
+
+        document.getElementById('btn-sair').addEventListener('click', (evento) => {
+            evento.preventDefault();
+            if (typeof ArmsSessao !== 'undefined') {
+                ArmsSessao.terminar();
+            } else {
+                localStorage.removeItem('arms_utilizador_logado');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
+
+

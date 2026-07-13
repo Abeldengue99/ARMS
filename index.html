@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<!-- Estou a dizer ao navegador web que isto é um documento HTML5 moderno para que as coisas funcionem bem e perfeitamente no site Aksanti -->
+<html lang="pt">
+<!-- Estou a abrir o cabeçalho invisével (o Head) da nossa página onde carregamos todos os motores do sistema e a estética (Estilos CSS) do documento -->
+<head>
+    <!-- Estou a mandar o navegador usar as letras perfeitinhas acentuadas de codificação (O standard da Web UTF-8!) para não dar erros com o é e os Tildes -->
+    <meta charset="UTF-8">
+    <!-- Estou a preparar as janelas para os ecrãs méveis (Viewports dos teleméveis!) dizendo para a largura da página bater na exata chapa com a largura final dos teus teleméveis -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Estou a pôr o Letreiro do Tétulo no pequeno canto acima do browser, nos separadores lé no PC para identificares muito bem que aba é a da nossa App -->
+    <title>Login - ARMS (Aksanti Request Management System)</title>
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="shortcut icon" type="image/svg+xml" href="img/favicon.svg">
+    <meta name="theme-color" content="#111111">
+
+    <!-- Estou a chamar por fios na linha com as partes essenciais: Primeiro carrega a Vassoura a limpar bugs de estilo velhos dos computadores! -->
+    <link rel="stylesheet" href="css/reset.css?v=2">
+    <!-- Estou a chamar e acender todo o tesouro escondido de Ouro da tua paleta no CSS, as tais variéveis globais! -->
+    <link rel="stylesheet" href="css/variaveis.css?v=5">
+    <!-- Estou a importar também a formatação de corpo na página base inteirinha das letras com que digitémos para estarem nas caixas do estilo base! -->
+    <link rel="stylesheet" href="css/base.css?v=5">
+    <!-- Estou a trazer os pedaéos que constroem as caixas dos inputs brancas no formulário a reluzir como desenhamos nos ficheiros da classe componentes -->
+    <link rel="stylesheet" href="css/componentes.css?v=2">
+    <!-- Estou a ativar a beleza de cinema, carregando os efeitos da Animação do CSS que d? vida aos painéis em movimentos na tela -->
+    <link rel="stylesheet" href="css/animacoes.css?v=2">
+
+    <!-- Estou a inserir um remendo caseiro pequenininho apenas do CSS para que a tela do ecrã de logar a janela (Só ela e mais nada!) bata no centro é medida da cruz na moldura inteira do teu PC  -->
+    <style>
+        /* Estou a focar as energias e prender este corpo inteirinho num flex sé para centrar e focar ao meio da tua face do pc */
+        body {
+            /* Estou a ordenar a forma do corpo em caixas que empurram o conteédo flexível para lé sem dores e matematicamente exacto */
+            display: flex;
+            /* Estou a puxar para o meio certinho nas vias laterais, e a empurrar as coisas no eixo vertical de alto para baixo! */
+            align-items: center;
+            justify-content: center;
+            /* Estou a fazer pinturas de fundo do preto carvoeiro mais profundo - um quase negro luxuoso das paredes de um salão das portas de banco de luxo a condizer é Aksanti! */
+            background-color: var(--aksanti-dark);
+        }
+        /* Estou a pôr nos limites uma contenção para que o branco da caixinha (o cartão a login) fique ali estreito sem crescer desalmadamente para ocupar até a parede em 4K. Méximo de 400px é lagura num retângulo lindo ao alto */
+        .card-login {
+            width: 100%;
+            max-width: 400px;
+        }
+        /* Estou a pintar o meio branco deste papel em particular com muita subtileza numa cor escura na janela à volta */
+        .logo-container {
+            /* Estou a centrar com precisão na frente a parte onde as letras ficam a olhar, no cabeçalho central da imagem */
+            text-align: center;
+            margin-bottom: 32px;
+        }
+    </style>
+</head>
+<!-- Estou a fechar o lado da cabeéa para entrar no corpo que é afinal de contas o corpo de toda a tua obra visével - no Body da App! -->
+<body>
+
+    <!-- Estou a pôr e preparar na linha de tiro o grande cartãozinho branco ("Card") no escuro central, puxando-lhe pela farda CSS também as animaéoes em fade-in e com classe 'animacao-entrar' para que não choque ao saltar nos teus ecrãs! -->
+    <div class="card card-login animacao-entrar">
+        <!-- Estou a puxar e definir ali uma gaiola para meter lé no seu miolo certinho do ecrã o nosso bonito Logotipo ou Texto da tua imagem -->
+        <div class="logo-container">
+            <img src="img/logo.svg" alt="ARMS" class="logo-svg">
+        </div>
+
+        <!-- Estou a abrir finalmente os buracos e colocar as etiquetas que te véo convidar para entrar neste formulário da nossa Base de Dados -->
+        <form id="form-login">
+            <!-- Estou a meter nos contentores do espaço o "Email" com as caixinhas dele a condizer é direita para o utilizador dar toques ali -->
+            <div class="input-grupo">
+                <!-- Estou a trazer pela etiqueta ("data-i18n") na nossa mágica de JavaScript a tradução da caixa das Labels! Desta forma a língua nunca pisa o inglês! -->
+                <label for="email" data-i18n="login.email">Endereço de E-mail</label>
+                <!-- Estou a pôr o controlo com a foréa input-controlo e não o obrigo por agora a preencher nada para facilitar a tua visualização e os teus testes répidos no projeto! -->
+                <input type="email" id="email" class="input-controlo">
+            </div>
+
+            <!-- Estou a recomeçar num igual procedimento para colocar, por baixo da tua porta as Password da segurança! Um espaço input ao lado -->
+            <div class="input-grupo">
+                <label for="senha" data-i18n="login.senha">Palavra-passe</label>
+                <div style="position: relative;">
+                    <input type="password" id="senha" class="input-controlo" style="padding-right: 48px;">
+                    <button type="button" id="btn-ver-senha" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--texto-secundario); padding: 4px;" title="Mostrar palavra-passe">
+                        <svg id="icone-olho-aberto" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        <svg id="icone-olho-fechado" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Estou a pedir os links, um link na frente, que não o obrigue ao botão "Entrar" onde caso perca tudo no cérebro lhe deixe clicar onde "Esqueceu as palavra-passe?" -->
+            <div style="text-align: right; margin-bottom: 24px;">
+                <!-- Estou a usar o nosso data-i18n de novo na ancorazinha a apontar é parede e na formatação onde o texto esté pequeno da secção das Senhas -->
+                <a href="#" style="color: var(--aksanti-gold); font-size: 0.85rem;" data-i18n="login.esqueceu_senha">Esqueceu a sua palavra-passe?</a>
+            </div>
+
+            <!-- Estou a desenhar na pedra um botão grande, muito cheio na Primária (Aksanti-Gold), esticado ao cumprimento num formato ("w-100 nas 100%") que te ordena a "Entrar Clicando na luz!" -->
+            <button type="submit" class="btn btn-primario" style="width: 100%;" data-i18n="login.entrar">Entrar no Sistema</button>
+        </form>
+    </div>
+
+    <!-- Modal de Recuperação de Senha -->
+    <div id="modal-recuperar" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+        <div class="card" style="max-width:420px; width:90%; margin:auto; position:relative; top:50%; transform:translateY(-50%);">
+            <button id="btn-fechar-recuperar" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--texto-secundario);">&times;</button>
+            <div style="text-align:center; margin-bottom:24px;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--aksanti-gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <h3 style="font-size:1.25rem; margin-top:12px;">Recuperar Palavra-passe</h3>
+                <p style="color:var(--texto-secundario); font-size:0.9rem; margin-top:8px;">Introduza o seu e-mail e enviaremos instruéées para redefinir a sua palavra-passe.</p>
+            </div>
+            <div class="input-grupo">
+                <label for="email-recuperar">Endereço de E-mail</label>
+                <input type="email" id="email-recuperar" class="input-controlo" placeholder="exemplo@empresa.ao">
+            </div>
+            <div id="feedback-recuperar" style="display:none; padding:12px 16px; border-radius:8px; margin-bottom:16px; font-size:0.9rem;"></div>
+            <button id="btn-enviar-recuperar" class="btn btn-primario" style="width:100%;">Enviar Instruções</button>
+        </div>
+    </div>
+
+        <!-- Traduéées embutidas (fallback para quando a página é aberta via file:// ou fetch falha) -->
+        <script type="application/json" id="lang-pt">
+        {
+            "nav": {
+                "dashboard": "Painel de Controlo",
+                "pedidos": "Pedidos",
+                "clientes": "Clientes",
+                "areas": "Departamentos",
+                "notificacoes": "Notificações",
+                "perfil": "O Meu Perfil",
+                "admin": "Administração",
+                "sair": "Terminar Sessão"
+            },
+            "dashboard": {
+                "titulo": "Painel de Controlo",
+                "total_pedidos": "Total de Pedidos",
+                "pedidos_abertos": "Pedidos Abertos",
+                "taxa_resposta": "Taxa de Resposta",
+                "sla_medio": "SLA Médio",
+                "pedidos_recentes": "Pedidos Recentes",
+                "ver_todos": "Ver Todos"
+            },
+            "status": {
+                "DRAFT": "Rascunho",
+                "SENT": "Enviado",
+                "RECEIVED": "Recebido",
+                "CLIENT_RESPONDED": "Cliente Respondeu",
+                "ACCEPTED": "Aceite",
+                "REJECTED": "Rejeitado",
+                "CLOSED": "Fechado"
+            },
+            "acoes": {
+                "criar_pedido": "Criar Novo Pedido",
+                "guardar": "Guardar Alterações",
+                "cancelar": "Cancelar",
+                "editar": "Editar",
+                "eliminar": "Eliminar",
+                "enviar": "Enviar",
+                "aceitar": "Aceitar",
+                "rejeitar": "Rejeitar",
+                "ver_detalhes": "Ver Detalhes"
+            },
+            "tabela": {
+                "referencia": "Referência",
+                "cliente": "Cliente",
+                "area": "Área",
+                "status": "Estado",
+                "data": "Data",
+                "acoes": "Ações"
+            },
+                "moeda": {
+                "AOA": "Kwanza",
+                "USD": "Dólar",
+                "EUR": "Euro"
+            },
+            "login": {
+                "titulo": "Bem-vindo ao ARMS",
+                "subtitulo": "Aksanti Request Management System",
+                "email": "Endereço de E-mail",
+                "senha": "Palavra-passe",
+                "entrar": "Entrar no Sistema",
+                "esqueceu_senha": "Esqueceu a sua palavra-passe?"
+            }
+        }
+        </script>
+
+        <script type="application/json" id="lang-en">
+        {
+            "nav": {
+                "dashboard": "Dashboard",
+                "pedidos": "Requests",
+                "clientes": "Clients",
+                "areas": "Departments",
+                "notificacoes": "Notifications",
+                "perfil": "My Profile",
+                "admin": "Administration",
+                "sair": "Sign Out"
+            },
+            "dashboard": {
+                "titulo": "Dashboard",
+                "total_pedidos": "Total Requests",
+                "pedidos_abertos": "Open Requests",
+                "taxa_resposta": "Response Rate",
+                "sla_medio": "Average SLA",
+                "pedidos_recentes": "Recent Requests",
+                "ver_todos": "View All"
+            },
+            "status": {
+                "DRAFT": "Draft",
+                "SENT": "Sent",
+                "RECEIVED": "Received",
+                "CLIENT_RESPONDED": "Client Responded",
+                "ACCEPTED": "Accepted",
+                "REJECTED": "Rejected",
+                "CLOSED": "Closed"
+            },
+            "acoes": {
+                "criar_pedido": "Create New Request",
+                "guardar": "Save Changes",
+                "cancelar": "Cancel",
+                "editar": "Edit",
+                "eliminar": "Delete",
+                "enviar": "Send",
+                "aceitar": "Accept",
+                "rejeitar": "Reject",
+                "ver_detalhes": "View Details"
+            },
+            "tabela": {
+                "referencia": "Reference",
+                "cliente": "Client",
+                "area": "Area",
+                "status": "Status",
+                "data": "Date",
+                "acoes": "Actions"
+            },
+            "moeda": {
+                "AOA": "Kwanza",
+                "USD": "Dollar",
+                "EUR": "Euro"
+            },
+            "login": {
+                "titulo": "Welcome to ARMS",
+                "subtitulo": "Aksanti Request Management System",
+                "email": "Email Address",
+                "senha": "Password",
+                "entrar": "Sign In",
+                "esqueceu_senha": "Forgot your password?"
+            }
+        }
+        </script>
+
+        <script type="application/json" id="lang-fr">
+        {
+            "nav": {
+                "dashboard": "Tableau de Bord",
+                "pedidos": "Demandes",
+                "clientes": "Clients",
+                "areas": "Départements",
+                "notificacoes": "Notifications",
+                "perfil": "Mon Profil",
+                "admin": "Administration",
+                "sair": "Se Déconnecter"
+            },
+            "dashboard": {
+                "titulo": "Tableau de Bord",
+                "total_pedidos": "Total des Demandes",
+                "pedidos_abertos": "Demandes Ouvertes",
+                "taxa_resposta": "Taux de Réponse",
+                "sla_medio": "SLA Moyen",
+                "pedidos_recentes": "Demandes R?centes",
+                "ver_todos": "Voir Tout"
+            },
+            "status": {
+                "DRAFT": "Brouillon",
+                "SENT": "Envoyé",
+                "RECEIVED": "Reçu",
+                "CLIENT_RESPONDED": "Client a Répondu",
+                "ACCEPTED": "Accepté",
+                "REJECTED": "Rejeté",
+                "CLOSED": "Fermé"
+            },
+            "acoes": {
+                "criar_pedido": "Créer une Nouvelle Demande",
+                "guardar": "Enregistrer les Modifications",
+                "cancelar": "Annuler",
+                "editar": "Modifier",
+                "eliminar": "Supprimer",
+                "enviar": "Envoyer",
+                "aceitar": "Accepter",
+                "rejeitar": "Rejeter",
+                "ver_detalhes": "Voir les Détails"
+            },
+            "tabela": {
+                "referencia": "Référence",
+                "cliente": "Client",
+                "area": "D?partement",
+                "status": "Statut",
+                "data": "Date",
+                "acoes": "Actions"
+            },
+            "moeda": {
+                "AOA": "Kwanza",
+                "USD": "Dollar",
+                "EUR": "Euro"
+            },
+            "login": {
+                "titulo": "Bienvenue sur ARMS",
+                "subtitulo": "Aksanti Request Management System",
+                "email": "Adresse E-mail",
+                "senha": "Mot de passe",
+                "entrar": "Se Connecter",
+                "esqueceu_senha": "Mot de passe oublié ?"
+            }
+        }
+        </script>
+
+        <!-- Estou a convocar ao final de todas as caixas visíveis aos olhos do utilizador o ficheiro com o Cérebro I18n JavaScript, e pôr é prova nos nossos textos as tuas palavras de traduções ao carregar disto. -->
+    <script src="js/i18n.js?v=5"></script>
+        <script src="js/modal.js"></script>
+    
+    <script>
+        // Toggle mostrar/esconder senha
+        document.getElementById('btn-ver-senha').addEventListener('click', () => {
+            const campoSenha = document.getElementById('senha');
+            const olhoAberto = document.getElementById('icone-olho-aberto');
+            const olhoFechado = document.getElementById('icone-olho-fechado');
+            if (campoSenha.type === 'password') {
+                campoSenha.type = 'text';
+                olhoAberto.style.display = 'none';
+                olhoFechado.style.display = 'block';
+            } else {
+                campoSenha.type = 'password';
+                olhoAberto.style.display = 'block';
+                olhoFechado.style.display = 'none';
+            }
+        });
+
+        // Modal de recuperação de senha
+        const modalRecuperar = document.getElementById('modal-recuperar');
+        document.querySelector('a[data-i18n="login.esqueceu_senha"]').addEventListener('click', (e) => {
+            e.preventDefault();
+            modalRecuperar.style.display = 'flex';
+        });
+        document.getElementById('btn-fechar-recuperar').addEventListener('click', () => {
+            modalRecuperar.style.display = 'none';
+        });
+        modalRecuperar.addEventListener('click', (e) => {
+            if (e.target === modalRecuperar) modalRecuperar.style.display = 'none';
+        });
+        document.getElementById('btn-enviar-recuperar').addEventListener('click', () => {
+            const emailRecuperar = document.getElementById('email-recuperar').value.trim();
+            const feedback = document.getElementById('feedback-recuperar');
+            const btn = document.getElementById('btn-enviar-recuperar');
+            if (!emailRecuperar) {
+                feedback.style.display = 'block';
+                feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
+                feedback.style.color = '#ef4444';
+                feedback.textContent = 'Por favor, introduza o seu e-mail.';
+                return;
+            }
+            btn.textContent = 'A enviar...';
+            btn.disabled = true;
+            fetch('api/recuperar-senha.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: emailRecuperar })
+            })
+            .then(r => r.json())
+            .then(data => {
+                feedback.style.display = 'block';
+                if (data.sucesso) {
+                    feedback.style.backgroundColor = 'rgba(34,197,94,0.1)';
+                    feedback.style.color = '#22c55e';
+                    feedback.textContent = data.mensagem;
+                    setTimeout(() => { modalRecuperar.style.display = 'none'; }, 3000);
+                } else {
+                    feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
+                    feedback.style.color = '#ef4444';
+                    feedback.textContent = data.erro;
+                }
+                btn.textContent = 'Enviar Instruções';
+                btn.disabled = false;
+            })
+            .catch(() => {
+                feedback.style.display = 'block';
+                feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
+                feedback.style.color = '#ef4444';
+                feedback.textContent = 'Erro de ligação ao servidor.';
+                btn.textContent = 'Enviar Instruções';
+                btn.disabled = false;
+            });
+        });
+
+        // Login - limpar dados antigos e autenticar
+        document.getElementById('form-login').addEventListener('submit', (evento) => {
+            evento.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const senha = document.getElementById('senha').value.trim();
+            const btn = evento.target.querySelector('button[type="submit"]');
+            
+            if (!email || !senha) {
+                mostrarMensagem('Atenção', 'Por favor, preencha o email e a palavra-passe.');
+                return;
+            }
+            
+            const textoOriginal = btn.textContent;
+            btn.textContent = 'A entrar...';
+            btn.disabled = true;
+            
+            // IMPORTANTE: Limpar dados da sesséo anterior para evitar conflitos entre contas
+            localStorage.removeItem('arms_utilizador_logado');
+            localStorage.removeItem('arms_utilizador_dados');
+
+            fetch('api/login.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.sucesso) {
+                    localStorage.setItem('arms_utilizador_logado', 'true');
+                    localStorage.setItem('arms_utilizador_dados', JSON.stringify(data.utilizador));
+                    
+                    window.location.href = 'dashboard.html';
+                } else {
+                    mostrarMensagem('Atenção', data.erro || 'Não foi possível iniciar sesséo.');
+                    btn.textContent = textoOriginal;
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                mostrarMensagem('Atenção', 'Erro de ligação ao servidor.');
+                btn.textContent = textoOriginal;
+                btn.disabled = false;
+                console.error(err);
+            });
+        });
+    </script>
+</body>
+</html>
+

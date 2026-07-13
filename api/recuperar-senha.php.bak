@@ -1,0 +1,68 @@
+<?php
+/**
+ * ARMS — API de Recuperação de Palavra-passe
+ * Verifica se o e-mail existe na BD e gera uma nova senha temporária.
+ * Num ambiente de produção, esta senha seria enviada por e-mail (SMTP).
+ * Por agora, gera a senha e mostra na resposta para testes.
+ */
+require_once 'db.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['sucesso' => false, 'erro' => 'Método não permitido.']);
+    exit;
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+$email = trim($input['email'] ?? '');
+
+if (empty($email)) {
+    echo json_encode(['sucesso' => false, 'erro' => 'E-mail é obrigatório.']);
+    exit;
+}
+
+try {
+    // Verificar se o e-mail existe na BD
+    $stmt = $pdo->prepare("SELECT id, email FROM arms.auth_user WHERE email = :email AND is_active = true");
+    $stmt->execute(['email' => $email]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        // Por segurança, não revelamos se o e-mail existe ou não
+        echo json_encode([
+            'sucesso' => true,
+            'mensagem' => 'Se este e-mail estiver registado, receberá instruções de recuperação em breve.'
+        ]);
+        exit;
+    }
+
+    // Gerar nova senha temporária (8 caracteres alfanuméricos)
+    $novaSenha = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 8);
+    $hash = password_hash($novaSenha, PASSWORD_DEFAULT);
+
+    // Atualizar a senha na BD
+    $stmtUpdate = $pdo->prepare("UPDATE arms.auth_user SET password_hash = :hash WHERE id = :id");
+    $stmtUpdate->execute(['hash' => $hash, 'id' => $user['id']]);
+
+    // Em produção: enviar por e-mail via SMTP (ex: PHPMailer)
+    // Por agora, devolvemos a mensagem genérica de sucesso.
+    // A nova senha temporária aparece nos logs do servidor para testes.
+    error_log("[ARMS] Recuperação de senha para {$email}: Nova senha temporária = {$novaSenha}");
+
+    echo json_encode([
+        'sucesso' => true,
+        'mensagem' => 'Instruções de recuperação enviadas para ' . $email . '. Verifique a sua caixa de entrada.',
+        // APENAS para fase de desenvolvimento/testes — remover em produção!
+        'senha_temporaria' => $novaSenha
+    ]);
+
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['sucesso' => false, 'erro' => 'Erro interno: ' . $e->getMessage()]);
+}
+?>

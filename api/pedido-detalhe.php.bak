@@ -1,0 +1,88 @@
+<?php
+require_once 'db.php';
+header('Content-Type: application/json; charset=utf-8');
+
+if (!isset($_GET['ref'])) {
+    echo json_encode(['sucesso' => false, 'erro' => 'Referência não fornecida']);
+    exit;
+}
+
+$ref = $_GET['ref'];
+
+try {
+    $pdo->beginTransaction();
+
+    // Pedido principal
+    $sql = "SELECT r.id, r.reference, r.status, r.title, r.description, 
+            to_char(r.created_at, 'YYYY-MM-DD HH24:MI') as date,
+            a.name as area_name, c.name as client_name, c.primary_email as client_email,
+            u.full_name as created_by_name
+            FROM arms.request r
+            LEFT JOIN arms.area a ON r.area_id = a.id
+            LEFT JOIN arms.client c ON r.client_id = c.id
+            LEFT JOIN arms.user_profile u ON r.created_by = u.user_id
+            WHERE r.reference = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$ref]);
+    $pedido = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$pedido) {
+        echo json_encode(['sucesso' => false, 'erro' => 'Pedido não encontrado']);
+        exit;
+    }
+
+    $req_id = $pedido['id'];
+
+    // Timeline
+    $sql = "SELECT to_status, to_char(created_at, 'YYYY-MM-DD HH24:MI') as data_hora,
+            COALESCE(u.full_name, 'Sistema') as actor_name
+            FROM arms.request_audit_log ral
+            LEFT JOIN arms.user_profile u ON ral.actor_id = u.user_id
+            WHERE request_id = ? ORDER BY created_at ASC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$req_id]);
+    $timeline = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Comentários
+    $sql = "SELECT body, to_char(created_at, 'YYYY-MM-DD HH24:MI') as data_hora,
+            u.full_name as author_name FROM arms.request_comment rc
+            LEFT JOIN arms.user_profile u ON rc.author_id = u.user_id
+            WHERE request_id = ? ORDER BY created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$req_id]);
+    $comentarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Anexos
+    $sql = "SELECT id, file_name, size_bytes, to_char(created_at, 'YYYY-MM-DD HH24:MI') as data_hora,
+            u.full_name as uploaded_by_name FROM arms.attachment a
+            LEFT JOIN arms.user_profile u ON a.uploaded_by = u.user_id
+            WHERE request_id = ? AND response_id IS NULL ORDER BY created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$req_id]);
+    $anexos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Respostas Formais do Cliente
+    $sql = "SELECT rr.decision as status_decision, rr.body as message, to_char(rr.created_at, 'YYYY-MM-DD HH24:MI') as data_hora,
+            u.full_name as responded_by_name FROM arms.request_response rr
+            LEFT JOIN arms.user_profile u ON rr.responded_by = u.user_id
+            WHERE rr.request_id = ? ORDER BY rr.created_at ASC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$req_id]);
+    $respostas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $pdo->commit();
+
+    echo json_encode([
+        'sucesso' => true,
+        'dados' => $pedido,
+        'timeline' => $timeline,
+        'comentarios' => $comentarios,
+        'anexos' => $anexos,
+        'respostas' => $respostas
+    ]);
+
+} catch (Exception $e) {
+    $pdo->rollBack();
+    echo json_encode(['sucesso' => false, 'erro' => $e->getMessage()]);
+}
+?>

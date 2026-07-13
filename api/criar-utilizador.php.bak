@@ -1,0 +1,78 @@
+<?php
+require_once 'db.php';
+
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['sucesso' => false, 'erro' => 'Método não permitido']);
+    exit;
+}
+
+$data = json_decode(file_get_contents('php://input'), true);
+
+if (!$data) {
+    echo json_encode(['sucesso' => false, 'erro' => 'Dados inválidos']);
+    exit;
+}
+
+$firstName = trim($data['first_name'] ?? '');
+$lastName = trim($data['last_name'] ?? '');
+$email = trim($data['email'] ?? '');
+$tipoAcesso = trim($data['tipo_acesso'] ?? 'Aksanti Team');
+
+if (empty($firstName) || empty($email)) {
+    echo json_encode(['sucesso' => false, 'erro' => 'Nome e e-mail são obrigatórios.']);
+    exit;
+}
+
+try {
+    $pdo->beginTransaction();
+
+    // 1. Inserir em auth_user
+    // Password falsa, na realidade usaria bcrypt
+    $passwordHash = '$2b$12$REPLACE_WITH_REAL_BCRYPT_HASH_0000000000000000000000';
+    $userType = ($tipoAcesso === 'Cliente') ? 'CLIENT' : 'AKSANTI';
+    
+    $stmtUser = $pdo->prepare("
+        INSERT INTO arms.auth_user (email, password_hash, user_type) 
+        VALUES (:email, :password, :type) 
+        RETURNING id
+    ");
+    
+    $stmtUser->execute([
+        ':email' => $email,
+        ':password' => $passwordHash,
+        ':type' => $userType
+    ]);
+    
+    $userId = $stmtUser->fetchColumn();
+
+    // 2. Inserir em user_profile
+    $fullName = trim("$firstName $lastName");
+    $stmtProfile = $pdo->prepare("
+        INSERT INTO arms.user_profile (user_id, full_name, locale) 
+        VALUES (:user_id, :full_name, 'pt-PT')
+    ");
+    
+    $stmtProfile->execute([
+        ':user_id' => $userId,
+        ':full_name' => $fullName
+    ]);
+
+    $pdo->commit();
+
+    echo json_encode(['sucesso' => true, 'mensagem' => 'Utilizador criado com sucesso!']);
+
+} catch (PDOException $e) {
+    $pdo->rollBack();
+    // 23505 = unique_violation no PostgreSQL
+    if ($e->getCode() == '23505') {
+        echo json_encode(['sucesso' => false, 'erro' => 'Já existe um utilizador com este e-mail.']);
+    } else {
+        echo json_encode(['sucesso' => false, 'erro' => 'Erro na BD: ' . $e->getMessage()]);
+    }
+}
+?>

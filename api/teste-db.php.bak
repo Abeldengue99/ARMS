@@ -1,0 +1,30 @@
+<?php
+header('Content-Type: text/plain; charset=utf-8');
+
+echo "=== TESTE DE DRIVER POSTGRESQL ===\n\n";
+
+// 1. Verificar se o driver PDO pgsql está disponível
+echo "1. Drivers PDO disponíveis: " . implode(', ', PDO::getAvailableDrivers()) . "\n";
+echo "2. Driver pgsql presente: " . (in_array('pgsql', PDO::getAvailableDrivers()) ? 'SIM ✓' : 'NÃO ✗') . "\n\n";
+
+// 2. Tentar conectar
+try {
+    $dsn = "pgsql:host=localhost;port=5432;dbname='ARMS — Aksanti Request Management System'";
+    $pdo = new PDO($dsn, 'postgres', '5850', [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    ]);
+    $pdo->exec("SET search_path TO arms, public");
+    
+    echo "3. Conexão à BD: SUCESSO ✓\n\n";
+    
+    $stmt = $pdo->query("SELECT code, name FROM arms.area ORDER BY name");
+    $areas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    echo "4. Áreas encontradas: " . count($areas) . "\n";
+    foreach ($areas as $a) {
+        echo "   - [{$a['code']}] {$a['name']}\n";
+    }
+} catch (Exception $e) {
+    echo "3. ERRO: " . $e->getMessage() . "\n";
+}
+?>

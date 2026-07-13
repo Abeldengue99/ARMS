@@ -1,0 +1,57 @@
+/* Estou a selecionar todos os elementos da página e os pseudo-elementos before e after para garantir consistência */
+*, *::before, *::after {
+    /* Estou a remover a margem padrão que os navegadores metem de todos os elementos para ter controlo total do layout */
+    margin: 0;
+    /* Estou a remover o preenchimento padrão de todos os elementos para não ter espaços indesejados */
+    padding: 0;
+    /* Estou a garantir que as bordas e preenchimentos não aumentam o tamanho total do elemento, facilitando a construção de caixas */
+    box-sizing: border-box;
+}
+
+/* Estou a estilizar o corpo do documento para garantir que ocupa o ecrã inteiro */
+body {
+    /* Estou a definir a altura mínima do corpo para 100% da altura da janela, garantindo que o rodapé fica em baixo mesmo sem conteúdo */
+    min-height: 100vh;
+}
+
+/* Estou a remover o estilo padrão de todas as listas (para tirar aquelas bolinhas chatas do HTML base) */
+ul, ol {
+    /* Estou a tirar o estilo da lista para ficar com um aspeto limpo, usaremos muito para navegação lateral */
+    list-style: none;
+}
+
+/* Estou a remover o sublinhado padrão e a cor azul de todos os links, que parecem antiquados */
+a {
+    /* Estou a remover a linha debaixo do link */
+    text-decoration: none;
+    /* Estou a fazer com que o link herde a cor do texto à sua volta (elemento pai) */
+    color: inherit;
+}
+
+/* Estou a garantir que as imagens não ultrapassem o tamanho de onde estão colocadas, evitando quebrar o layout */
+img {
+    /* Estou a definir a largura máxima da imagem para 100% do espaço disponível */
+    max-width: 100%;
+    /* Estou a fazer com que a imagem se comporte como um bloco, isto evita um pequeno espaço em branco irritante debaixo das imagens na web */
+    display: block;
+}
+
+/* Estou a limpar todos os estilos feios que vêm por padrão nos botões dos navegadores web */
+button {
+    /* Estou a remover a cor de fundo padrão do botão */
+    background: none;
+    /* Estou a remover a borda padrão do botão */
+    border: none;
+    /* Estou a forçar o botão a herdar a nossa fonte em vez daquela feia do sistema operativo */
+    font: inherit;
+    /* Estou a mudar o cursor do rato para uma mãozinha quando se passa por cima do botão para indicar que se pode clicar */
+    cursor: pointer;
+    /* Estou a remover a cor do texto padrão do botão para podermos pintá-lo como quisermos depois */
+    color: inherit;
+}
+
+/* Estou a limpar os estilos base das caixas de input, áreas de texto e selects */
+input, textarea, select {
+    /* Estou a herdar a fonte do elemento pai para manter a consistência da nossa tipografia premium */
+    font: inherit;
+}

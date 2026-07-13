@@ -1,0 +1,267 @@
+/**
+ * ARMS — Motor de Pedidos (Requests Engine)
+ * Renderiza a tabela de pedidos, filtros avançados e exportação PDF
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // === RENDERIZAÇÃO DA TABELA ===
+    function renderizarTabelaPedidos(pedidosFiltrados) {
+        const corpoTabela = document.getElementById('tabela-corpo-pedidos');
+        if (!corpoTabela) return;
+
+        corpoTabela.innerHTML = '';
+
+        if (pedidosFiltrados.length === 0) {
+            corpoTabela.innerHTML = `<tr><td colspan="6" style="padding: 32px; text-align: center; color: var(--texto-secundario);">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4d4d8" stroke-width="1.5" style="margin-bottom: 12px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><br>
+                Nenhum pedido encontrado com os filtros selecionados.
+            </td></tr>`;
+            return;
+        }
+
+        pedidosFiltrados.forEach(pedido => {
+            let corBadge = 'badge-aviso';
+            if (pedido.status === 'ACCEPTED' || pedido.status === 'CLOSED') corBadge = 'badge-sucesso';
+            if (pedido.status === 'REJECTED') corBadge = 'badge-perigo';
+            if (pedido.status === 'SENT' || pedido.status === 'CLIENT_RESPONDED' || pedido.status === 'RECEIVED') corBadge = 'badge-info';
+
+            const linhaHTML = `
+                <tr style="border-bottom: 1px solid #f4f4f5; transition: background-color 0.2s; cursor: pointer;" onclick="window.location.href='pedido-detalhe.html?ref=${pedido.id_str}'" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
+                    <td style="padding: 16px; font-weight: 500;">${pedido.id_str}</td>
+                    <td style="padding: 16px;">${pedido.client_name}</td>
+                    <td style="padding: 16px;">${pedido.area_name}</td>
+                    <td style="padding: 16px;">
+                        <span class="badge ${corBadge}" data-i18n="status.${pedido.status}">${pedido.status}</span>
+                    </td>
+                    <td style="padding: 16px;">${pedido.date}</td>
+                    <td style="padding: 16px; text-align: right;">
+                        <a href="pedido-detalhe.html?id=${pedido.id_str}" style="color: var(--aksanti-gold); font-weight: 500; font-size: 0.9rem; text-decoration: none;" data-i18n="acoes.ver_detalhes">Ver Detalhes</a>
+                    </td>
+                </tr>
+            `;
+            corpoTabela.insertAdjacentHTML('beforeend', linhaHTML);
+        });
+
+        // Atualizar contador
+        const contadorEl = document.getElementById('pedidos-contador');
+        if (contadorEl) contadorEl.textContent = pedidosFiltrados.length + ' pedido' + (pedidosFiltrados.length !== 1 ? 's' : '');
+
+        // Aplicar traduções
+        if (typeof mudarIdiomaAksanti === 'function') {
+            const idiomaMemorizado = localStorage.getItem('arms_idioma') || 'pt';
+            mudarIdiomaAksanti(idiomaMemorizado);
+        }
+    }
+
+    let pedidosCarregados = [];
+    let termoAtualPesquisa = '';
+    let filtroStatusAtual = '';
+    let filtroDataDe = '';
+    let filtroDataAte = '';
+
+    // === FUNÇÃO CENTRAL DE FILTRAGEM ===
+    function aplicarFiltros() {
+        let resultado = pedidosCarregados;
+
+        // Filtro por texto (referência, cliente, área, status)
+        if (termoAtualPesquisa) {
+            resultado = resultado.filter(p =>
+                p.id_str.toLowerCase().includes(termoAtualPesquisa) ||
+                p.status.toLowerCase().includes(termoAtualPesquisa) ||
+                p.client_name.toLowerCase().includes(termoAtualPesquisa) ||
+                (p.area_name && p.area_name.toLowerCase().includes(termoAtualPesquisa))
+            );
+        }
+
+        // Filtro por status
+        if (filtroStatusAtual) {
+            resultado = resultado.filter(p => p.status === filtroStatusAtual);
+        }
+
+        // Filtro por data (de)
+        if (filtroDataDe) {
+            resultado = resultado.filter(p => {
+                const dataPedido = p.date ? p.date.substring(0, 10) : '';
+                return dataPedido >= filtroDataDe;
+            });
+        }
+
+        // Filtro por data (até)
+        if (filtroDataAte) {
+            resultado = resultado.filter(p => {
+                const dataPedido = p.date ? p.date.substring(0, 10) : '';
+                return dataPedido <= filtroDataAte;
+            });
+        }
+
+        renderizarTabelaPedidos(resultado);
+    }
+
+    // === INICIALIZAR DADOS VIA POLLING ===
+    const urlParams = new URLSearchParams(window.location.search);
+    const q = urlParams.get('q');
+    if (q) {
+        termoAtualPesquisa = q.toLowerCase();
+        const inputFiltro = document.getElementById('filtro-pedidos');
+        if (inputFiltro) inputFiltro.value = q;
+    }
+
+    if (typeof ArmsTempoReal !== 'undefined') {
+        ArmsTempoReal.iniciar('pedidos', (data) => {
+            if (data.pedidos) {
+                pedidosCarregados = data.pedidos;
+                aplicarFiltros();
+            }
+        });
+    }
+
+    // === EVENT LISTENERS DOS FILTROS ===
+    const inputFiltro = document.getElementById('filtro-pedidos');
+    if (inputFiltro) {
+        inputFiltro.addEventListener('keyup', (e) => {
+            termoAtualPesquisa = e.target.value.toLowerCase();
+            aplicarFiltros();
+        });
+    }
+
+    const selectStatus = document.getElementById('filtro-status');
+    if (selectStatus) {
+        selectStatus.addEventListener('change', (e) => {
+            filtroStatusAtual = e.target.value;
+            aplicarFiltros();
+        });
+    }
+
+    const inputDataDe = document.getElementById('filtro-data-de');
+    if (inputDataDe) {
+        inputDataDe.addEventListener('change', (e) => {
+            filtroDataDe = e.target.value;
+            aplicarFiltros();
+        });
+    }
+
+    const inputDataAte = document.getElementById('filtro-data-ate');
+    if (inputDataAte) {
+        inputDataAte.addEventListener('change', (e) => {
+            filtroDataAte = e.target.value;
+            aplicarFiltros();
+        });
+    }
+
+    // Botão de limpar filtros
+    const btnLimpar = document.getElementById('btn-limpar-filtros');
+    if (btnLimpar) {
+        btnLimpar.addEventListener('click', () => {
+            termoAtualPesquisa = '';
+            filtroStatusAtual = '';
+            filtroDataDe = '';
+            filtroDataAte = '';
+            if (inputFiltro) inputFiltro.value = '';
+            if (selectStatus) selectStatus.value = '';
+            if (inputDataDe) inputDataDe.value = '';
+            if (inputDataAte) inputDataAte.value = '';
+            aplicarFiltros();
+        });
+    }
+
+    // === EXPORTAR PDF ===
+    const btnPDF = document.getElementById('btn-exportar-pdf');
+    if (btnPDF) {
+        btnPDF.addEventListener('click', () => {
+            gerarRelatorioPDF();
+        });
+    }
+
+    function gerarRelatorioPDF() {
+        // Obter dados filtrados atualmente visíveis
+        let dados = pedidosCarregados;
+        if (termoAtualPesquisa) {
+            dados = dados.filter(p =>
+                p.id_str.toLowerCase().includes(termoAtualPesquisa) ||
+                p.status.toLowerCase().includes(termoAtualPesquisa) ||
+                p.client_name.toLowerCase().includes(termoAtualPesquisa) ||
+                (p.area_name && p.area_name.toLowerCase().includes(termoAtualPesquisa))
+            );
+        }
+        if (filtroStatusAtual) dados = dados.filter(p => p.status === filtroStatusAtual);
+        if (filtroDataDe) dados = dados.filter(p => (p.date || '').substring(0, 10) >= filtroDataDe);
+        if (filtroDataAte) dados = dados.filter(p => (p.date || '').substring(0, 10) <= filtroDataAte);
+
+        // Criar janela de impressão como PDF
+        const janela = window.open('', '_blank');
+        janela.document.write(`<!DOCTYPE html>
+<html>
+<head>
+    <title>Relatório de Pedidos - ARMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; padding: 40px; color: #1e293b; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 3px solid #d97706; }
+        .header h1 { font-size: 24px; color: #0f172a; }
+        .header .subtitle { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .header .logo { font-size: 28px; font-weight: 800; color: #d97706; }
+        .meta { display: flex; gap: 24px; margin-bottom: 24px; font-size: 12px; color: #64748b; }
+        .meta span { background: #f8fafc; padding: 4px 10px; border-radius: 4px; border: 1px solid #e2e8f0; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th { background-color: #f8fafc; padding: 10px 12px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        tbody td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+        tbody tr:nth-child(even) { background-color: #fafafa; }
+        .badge { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge-sucesso { background: #dcfce7; color: #166534; }
+        .badge-perigo { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+        .badge-aviso { background: #fef3c7; color: #92400e; }
+        .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #94a3b8; text-align: center; }
+        @media print { body { padding: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Relatório de Pedidos</h1>
+            <p class="subtitle">Aksanti Request Management System</p>
+        </div>
+        <div class="logo">ARMS</div>
+    </div>
+    <div class="meta">
+        <span>📅 Gerado em: ${new Date().toLocaleString('pt-PT')}</span>
+        <span>📊 Total: ${dados.length} pedido${dados.length !== 1 ? 's' : ''}</span>
+        ${filtroStatusAtual ? '<span>🏷️ Filtro: ' + filtroStatusAtual + '</span>' : ''}
+        ${filtroDataDe ? '<span>📆 De: ' + filtroDataDe + '</span>' : ''}
+        ${filtroDataAte ? '<span>📆 Até: ' + filtroDataAte + '</span>' : ''}
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Referência</th>
+                <th>Cliente</th>
+                <th>Área</th>
+                <th>Estado</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${dados.map(p => {
+                let bc = 'badge-aviso';
+                if (p.status === 'ACCEPTED' || p.status === 'CLOSED') bc = 'badge-sucesso';
+                if (p.status === 'REJECTED') bc = 'badge-perigo';
+                if (p.status === 'SENT' || p.status === 'RECEIVED' || p.status === 'CLIENT_RESPONDED') bc = 'badge-info';
+                return `<tr>
+                    <td style="font-weight:600;">${p.id_str}</td>
+                    <td>${p.client_name}</td>
+                    <td>${p.area_name || '—'}</td>
+                    <td><span class="badge ${bc}">${p.status}</span></td>
+                    <td>${p.date || '—'}</td>
+                </tr>`;
+            }).join('')}
+        </tbody>
+    </table>
+    <div class="footer">
+        <p>ARMS — Aksanti Request Management System &copy; ${new Date().getFullYear()} | Documento gerado automaticamente</p>
+    </div>
+    <script>window.onload = function() { window.print(); }</script>
+</body>
+</html>`);
+        janela.document.close();
+    }
+});

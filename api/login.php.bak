@@ -1,0 +1,104 @@
+<?php
+/**
+ * ARMS — API de Autenticação (Login)
+ * Valida credenciais contra a tabela auth_user do PostgreSQL
+ * Cria sessão PHP segura e devolve dados do utilizador
+ */
+require_once 'db.php';
+
+// Iniciar sessão PHP se ainda não estiver activa
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+header('Content-Type: application/json; charset=utf-8');
+
+// Apenas POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['sucesso' => false, 'erro' => 'Método não permitido.']);
+    exit;
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+
+$email = trim($input['email'] ?? '');
+$senha = trim($input['senha'] ?? '');
+
+if (empty($email) || empty($senha)) {
+    echo json_encode(['sucesso' => false, 'erro' => 'Email e palavra-passe são obrigatórios.']);
+    exit;
+}
+
+try {
+    // Buscar utilizador pelo email
+    $stmt = $pdo->prepare("
+        SELECT 
+            au.id, au.email, au.password_hash, au.user_type, au.is_admin, au.is_active,
+            up.full_name, up.phone, up.locale, up.avatar_url,
+            cc.client_id
+        FROM arms.auth_user au
+        LEFT JOIN arms.user_profile up ON au.id = up.user_id
+        LEFT JOIN arms.client_contact cc ON au.id = cc.user_id
+        WHERE au.email = :email
+    ");
+    $stmt->execute(['email' => $email]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        echo json_encode(['sucesso' => false, 'erro' => 'Credenciais inválidas.']);
+        exit;
+    }
+
+    // Verificar se a conta está activa
+    if (!$user['is_active']) {
+        echo json_encode(['sucesso' => false, 'erro' => 'Esta conta foi desactivada. Contacte o administrador.']);
+        exit;
+    }
+
+    // Verificar a password com bcrypt
+    if (!password_verify($senha, $user['password_hash'])) {
+        echo json_encode(['sucesso' => false, 'erro' => 'Credenciais inválidas.']);
+        exit;
+    }
+
+    // Atualizar último login
+    $stmtLogin = $pdo->prepare("UPDATE arms.auth_user SET last_login_at = NOW() WHERE id = :id");
+    $stmtLogin->execute(['id' => $user['id']]);
+
+    // Criar sessão
+    $_SESSION['arms_user_id'] = $user['id'];
+    $_SESSION['arms_user_email'] = $user['email'];
+    $_SESSION['arms_user_type'] = $user['user_type'];
+    $_SESSION['arms_is_admin'] = $user['is_admin'];
+    $_SESSION['arms_full_name'] = $user['full_name'] ?? 'Utilizador';
+    $_SESSION['arms_client_id'] = $user['client_id'] ?? null;
+    $_SESSION['arms_logado'] = true;
+
+    // Gerar as iniciais para o avatar
+    $nome = $user['full_name'] ?? $user['email'];
+    $partes = explode(' ', $nome);
+    $iniciais = strtoupper(substr($partes[0], 0, 1));
+    if (count($partes) > 1) {
+        $iniciais .= strtoupper(substr(end($partes), 0, 1));
+    }
+
+    echo json_encode([
+        'sucesso' => true,
+        'mensagem' => 'Sessão iniciada com sucesso!',
+        'utilizador' => [
+            'id' => $user['id'],
+            'email' => $user['email'],
+            'nome' => $user['full_name'] ?? 'Utilizador',
+            'tipo' => $user['user_type'],
+            'admin' => (bool)$user['is_admin'],
+            'iniciais' => $iniciais,
+            'locale' => $user['locale'] ?? 'pt-PT',
+            'client_id' => $user['client_id'] ?? null
+        ]
+    ]);
+
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['sucesso' => false, 'erro' => 'Erro interno: ' . $e->getMessage()]);
+}
+?>

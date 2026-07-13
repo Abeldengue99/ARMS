@@ -1,0 +1,87 @@
+// Estou a criar uma caixa de memória temporária que guarda os textos dos JSONs para não estarmos sempre a ir buscar a internet, gastando rede e fazendo o ecrã lento ao piscar as páginas
+let traducoesEmCache = {};
+
+// Estou a criar a ordem asíncrona ("Async") gigante (que corre em segundo plano) para a substituição mágica e total da nossa língua Aksanti perante os olhos dos clientes em todos os botões e texto da janela
+async function mudarIdiomaAksanti(codigoDoIdioma) {
+    
+    // Estou a gravar o novo idioma escolhido ("pt", "en" ou "fr") na caixa negra do navegador (localStorage), assim quando ele fechar e voltar amanhã à janela Aksanti, não volta para inglês e lembra as decisões!
+    localStorage.setItem('arms_idioma', codigoDoIdioma);
+    
+    // Estou a perguntar à aplicação se não temos a chave de tradução deste idioma em concreto lá nas caixas da nossa cache guardada de hoje... Se a caixa estiver vazia disto, vamos buscá-la!
+    if (!traducoesEmCache[codigoDoIdioma]) {
+        try {
+            // Estou a pedir aos caminhos das pastas onde os ficheiros JSON estão arquivados para "ir lá buscar-me rápido as palavras em ficheiro JSON para aquela língua e aguarda ("Await") lá sentado que ela chegue"!
+            const resposta = await fetch(`lang/${codigoDoIdioma}.json`);
+            // Estou a arrumar esse código manhoso JSON que de lá regressou e transformá-lo nos nossos maravilhosos objetos JS a estruturar palavras fáceis de caçar num lado, para as pormos com nomes como nav e titulos no cérebro
+            const textos = await resposta.json();
+            // Estou a guardar essa mala cheia de todas as tuas traduções prontas nas gavetas do cache, devidamente separadas pelo nosso carimbo ("pt") para aceder nas próximas páginas num microssegundo sem as ir ler em pastinha de novo!
+            traducoesEmCache[codigoDoIdioma] = textos;
+        } catch (erro) {
+            console.error("Estou a tentar ler o ficheiro das linguagens da Aksanti mas falhei em o encontrar: ", erro);
+            // Fallback: tentar ler um bloco JSON embutido no HTML com id `lang-<codigo>`
+            try {
+                const inline = document.getElementById(`lang-${codigoDoIdioma}`);
+                if (inline && inline.textContent) {
+                    const textos = JSON.parse(inline.textContent);
+                    traducoesEmCache[codigoDoIdioma] = textos;
+                } else {
+                    // Se não houver inline, abortamos (não há traduções disponíveis)
+                    return;
+                }
+            } catch (erroInline) {
+                console.error('Falha ao ler traduções embutidas:', erroInline);
+                return;
+            }
+        }
+    }
+
+    // Estou a extrair do pote sagrado os todos textos certinhos no idioma, que acabamos afinal de pedir ou até dos que lá tínhamos antes
+    const textosIdioma = traducoesEmCache[codigoDoIdioma];
+    
+    // Estou a correr à caça pelo ecrã inteiro de ponta a rabo à procura só e com a lupa nos elementos com a medalha escondida "data-i18n". O Foreach vai de elemento a elemento por ali abaixo tratar com este pequeno trecho neles um a um.
+    document.querySelectorAll('[data-i18n]').forEach(elementoHTML => {
+        // Estou a sacar a identificação única / chapa dessa medalha que caçámos! Para a tal etiqueta sabermos por qual a substituir depois na memória (um exemplo é o nome no botão do cabeçalho "nav.pedidos" no nosso selo i18n na html).
+        const chaveDaGaveta = elementoHTML.getAttribute('data-i18n');
+        
+        // Estou a picar a frase onde encontrámos pontos soltos "nav.dashboard", e as separo ("Split") em migalhas pequeninas à mesma. Tudo para que depois nos seja possível investigar no cofre JSON das gavetas a caminho interior até elas.
+        const chavesPartido = chaveDaGaveta.split('.');
+        
+        // Estou a definir onde vou arrancar no nosso grande poço de tesouro com o idioma inteiro nos textos puros e fortes da "traducoesEmCache" onde fomos há bocado!
+        let valorTraduzido = textosIdioma;
+        
+        // Estou a seguir nas palavras pequenas como pedrinhas da história a dar nos caminhos dentro das pastas do mapa do grande objeto a descer andares a dentro dele com este For
+        for (let parte of chavesPartido) {
+            // Estou a usar o truque para entrar a pés juntos numa divisão dos objetos e ir sacando de lá partes - como quem entra numa caixa até o fundo ("Avisa-me se não for lá e se parte e aterra em NULL para mim!")
+            valorTraduzido = valorTraduzido?.[parte];
+        }
+        
+        // Estou a questionar se o resultado valeu de algo afinal de contas, e não ficámos e esvaziamos a bater num muro escuro ("Undefined"), mas a trazer sim os novos valores traduzidos à luz de fato
+        if (valorTraduzido) {
+            // Estou a mandar espalmar e esfregar no interior branco sem fundo, por cima nas caras do teu html inteiro (nos botões, painéis, caixas, textos), todas aquelas tuas belas traduções a correr nos seus lugares perfeitamente! Magia em texto à frente dos utilizadores
+            elementoHTML.textContent = valorTraduzido;
+        }
+    });
+
+    // Estou a ir procurar onde vive a tal caixa da barrinha no topo das navegações onde selecionas a tal língua e escolhes do lado para tentar colocar e mexer no ponteiro depois!
+    const selectDoIdioma = document.getElementById('select-idioma-aksanti');
+    // Estou a verificar no entanto, por muito parvo e simples que seja que o nosso Select (ou barrinha de escolhas da página a qual estámos!) e ver que ela se atreve de veras a existir e não seja fantasma - antes sim de igualar a ele na "barrinha" e o pormos focado na opção visual escolhida!
+    if (selectDoIdioma) selectDoIdioma.value = codigoDoIdioma;
+}
+
+// Estou a aplicar uma pequena parabólica virada e muito super-atenta para ouvir o teu ecrã principal a carregar e respirar - a acordar! (Ouvir até ao Dom de Todo O HTML Estar Carregado!) para podermos disparar de surpresa estas ordens aos botões
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Estou a roubar no interior ao teu arquivo profundo dos dias antigos "localStorage", a língua em que lias o sistema. Caso nem lêssemos e nem fôssemos o primeiro lá ou por erro, a tua mãe língua (A original e maravilhosa "PT" lusa! )
+    const idiomaMemorizado = localStorage.getItem('arms_idioma') || 'pt';
+    // Estou a arrancar sem qualquer espinhas o tal motor na maravilha das traduções que construí antes, enviando-lhe na nossa primeira corrida logo o pedido ("Faz em PT agora para a gente toda!").  
+    mudarIdiomaAksanti(idiomaMemorizado);
+
+    // Estou a voltar à caça, a focar num buraco a atenção nos painéis com a caixa de selecionar o menu das línguas. 
+    const selectDoIdioma = document.getElementById('select-idioma-aksanti');
+    
+    // Estou a prevenir de colocar audição/ouvintes na rua a botões mortos no espaço do navegador. Só dou ouvido a botões com corpo real na nossa tela ali existente!
+    if (selectDoIdioma) {
+        // Estou a ligar o super-poder a esta peça de mudança a notar nas mudanças ("Eventos do tipo Change") e assim ele mandar com urgência os comandos na tua função inteira em "Muda" na qual passamos no centro os textos / Valor lá que clicámos no fim no teclado (target.value)! Tudo para fazer as tuas mudanças numa língua e a um estalar dos cliques num milissegundo de diferença!!
+        selectDoIdioma.addEventListener('change', (evento) => mudarIdiomaAksanti(evento.target.value));
+    }
+});

@@ -1,0 +1,96 @@
+// Estou a criar o componente de Modal reutilizável que vai ser usado em toda a plataforma ARMS
+// Estou a guardar a referência do modal que está aberto de momento para poder fechá-lo depois
+let modalAberto = null;
+
+// Estou a criar a função principal que abre e mostra um modal na tela com título e conteúdo dinâmico
+function abrirModal(titulo, conteudoHTML, opcoes = {}) {
+    // Estou a fechar qualquer modal que já esteja aberto antes de criar um novo para evitar sobreposições
+    if (modalAberto) fecharModal();
+
+    // Estou a criar a cortina escura semitransparente que cobre toda a página por trás do modal
+    const fundo = document.createElement('div');
+    // Estou a dar-lhe um ID único para poder encontrá-lo e removê-lo depois
+    fundo.id = 'modal-fundo-aksanti';
+    // Estou a aplicar os estilos da cortina escura que cobre o ecrã inteiro
+    fundo.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:2000; display:flex; align-items:center; justify-content:center; animation: entrarSuave 0.3s ease forwards;';
+
+    // Estou a definir a largura máxima do modal baseado nas opções recebidas ou usar 520px como padrão
+    const larguraMax = opcoes.largura || '520px';
+
+    // Estou a criar a caixa branca do modal que vai conter o título, o conteúdo e os botões
+    const caixa = document.createElement('div');
+    // Estou a aplicar os estilos visuais do modal seguindo o design system Aksanti (cantos redondos, sombra, fundo branco)
+    caixa.style.cssText = `background: var(--bg-card); border-radius: var(--raio-borda); padding: 0; width: 90%; max-width: ${larguraMax}; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); animation: entrarSuave 0.3s ease forwards;`;
+
+    // Estou a construir o HTML interno do modal com o cabeçalho, o corpo e o botão de fechar
+    caixa.innerHTML = `
+        <!-- Estou a criar o cabeçalho do modal com o título e o botão X para fechar -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding: 20px 24px; border-bottom: 1px solid #e4e4e7;">
+            <h3 style="font-family: var(--fonte-display); margin:0;">${titulo}</h3>
+            <button id="modal-btn-fechar" style="background:none; border:none; cursor:pointer; font-size:1.5rem; color: var(--texto-secundario); line-height:1;">&times;</button>
+        </div>
+        <!-- Estou a criar o corpo do modal onde vai o conteúdo dinâmico recebido por parâmetro -->
+        <div style="padding: 24px;" id="modal-corpo-aksanti">
+            ${conteudoHTML}
+        </div>
+    `;
+
+    // Estou a juntar a caixa do modal à cortina escura
+    fundo.appendChild(caixa);
+    // Estou a colocar toda a estrutura no corpo da página para aparecer por cima de tudo
+    document.body.appendChild(fundo);
+    // Estou a guardar a referência do modal aberto para poder fechá-lo depois
+    modalAberto = fundo;
+
+    // Estou a ligar o botão X para fechar o modal quando clicado
+    document.getElementById('modal-btn-fechar').addEventListener('click', fecharModal);
+
+    // Estou a fechar o modal se o utilizador clicar na cortina escura fora da caixa branca
+    fundo.addEventListener('click', (evento) => {
+        // Estou a verificar se o clique foi directamente na cortina e não dentro da caixa do modal
+        if (evento.target === fundo) fecharModal();
+    });
+
+    // Estou a fechar o modal se o utilizador carregar na tecla Escape do teclado
+    document.addEventListener('keydown', fecharComEscape);
+}
+
+// Estou a criar a função que fecha e remove o modal da página de forma limpa
+function fecharModal() {
+    // Estou a verificar se existe algum modal aberto antes de tentar fechar
+    if (modalAberto) {
+        // Estou a remover o modal inteiro do corpo da página
+        modalAberto.remove();
+        // Estou a limpar a referência do modal aberto
+        modalAberto = null;
+    }
+    // Estou a remover o ouvinte da tecla Escape para não acumular ouvintes a cada abertura de modal
+    document.removeEventListener('keydown', fecharComEscape);
+}
+
+// Estou a criar a função auxiliar que escuta a tecla Escape para fechar o modal
+function fecharComEscape(evento) {
+    // Estou a verificar se a tecla pressionada é o Escape
+    if (evento.key === 'Escape') fecharModal();
+}
+
+// Estou a criar uma função de conveniência para mostrar um modal de confirmação com dois botões (Sim/Não)
+function confirmarAcao(titulo, mensagem, aoConfirmar) {
+    // Estou a construir o conteúdo do modal de confirmação com a mensagem e os dois botões
+    const conteudo = `
+        <p style="color: var(--texto-secundario); margin-bottom: 24px;">${mensagem}</p>
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+            <button class="btn btn-secundario" onclick="fecharModal()">Cancelar</button>
+            <button class="btn btn-primario" id="modal-btn-confirmar">Confirmar</button>
+        </div>
+    `;
+    // Estou a abrir o modal com o conteúdo de confirmação que acabei de construir
+    abrirModal(titulo, conteudo, { largura: '420px' });
+    // Estou a ligar o botão de confirmação à função recebida e a fechar o modal depois
+    document.getElementById('modal-btn-confirmar').addEventListener('click', () => {
+        // Estou a executar a acção de confirmação recebida por parâmetro
+        aoConfirmar();
+        // Estou a fechar o modal após a confirmação
+        fecharModal();
+    });
+}

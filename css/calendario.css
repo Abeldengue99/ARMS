@@ -1,0 +1,377 @@
+.pagina-calendario .conteudo-pagina {
+    max-width: 1360px;
+}
+
+.calendario-topo {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.calendario-topo h1 {
+    margin: 0;
+    font-size: 2.1rem;
+}
+
+.calendario-topo p {
+    max-width: 720px;
+    margin: 6px 0 0;
+    color: var(--texto-secundario);
+}
+
+.calendario-acoes,
+.calendario-toolbar,
+.calendario-navegacao,
+.calendario-modos {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.calendario-toolbar {
+    justify-content: space-between;
+    padding: 18px;
+    margin-bottom: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+}
+
+.calendario-periodo {
+    min-width: 210px;
+    margin: 0;
+    font-size: 1.35rem;
+}
+
+.calendario-icone-btn {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    color: var(--texto-principal);
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.calendario-icone-btn:hover {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.calendario-modo {
+    min-height: 42px;
+    padding: 0 18px;
+    color: var(--texto-secundario);
+    font-weight: 700;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.calendario-modo.ativo {
+    color: #ffffff;
+    background: var(--aksanti-dark);
+    border-color: var(--aksanti-dark);
+}
+
+.calendario-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.calendario-kpi {
+    padding: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.calendario-kpi span {
+    display: block;
+    color: var(--texto-secundario);
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.calendario-kpi strong {
+    display: block;
+    margin-top: 6px;
+    color: #111827;
+    font-size: 1.7rem;
+    line-height: 1;
+}
+
+.calendario-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px;
+    gap: 18px;
+    align-items: start;
+}
+
+.calendario-card,
+.calendario-dia-painel {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+}
+
+.calendario-semana-cabecalho,
+.calendario-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendario-semana-cabecalho {
+    background: #171717;
+}
+
+.calendario-semana-cabecalho span {
+    padding: 12px 10px;
+    color: #e5e7eb;
+    font-weight: 800;
+    text-align: center;
+}
+
+.calendario-dia {
+    min-height: 154px;
+    padding: 12px;
+    background: #ffffff;
+    border-right: 1px solid #eef2f7;
+    border-bottom: 1px solid #eef2f7;
+    cursor: pointer;
+    transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.calendario-dia:hover {
+    background: #fffaf2;
+}
+
+.calendario-dia.fora-mes {
+    background: #f8fafc;
+    color: #94a3b8;
+}
+
+.calendario-dia.hoje .calendario-dia-numero {
+    color: #ffffff;
+    background: var(--aksanti-gold);
+}
+
+.calendario-dia.selecionado {
+    background: #fff7ed;
+    box-shadow: inset 0 0 0 2px #f59e0b;
+}
+
+.calendario-dia-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.calendario-dia-numero {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    font-weight: 800;
+    border-radius: 50%;
+}
+
+.calendario-dia-contador {
+    color: var(--texto-secundario);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.calendario-eventos {
+    display: grid;
+    gap: 7px;
+}
+
+.calendario-evento {
+    --evento-cor: #64748b;
+    --evento-bg: #f8fafc;
+    display: block;
+    width: 100%;
+    padding: 8px 9px;
+    color: #111827;
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1.25;
+    text-align: left;
+    background: var(--evento-bg);
+    border: 1px solid transparent;
+    border-left: 4px solid var(--evento-cor);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.calendario-evento:hover {
+    border-color: var(--evento-cor);
+}
+
+.calendario-evento small {
+    display: block;
+    margin-top: 2px;
+    color: var(--texto-secundario);
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.calendario-evento[data-categoria="urgente"] {
+    --evento-cor: #dc2626;
+    --evento-bg: #fef2f2;
+}
+
+.calendario-evento[data-categoria="deadline"] {
+    --evento-cor: #d97706;
+    --evento-bg: #fff7ed;
+}
+
+.calendario-evento[data-categoria="pedido"] {
+    --evento-cor: #2563eb;
+    --evento-bg: #eff6ff;
+}
+
+.calendario-evento[data-categoria="enviado"] {
+    --evento-cor: #7c3aed;
+    --evento-bg: #f3e8ff;
+}
+
+.calendario-evento[data-categoria="recebido"] {
+    --evento-cor: #0891b2;
+    --evento-bg: #ecfeff;
+}
+
+.calendario-evento[data-categoria="aceite"] {
+    --evento-cor: #059669;
+    --evento-bg: #ecfdf5;
+}
+
+.calendario-evento[data-categoria="rejeitado"] {
+    --evento-cor: #b91c1c;
+    --evento-bg: #fee2e2;
+}
+
+.calendario-evento[data-categoria="alteracao"] {
+    --evento-cor: #ea580c;
+    --evento-bg: #ffedd5;
+}
+
+.calendario-mais {
+    color: var(--texto-secundario);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.calendario-semanal {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendario-semanal-dia {
+    min-height: 460px;
+    padding: 14px;
+    border-right: 1px solid #eef2f7;
+}
+
+.calendario-semanal-dia:last-child {
+    border-right: 0;
+}
+
+.calendario-semanal-dia h3 {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+}
+
+.calendario-dia-painel {
+    padding: 18px;
+}
+
+.calendario-dia-painel h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.calendario-dia-painel p {
+    margin: 4px 0 16px;
+    color: var(--texto-secundario);
+}
+
+.calendario-lista-dia {
+    display: grid;
+    gap: 10px;
+}
+
+.calendario-vazio {
+    padding: 22px;
+    color: var(--texto-secundario);
+    text-align: center;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+}
+
+.calendario-carregando {
+    padding: 44px;
+    color: var(--texto-secundario);
+    text-align: center;
+}
+
+@media (max-width: 1180px) {
+    .calendario-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 860px) {
+    .calendario-topo,
+    .calendario-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .calendario-acoes,
+    .calendario-navegacao,
+    .calendario-modos {
+        flex-wrap: wrap;
+    }
+
+    .calendario-acoes .btn {
+        flex: 1 1 180px;
+        justify-content: center;
+    }
+
+    .calendario-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .calendario-card {
+        overflow-x: auto;
+    }
+
+    .calendario-semana-cabecalho,
+    .calendario-grid,
+    .calendario-semanal {
+        min-width: 760px;
+    }
+}
+
+@media (max-width: 560px) {
+    .calendario-kpis {
+        grid-template-columns: 1fr;
+    }
+}

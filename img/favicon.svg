@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="ARMS">
+  <defs>
+    <linearGradient id="arms-gold" x1="14" y1="8" x2="50" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#111111"/>
+  <rect x="6" y="6" width="52" height="52" rx="11" fill="none" stroke="url(#arms-gold)" stroke-width="3"/>
+  <path d="M32 13 49 50h-8l-3.2-7.6H26.1L22.9 50H15l17-37Zm-3.3 23h6.7L32 27.7 28.7 36Z" fill="url(#arms-gold)"/>
+  <path d="M22 52h20" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".92"/>
+</svg>

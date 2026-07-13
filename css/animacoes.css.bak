@@ -1,0 +1,114 @@
+/* Estou a criar a coreografia de uma animação (o Fade In ou Entrada Suave), para que, quando o utilizador abrir o Dashboard Aksanti, os cartões não apareçam de repente, mas sim como num filme luxuoso */
+@keyframes entrarSuave {
+    /* Estou a definir o primeiro passo, a linha de partida da animação: o cartão começa totalmente transparente (invisível) e um bocadinho mais abaixo do seu sítio real */
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    /* Estou a definir o último passo, o ponto de chegada: o cartão termina com a sua cor forte 100% visível e sobe ligeiramente para encaixar no seu local definitivo no ecrã */
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estou a criar um comando (classe) que podemos encostar a qualquer peça do nosso puzzle (um cartão, uma tabela de pedidos, etc) para usar esta mesma animação de entrada com suavidade */
+.animacao-entrar {
+    /* Estou a ligar a animação "entrarSuave" a esta peça, ordenando que toda a coreografia dure apenas meio segundo, usando uma curva de velocidade (bezier) que começa rápida e abranda suavemente no fim, fixando-se no lugar final (forwards) */
+    animation: entrarSuave 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    /* Estou a forçar que a peça fique totalmente invisível antes da animação sequer começar a dar o primeiro passo, prevenindo que a pessoa veja um piscar de olhos feio antes de a página se carregar por completo */
+    opacity: 0;
+}
+
+/* Estou a criar um temporizador pequeno (um atraso) para as peças que aparecem à direita ou abaixo, gerando um efeito de onda ou cascata espetacular (o segundo cartão de KPI espera um pouco e só depois do primeiro é que aparece) */
+.atraso-1 {
+    /* Estou a ordenar a este elemento específico para aguardar um décimo de segundo (0.1s) no escuro antes de ligar e começar o seu belo movimento de entrada na tela do gestor */
+    animation-delay: 0.1s;
+}
+
+/* Estou a acrescentar um temporizador ainda maior para o terceiro cartão na linha, reforçando a onda visual de aparecerem as peças em cascata, como peças de dominó visuais e apelativas */
+.atraso-2 {
+    /* Estou a ordenar que o terceiro espere dois décimos de segundo (0.2s), prolongando e orquestrando o aspeto Premium da Aksanti que aparece faseado sem sobrecarregar a vista logo de imediato */
+    animation-delay: 0.2s;
+}
+
+/* Estou a criar um atraso final longo, normalmente para os grandes gráficos ou para a tabela de todos os pedidos no fundo, que por serem as partes mais pesadas, devem ser as últimas a entrarem em cena nesta coreografia de arranque de painel! */
+.atraso-3 {
+    /* Estou a determinar os três décimos de segundo (0.3s) em atraso para aquela última e mais pesada peça. Esta cascata ajuda o cérebro a processar onde estão as coisas de forma relaxada, sem ler a página como uma parede de dados brutal. */
+    animation-delay: 0.3s;
+}
+
+/* =========================================================================
+   ANIMAÇÕES INSPIRADAS NA ISAF CACIMBO (SLIDE-UP E PRELOADER)
+========================================================================= */
+
+/* Estou a criar o ecrã de carregamento inspirador da ISAF (Preloader), um painel da tua cor escura que cobre a tela toda antes de mostrar a bela aplicação, disfarçando o carregar do Javascript */
+.preloader-aksanti {
+    /* Estou a fixar esta tela de cima a baixo para tapar o ecrã do navegador todo sem falhas (Top 0 e Left 0 a 100%) */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* Estou a dar a honra à nossa cor Charcoal Dark da Aksanti de ser a anfitriã da entrada de gala ao sistema */
+    background-color: var(--aksanti-dark);
+    /* Estou a usar o eixo z-index altíssimo e impenetrável (9999) para garantir que absolutamente nada se atreve a sobrepor-se a esta cortina fechada antes de o teatro estar pronto! */
+    z-index: 9999;
+    /* Estou a centrar o texto que diz "Aksanti" perfeitamente e geometricamente no meio cravado da tua tela com a força do flexbox */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Estou a preparar e ligar o rastilho à bomba da animação que vai desfazer e vaporizar esta tela escura suavemente no ar ao fim do tempo de entrada de um segundo */
+    animation: apagarPreloader 1s ease 1s forwards;
+    /* Estou a garantir que, a partir do segundo que a cortina desaparecer e ficar invisível, o teu clique a fure como se não fosse nada e trespasse para clicar nos painéis atrás (Pointer Events nulos ali!) */
+    pointer-events: none;
+}
+
+/* Estou a criar a coreografia que literalmente e suavemente apaga da vista e esconde do cursor a cortina negra de cima do palco! */
+@keyframes apagarPreloader {
+    to {
+        /* Estou a puxar as luzes e as cores ao ponto morto e zero, fica transparente num sopro. */
+        opacity: 0;
+        /* Estou a mandá-la cega nas janelas! Assim já não interrompe nadinha do que está vivo ou a reluzir lá na plataforma (Hidden - escondido). */
+        visibility: hidden;
+    }
+}
+
+/* Estou a criar o texto animado cravado dentro do centro do Preloader escuro que cintila a piscar e gritar de ouro - Aksanti! */
+.preloader-texto {
+    /* Estou a usar o fato de gala, a tua Fonte Display para títulos nos nossos botões e menus do carregador principal. Outfit lindo e gordo! */
+    font-family: var(--fonte-display);
+    /* Estou a dar um tamanho considerável no meio da porta para ser a primeira coisa a cravar na memória dos teus clientes Aksanti (três vezes a raiz) */
+    font-size: 3rem;
+    /* Estou a assinar nas letras da escuridão e no negro a cor reluzente do Gold do Premium Aksanti! O logo ouro no ecrã negro puro! */
+    color: var(--aksanti-gold);
+    /* Estou a criar e a acender uma chama, a luz começa a piscar suavemente em torno das letras em loops infinitos, acalmando ansiedades */
+    animation: pulsarTexto 1.5s infinite;
+}
+
+/* Estou a construir ao milímetro do coração a bater da letra Aksanti a pulsar a Ouro e a cintilar: A Animação Infinita */
+@keyframes pulsarTexto {
+    /* Estou a iniciar e a terminar nos zeros os pulsares de batida na mesma batida do sangue: com 50% de opacidade e à largura certa da tabela de tamanho 1  */
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    /* Estou a dar ordem aos píncaros, ao subir com as luzes e no exato topo a bater nas nuvens das formas daquele coração: Brilho MÁXIMO (1) e Inchado a um ponto zero cinco as letras (scale 1.05)! */
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Estou a recriar nas linhas de CSS aquele deslumbramento de efeito "Entrada com Deslize Vindo dos Fundos (Slide Up Fade)" igualzinho ao site ISAF de Cacimbo! */
+.deslizar-cima-isaf {
+    /* Estou a atar à cama as nossas coisas, coloco a peça ou quadro ali cravado bem mais fundo 40 pixeis à base escondido dos espreitadores no poço zero Opacidade */
+    opacity: 0;
+    /* Estou a enterrá-los no chão 40px, como as molas antes de puxar, preparados para deslizar como uma gaveta solta lá! */
+    transform: translateY(40px);
+    /* Estou a dar uma ordem imperial de deslize (Desliza e Acende), puxando nos milissegundos um ar de "Slow Motion no topo" de luxo na curva que chega e trava sem partir pratos à chegada (0.16 1 0.3 1) no final! */
+    animation: slideUpFadeISAF 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Estou a fechar a mecânica para o efeito Cacimbo e travar em segurança total nas marcas ali de base. Desliza para Cima!  */
+@keyframes slideUpFadeISAF {
+    /* Estou a direcionar as setas do escorregador e o deslize para um fim calmo a ficar à vista da pessoa com as luzes claras da vista das imagens! */
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

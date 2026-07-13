@@ -1,0 +1,23 @@
+<?php
+header('Content-Type: application/json; charset=utf-8');
+
+// Teste de conexão simples
+try {
+    $host = 'localhost';
+    $db = 'ARMS — Aksanti Request Management System';
+    $user = 'postgres';
+    $pass = '5850';
+    $port = '5432';
+
+    $dsn = "pgsql:host=$host;port=$port;dbname='$db'";
+    $pdo = new PDO($dsn, $user, $pass);
+    
+    $result = $pdo->query("SELECT COUNT(*) as total FROM arms.request");
+    $data = $result->fetch();
+    
+    echo json_encode(['sucesso' => true, 'total_pedidos' => $data['total']]);
+    
+} catch (Exception $e) {
+    echo json_encode(['sucesso' => false, 'erro' => $e->getMessage()]);
+}
+?>

@@ -1,0 +1,51 @@
+<?php
+require_once 'db.php';
+header('Content-Type: application/json; charset=utf-8');
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (empty($_SESSION['arms_logado']) || empty($_SESSION['arms_user_id'])) {
+    echo json_encode(['sucesso' => false, 'erro' => 'NÃ£o autenticado.']);
+    exit;
+}
+
+$data = json_decode(file_get_contents('php://input'), true);
+
+if (!$data || !isset($data['reference']) || !isset($data['novo_status'])) {
+    echo json_encode(['sucesso' => false, 'erro' => 'Dados incompletos']);
+    exit;
+}
+
+try {
+    $userId = $_SESSION['arms_user_id'];
+    $pdo->beginTransaction();
+    $pdo->exec("SET LOCAL arms.current_user_id = '" . $userId . "'");
+
+    $sql = "UPDATE arms.request SET status = ? WHERE reference = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$data['novo_status'], $data['reference']]);
+
+    // Buscar request_id e client_user_id para a notificação
+    $stmtReq = $pdo->prepare("SELECT r.id, r.created_by, cc.user_id as client_user_id FROM arms.request r LEFT JOIN arms.client_contact cc ON r.client_id = cc.client_id WHERE r.reference = ?");
+    $stmtReq->execute([$data['reference']]);
+    $reqData = $stmtReq->fetch();
+
+    if ($reqData) {
+        $destinatarioId = ($userId === $reqData['created_by']) ? $reqData['client_user_id'] : $reqData['created_by'];
+        if ($destinatarioId) {
+            $sqlNotif = "INSERT INTO arms.notification (recipient_id, request_id, type, channel, payload) VALUES (?, ?, 'STATUS_CHANGE', 'IN_APP', ?)";
+            $payload = json_encode(['pedido_ref' => $data['reference'], 'to_status' => $data['novo_status']]);
+            $stmtNotif = $pdo->prepare($sqlNotif);
+            $stmtNotif->execute([$destinatarioId, $reqData['id'], $payload]);
+        }
+    }
+
+    $pdo->commit();
+    echo json_encode(['sucesso' => true, 'novo_status' => $data['novo_status']]);
+
+} catch (Exception $e) {
+    echo json_encode(['sucesso' => false, 'erro' => $e->getMessage()]);
+}
+?>

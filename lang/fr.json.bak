@@ -1,0 +1,62 @@
+{
+  "nav": {
+    "dashboard": "Tableau de Bord",
+    "pedidos": "Demandes",
+    "clientes": "Clients",
+    "areas": "Départements",
+    "notificacoes": "Notifications",
+    "perfil": "Mon Profil",
+    "admin": "Administration",
+    "sair": "Se Déconnecter"
+  },
+  "dashboard": {
+    "titulo": "Tableau de Bord",
+    "total_pedidos": "Total des Demandes",
+    "pedidos_abertos": "Demandes Ouvertes",
+    "taxa_resposta": "Taux de Réponse",
+    "sla_medio": "SLA Moyen",
+    "pedidos_recentes": "Demandes Récentes",
+    "ver_todos": "Voir Tout"
+  },
+  "status": {
+    "DRAFT": "Brouillon",
+    "SENT": "Envoyé",
+    "RECEIVED": "Reçu",
+    "CLIENT_RESPONDED": "Client a Répondu",
+    "ACCEPTED": "Accepté",
+    "REJECTED": "Rejeté",
+    "CLOSED": "Fermé"
+  },
+  "acoes": {
+    "criar_pedido": "Créer une Nouvelle Demande",
+    "guardar": "Enregistrer les Modifications",
+    "cancelar": "Annuler",
+    "editar": "Modifier",
+    "eliminar": "Supprimer",
+    "enviar": "Envoyer",
+    "aceitar": "Accepter",
+    "rejeitar": "Rejeter",
+    "ver_detalhes": "Voir les Détails"
+  },
+  "tabela": {
+    "referencia": "Référence",
+    "cliente": "Client",
+    "area": "Département",
+    "status": "Statut",
+    "data": "Date",
+    "acoes": "Actions"
+  },
+  "moeda": {
+    "AOA": "Kwanza",
+    "USD": "Dollar",
+    "EUR": "Euro"
+  },
+  "login": {
+    "titulo": "Bienvenue sur ARMS",
+    "subtitulo": "Aksanti Request Management System",
+    "email": "Adresse E-mail",
+    "senha": "Mot de passe",
+    "entrar": "Se Connecter",
+    "esqueceu_senha": "Mot de passe oublié ?"
+  }
+}

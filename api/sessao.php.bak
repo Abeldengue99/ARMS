@@ -1,0 +1,77 @@
+<?php
+/**
+ * ARMS — API de Sessão (verificação e logout)
+ * Verifica se o utilizador está autenticado e devolve dados da sessão
+ */
+require_once 'db.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+header('Content-Type: application/json; charset=utf-8');
+
+$acao = $_GET['acao'] ?? 'verificar';
+
+switch ($acao) {
+    case 'verificar':
+        if (!empty($_SESSION['arms_logado']) && $_SESSION['arms_logado'] === true) {
+            // Buscar dados atualizados do utilizador
+            $stmt = $pdo->prepare("
+                SELECT 
+                    au.id, au.email, au.user_type, au.is_admin, au.is_active,
+                    up.full_name, up.locale,
+                    cc.client_id
+                FROM arms.auth_user au
+                LEFT JOIN arms.user_profile up ON au.id = up.user_id
+                LEFT JOIN arms.client_contact cc ON au.id = cc.user_id
+                WHERE au.id = :id
+            ");
+            $stmt->execute(['id' => $_SESSION['arms_user_id']]);
+            $user = $stmt->fetch();
+
+            if (!$user || !$user['is_active']) {
+                session_destroy();
+                echo json_encode(['sucesso' => false, 'autenticado' => false]);
+                exit;
+            }
+
+            $nome = $user['full_name'] ?? $user['email'];
+            $partes = explode(' ', $nome);
+            $iniciais = strtoupper(substr($partes[0], 0, 1));
+            if (count($partes) > 1) {
+                $iniciais .= strtoupper(substr(end($partes), 0, 1));
+            }
+
+            // Guardar na sessão para uso noutros scripts API
+            $_SESSION['arms_user_type'] = $user['user_type'];
+            $_SESSION['arms_client_id'] = $user['client_id'];
+
+            echo json_encode([
+                'sucesso' => true,
+                'autenticado' => true,
+                'utilizador' => [
+                    'id' => $user['id'],
+                    'email' => $user['email'],
+                    'nome' => $user['full_name'] ?? 'Utilizador',
+                    'tipo' => $user['user_type'],
+                    'admin' => (bool)$user['is_admin'],
+                    'iniciais' => $iniciais,
+                    'locale' => $user['locale'] ?? 'pt-PT',
+                    'client_id' => $user['client_id']
+                ]
+            ]);
+        } else {
+            echo json_encode(['sucesso' => true, 'autenticado' => false]);
+        }
+        break;
+
+    case 'logout':
+        session_destroy();
+        echo json_encode(['sucesso' => true, 'mensagem' => 'Sessão terminada.']);
+        break;
+
+    default:
+        echo json_encode(['sucesso' => false, 'erro' => 'Ação desconhecida.']);
+}
+?>
