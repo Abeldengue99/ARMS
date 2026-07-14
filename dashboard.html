@@ -231,12 +231,27 @@
             <div class="conteudo-pagina">
 
                 <!-- Header ao estilo do Design -->
-                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
                     <div>
                         <h2 style="font-size: 2.2rem; font-weight: 700; color: #1e293b;" data-i18n="nav.dashboard">
                             Painel de Controlo</h2>
                         <p style="color: var(--texto-secundario); font-size: 0.95rem; margin-top: 4px;"
                             id="data-corrente">A carregar período...</p>
+                    </div>
+
+                    <!-- Filtros do Dashboard (Visível apenas para Admin) -->
+                    <div class="menu-super-admin-only" style="display: none; align-items: center; gap: 12px; flex-wrap: wrap;" id="dashboard-filtros-container">
+                        <select id="filtro-dashboard-cliente" class="input-controlo" style="width: auto; min-width: 200px;">
+                            <option value="">Todas as Entidades</option>
+                            <option value="AKSANTI">Apenas Equipa Interna</option>
+                        </select>
+                        <select id="filtro-dashboard-area" class="input-controlo" style="width: auto; min-width: 200px;">
+                            <option value="">Todos os Departamentos</option>
+                        </select>
+                        <button id="btn-limpar-filtros-dashboard" style="background: none; border: none; color: var(--cor-perigo); cursor: pointer; font-size: 0.9rem; font-weight: 500; display: none; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            Limpar
+                        </button>
                     </div>
                 </div>
 
@@ -280,6 +295,25 @@
                             <p class="texto-secundario"
                                 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 4px;">Pedidos Abertos</p>
                             <h3 id="kpi-abertos" style="font-size: 1.75rem; font-weight: 700; color: #1e293b;">...</h3>
+                        </div>
+                    </div>
+
+                    <!-- KPI: Pedidos Vencidos -->
+                    <div class="card animacao-entrar atraso-1"
+                        style="display: flex; align-items: center; padding: 24px; border-radius: 12px; gap: 16px; border: 1px solid #f1f5f9;">
+                        <div
+                            style="width: 48px; height: 48px; border-radius: 12px; background-color: #fee2e2; display: flex; align-items: center; justify-content: center; color: #ef4444; flex-shrink: 0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="texto-secundario"
+                                style="font-size: 0.9rem; font-weight: 600; margin-bottom: 4px;">Pedidos Vencidos</p>
+                            <h3 id="kpi-vencidos" style="font-size: 1.75rem; font-weight: 700; color: #ef4444;">...</h3>
                         </div>
                     </div>
 
@@ -657,6 +691,82 @@
             const dashboardAdmin = utilizadorDashboard.admin === true;
             const dashboardMembroAksanti = !dashboardClienteExterno && !dashboardAdmin;
 
+            // Configurar filtros se for admin
+            if (dashboardAdmin) {
+                const containerFiltros = document.getElementById('dashboard-filtros-container');
+                const selectCliente = document.getElementById('filtro-dashboard-cliente');
+                const selectArea = document.getElementById('filtro-dashboard-area');
+                const btnLimpar = document.getElementById('btn-limpar-filtros-dashboard');
+
+                if (containerFiltros && selectCliente && selectArea) {
+                    containerFiltros.style.display = 'flex';
+
+                    // Carregar clientes
+                    fetch('api/clientes.php')
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.sucesso && data.dados) {
+                                data.dados.forEach(c => {
+                                    const opt = document.createElement('option');
+                                    opt.value = c.id;
+                                    opt.textContent = `Cliente: ${c.company_name || c.name}`;
+                                    selectCliente.appendChild(opt);
+                                });
+                            }
+                        });
+
+                    // Carregar areas
+                    fetch('api/areas.php')
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.sucesso && data.dados) {
+                                data.dados.forEach(a => {
+                                    const opt = document.createElement('option');
+                                    opt.value = a.id;
+                                    opt.textContent = `${a.name} (${a.code})`;
+                                    selectArea.appendChild(opt);
+                                });
+                            }
+                        });
+
+                    function aplicarFiltros() {
+                        const clienteVal = selectCliente.value;
+                        const areaVal = selectArea.value;
+
+                        const filtros = {};
+                        if (clienteVal === 'AKSANTI') {
+                            filtros.filter_destination_type = 'AKSANTI';
+                        } else if (clienteVal) {
+                            filtros.filter_client_id = clienteVal;
+                        }
+
+                        if (areaVal) {
+                            filtros.filter_area_id = areaVal;
+                        }
+
+                        if (clienteVal || areaVal) {
+                            btnLimpar.style.display = 'flex';
+                        } else {
+                            btnLimpar.style.display = 'none';
+                        }
+
+                        if (typeof ArmsTempoReal !== 'undefined' && typeof ArmsTempoReal.definirFiltros === 'function') {
+                            ArmsTempoReal.definirFiltros(filtros);
+                            ArmsTempoReal.forcarAtualizacao();
+                        }
+                    }
+
+                    selectCliente.addEventListener('change', aplicarFiltros);
+                    selectArea.addEventListener('change', aplicarFiltros);
+
+                    btnLimpar.addEventListener('click', () => {
+                        selectCliente.value = '';
+                        selectArea.value = '';
+                        aplicarFiltros();
+                    });
+                }
+            }
+
             function rotuloEntidadePedidoDashboard() {
                 if (dashboardAdmin) return 'Cliente';
                 if (dashboardClienteExterno) return 'Parceiro';
@@ -806,6 +916,8 @@
                     const kpis = data.kpis;
                     document.getElementById('kpi-total').textContent = kpis.total_pedidos;
                     document.getElementById('kpi-abertos').textContent = kpis.pedidos_abertos;
+                    const kpiVencidos = document.getElementById('kpi-vencidos');
+                    if (kpiVencidos) kpiVencidos.textContent = Number(kpis.pedidos_vencidos || 0);
                     document.getElementById('kpi-taxa').textContent = kpis.taxa_resposta + '%';
                     document.getElementById('kpi-sla').textContent = kpis.sla_medio;
                 }
