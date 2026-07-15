@@ -19,7 +19,7 @@ function armsConfiguracoesPadrao() {
             'descricao' => 'Ativa alertas automaticos antes do prazo do pedido terminar.',
         ],
         'automation_deadline_warning_hours' => [
-            'valor' => '24',
+            'valor' => '72',
             'descricao' => 'Horas antes do deadline para criar alerta automatico.',
         ],
         'automation_deadline_overdue_enabled' => [
@@ -57,6 +57,15 @@ function armsConfiguracoesGarantirEstrutura(PDO $pdo) {
             ':description' => $dados['descricao'],
         ]);
     }
+
+    $pdo->exec("
+        UPDATE arms.system_setting
+        SET setting_value = '72',
+            description = 'Horas antes do deadline para criar alerta automatico.',
+            updated_at = now()
+        WHERE setting_key = 'automation_deadline_warning_hours'
+          AND setting_value = '24'
+    ");
 }
 
 function armsConfiguracaoObter(PDO $pdo, $chave, $padrao = null) {
@@ -121,8 +130,9 @@ function armsConfiguracoesResumo(PDO $pdo) {
         'automation_invite_resend_enabled' => armsConfiguracaoInteiro($pdo, 'automation_invite_resend_enabled', 0, 0, 1),
         'automation_invite_resend_days' => armsConfiguracaoInteiro($pdo, 'automation_invite_resend_days', 2, 1, 90),
         'automation_deadline_warning_enabled' => armsConfiguracaoInteiro($pdo, 'automation_deadline_warning_enabled', 1, 0, 1),
-        'automation_deadline_warning_hours' => armsConfiguracaoInteiro($pdo, 'automation_deadline_warning_hours', 24, 1, 168),
+        'automation_deadline_warning_hours' => armsConfiguracaoInteiro($pdo, 'automation_deadline_warning_hours', 72, 1, 168),
         'automation_deadline_overdue_enabled' => armsConfiguracaoInteiro($pdo, 'automation_deadline_overdue_enabled', 1, 0, 1),
         'automation_retention_cleanup_enabled' => armsConfiguracaoInteiro($pdo, 'automation_retention_cleanup_enabled', 0, 0, 1),
+        'retention_require_manual_cleanup' => armsConfiguracaoInteiro($pdo, 'retention_require_manual_cleanup', 1, 0, 1),
     ];
 }

@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Estou a focar a aba do navegador no nome certo para te orientares: Lista de Pedidos -->
     <title>Pedidos - ARMS</title>
-    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-    <link rel="shortcut icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
     <meta name="theme-color" content="#111111">
     <!-- Script Anti-Flicker: Ocultar imediatamente links admin para clientes usando localStorage antes de renderizar a página -->
     <script>
@@ -163,6 +163,23 @@
                     <button id="btn-criar-pedido" class="btn btn-primario" data-i18n="acoes.criar_pedido">Criar Novo Pedido</button>
                 </div>
 
+                <!-- Centro de Pendências (Visível apenas para Admin) -->
+                <div id="centro-pendencias-container" style="display: none; margin-bottom: 24px;">
+                    <div style="background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 4px solid var(--aksanti-gold); border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <h3 style="margin: 0; color: #92400e; font-size: 1.2rem; font-weight: 700;">Centro de Pendências</h3>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;" id="grelha-pendencias">
+                            <div style="color: #92400e; font-size: 0.9rem;">A carregar anomalias do sistema...</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Estou a reciclar as tuas cartas brancas (Cards) para a grelha de listagem total deslizar perfeitamente no ecrã com a magia da ISAF Cacimbo (deslizar-cima-isaf) -->
                 <div class="card deslizar-cima-isaf">
                     
@@ -210,7 +227,7 @@
                         <span id="pedidos-contador" style="font-size: 0.85rem; color: var(--texto-secundario); font-weight: 500;">A carregar...</span>
                     </div>
                     <div style="overflow-x: auto;">
-                        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                        <table style="width: 100%; text-align: left; border-collapse: collapse;" class="tabela-pedidos-responsiva">
                             <thead>
                                 <tr style="border-bottom: 1px solid #e4e4e7;">
                                     <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="tabela.referencia">Referência</th>
@@ -225,6 +242,12 @@
                             <tbody id="tabela-corpo-pedidos">
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <div class="dashboard-recentes-navegacao" id="pedidos-navegacao" style="margin-top: 16px; padding: 16px; border-top: 1px solid #f1f5f9; display: flex; justify-content: center; gap: 16px; align-items: center; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; background-color: #fafafa;">
+                        <button type="button" id="btn-pedidos-recuar" class="btn btn-secundario" style="padding: 6px 12px; border-radius: 6px;">&larr; Recuar</button>
+                        <span class="dashboard-recentes-indicador" id="pedidos-indicador" style="font-weight: 500; color: var(--texto-secundario); font-size: 0.9rem;">1 / 1</span>
+                        <button type="button" id="btn-pedidos-avancar" class="btn btn-secundario" style="padding: 6px 12px; border-radius: 6px;">Avan&ccedil;ar &rarr;</button>
                     </div>
                 </div>
 
@@ -286,8 +309,8 @@
                         <div class="largura-total" id="grupo-tipo-destino" style="${estiloTipoDestino}">
                             <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Enviar pedido para <span style="color: var(--cor-perigo);">*</span></label>
                             <select id="campo-destino-tipo" class="input-controlo">
-                                <option value="CLIENT" selected>Cliente</option>
-                                <option value="AKSANTI">Membro Aksanti</option>
+                                <option value="CLIENT" selected>Empresa / Cliente Final</option>
+                                <option value="AKSANTI">Equipa Interna</option>
                             </select>
                         </div>
                         <div>
@@ -309,9 +332,9 @@
                             </select>
                         </div>
                         <div id="grupo-membro-aksanti" style="display:none;">
-                            <label id="label-membro-aksanti" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Membro Aksanti <span style="color: var(--cor-perigo);">*</span></label>
+                            <label id="label-membro-aksanti" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Equipa Interna <span style="color: var(--cor-perigo);">*</span></label>
                             <select id="campo-membro-aksanti" class="input-controlo">
-                                <option value="">Selecionar membro Aksanti</option>
+                                <option value="">Selecionar membro da Equipa Interna</option>
                             </select>
                         </div>
                         <div id="grupo-email-cliente" style="${estiloCamposCliente}">
@@ -379,11 +402,12 @@
                             }
 
                             if (selMembroAksanti) {
-                                selMembroAksanti.innerHTML = '<option value="">Selecionar membro Aksanti</option>';
+                                selMembroAksanti.innerHTML = '<option value="">Selecionar membro da Equipa Interna</option>';
                                 (data.membros_aksanti || []).forEach(m => {
                                     const cargo = m.cargo ? ' - ' + m.cargo : '';
                                     const perfil = m.is_admin ? ' (Super Admin)' : '';
-                                    selMembroAksanti.innerHTML += '<option value="' + m.id + '" data-email="' + m.email + '">' + m.full_name + cargo + perfil + '</option>';
+                                    const areasAttr = (m.area_ids || []).join(',');
+                                    selMembroAksanti.innerHTML += '<option value="' + m.id + '" data-email="' + m.email + '" data-areas="' + areasAttr + '">' + m.full_name + cargo + perfil + '</option>';
                                 });
                             }
 
@@ -397,6 +421,13 @@
                                 selMembroAksanti.addEventListener('change', () => {
                                     const opcao = selMembroAksanti.options[selMembroAksanti.selectedIndex];
                                     emailInput.value = opcao && opcao.dataset.email ? opcao.dataset.email : '';
+                                    
+                                    if (opcao && opcao.dataset.areas) {
+                                        const areasDoMembro = opcao.dataset.areas.split(',');
+                                        if (areasDoMembro.length > 0 && areasDoMembro[0]) {
+                                            selArea.value = areasDoMembro[0];
+                                        }
+                                    }
                                 });
                             }
 
@@ -451,6 +482,7 @@
                         client_email: document.getElementById('campo-email-cliente').value.trim(),
                         destination_type: modoAdmin ? document.getElementById('campo-destino-tipo').value : 'AKSANTI',
                         recipient_user_id: modoAdmin ? document.getElementById('campo-membro-aksanti').value : '',
+                        recipient_scope: (modoAdmin && document.getElementById('campo-membro-aksanti').value) ? 'USER' : 'DEPARTMENT',
                         deadline:     document.getElementById('campo-deadline').value
                     };
 

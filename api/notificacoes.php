@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once 'configuracoes-servico.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
@@ -205,6 +206,42 @@ try {
     $clientId = $_SESSION['arms_client_id'] ?? null;
 
     if ($userType === 'CLIENT' && $clientId) {
+        $horasAlertaDeadline = armsConfiguracaoInteiro($pdo, 'automation_deadline_warning_hours', 72, 1, 168);
+
+        $stmtAlertaDeadline = $pdo->prepare("
+            INSERT INTO arms.notification (recipient_id, request_id, type, channel, payload)
+            SELECT
+                :uid::uuid,
+                r.id,
+                'DEADLINE',
+                'IN_APP',
+                jsonb_build_object(
+                    'pedido_ref', r.reference,
+                    'message', 'Prazo de pedido a terminar',
+                    'deadline', to_char(r.deadline_at, 'DD/MM/YYYY HH24:MI'),
+                    'automacao_tipo', 'deadline_warning'
+                )
+            FROM arms.request r
+            WHERE r.client_id = :client_id::uuid
+              AND r.status IN ('SENT', 'RECEIVED')
+              AND r.deadline_at >= NOW()
+              AND r.deadline_at <= NOW() + ((:horas)::int * INTERVAL '1 hour')
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM arms.notification n
+                  WHERE n.recipient_id = :uid::uuid
+                    AND n.request_id = r.id
+                    AND n.type = 'DEADLINE'
+                    AND n.channel = 'IN_APP'
+                    AND COALESCE(n.payload->>'automacao_tipo', '') = 'deadline_warning'
+              )
+        ");
+        $stmtAlertaDeadline->execute([
+            ':uid' => $userId,
+            ':client_id' => $clientId,
+            ':horas' => $horasAlertaDeadline
+        ]);
+
         $stmtUrgentes = $pdo->prepare("
             INSERT INTO arms.notification (recipient_id, request_id, type, channel, payload)
             SELECT
@@ -215,7 +252,8 @@ try {
                 jsonb_build_object(
                     'pedido_ref', r.reference,
                     'message', 'Pedido urgente para responder',
-                    'deadline', to_char(r.deadline_at, 'DD/MM/YYYY HH24:MI')
+                    'deadline', to_char(r.deadline_at, 'DD/MM/YYYY HH24:MI'),
+                    'automacao_tipo', 'deadline_overdue'
                 )
             FROM arms.request r
             WHERE r.client_id = :client_id::uuid
@@ -228,6 +266,7 @@ try {
                     AND n.request_id = r.id
                     AND n.type = 'DEADLINE'
                     AND n.channel = 'IN_APP'
+                    AND COALESCE(n.payload->>'automacao_tipo', 'deadline_overdue') = 'deadline_overdue'
               )
         ");
         $stmtUrgentes->execute([

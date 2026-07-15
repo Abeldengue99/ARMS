@@ -5,6 +5,7 @@
  */
 require_once 'db.php';
 require_once 'email.php';
+require_once 'senha-politica.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -54,6 +55,8 @@ HTML;
 }
 
 try {
+    armsSenhaPoliticaGarantirEstrutura($pdo);
+
     $stmt = $pdo->prepare("
         SELECT id, email
         FROM arms.auth_user
@@ -78,7 +81,8 @@ try {
 
     $stmtUpdate = $pdo->prepare("
         UPDATE arms.auth_user
-        SET password_hash = :hash
+        SET password_hash = :hash,
+            password_changed_at = NOW()
         WHERE id = :id
     ");
     $stmtUpdate->execute([

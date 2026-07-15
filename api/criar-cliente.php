@@ -25,14 +25,31 @@ $nif = trim($input['nif'] ?? '');
 $localizacao = trim($input['localizacao'] ?? '');
 $contactoNome = trim($input['contacto_nome'] ?? '');
 
-// Validar campos obrigatórios
-if ($nome === '' || $email === '') {
-    echo json_encode(['sucesso' => false, 'erro' => 'Nome e Email são obrigatórios.']);
+// Validar campos obrigatórios (Empresa)
+if ($nome === '' || $email === '' || $nif === '' || $localizacao === '') {
+    echo json_encode(['sucesso' => false, 'erro' => 'Nome, Email, NIF e Localização da empresa são obrigatórios.']);
     exit;
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(['sucesso' => false, 'erro' => 'Informe um e-mail válido antes de criar o cliente.']);
+    echo json_encode(['sucesso' => false, 'erro' => 'Informe um e-mail válido para a empresa.']);
+    exit;
+}
+
+// Validar representantes
+$representantes = $input['representantes'] ?? [];
+if (!is_array($representantes) || count($representantes) === 0) {
+    echo json_encode(['sucesso' => false, 'erro' => 'É obrigatório registar pelo menos um representante.']);
+    exit;
+}
+
+$primeiroRep = $representantes[0];
+$repNome = trim($primeiroRep['nome'] ?? '');
+$repEmail = trim($primeiroRep['email'] ?? '');
+$repTelefone = trim($primeiroRep['telefone'] ?? '');
+
+if ($repNome === '' || $repEmail === '' || $repTelefone === '') {
+    echo json_encode(['sucesso' => false, 'erro' => 'O Representante principal deve ter Nome, Email e Contacto preenchidos.']);
     exit;
 }
 
@@ -88,19 +105,36 @@ try {
 
     $novoCliente = $stmt->fetch();
 
-    // Se houver contacto, inserir também
-    if ($contactoNome !== '') {
+    // Inserir os representantes
+    $representantes = $input['representantes'] ?? [];
+    if (is_array($representantes) && count($representantes) > 0) {
         $stmtContacto = $pdo->prepare("
-            INSERT INTO arms.client_contact (client_id, email, full_name)
-            VALUES (:client_id, :email, :full_name)
+            INSERT INTO arms.client_contact (client_id, email, full_name, phone)
+            VALUES (:client_id, :email, :full_name, :phone)
             ON CONFLICT (client_id, email) DO UPDATE
-            SET full_name = EXCLUDED.full_name
+            SET full_name = EXCLUDED.full_name,
+                phone = EXCLUDED.phone
         ");
-        $stmtContacto->execute([
-            'client_id' => $novoCliente['id'],
-            'email'     => $email,
-            'full_name' => $contactoNome
-        ]);
+        
+        foreach ($representantes as $rep) {
+            $repNome = trim($rep['nome'] ?? '');
+            $repEmail = strtolower(trim($rep['email'] ?? ''));
+            $repTelefone = trim($rep['telefone'] ?? '');
+            
+            // Gerar um email falso se não for fornecido para não quebrar o unique de contactos sem email
+            if ($repEmail === '') {
+                $repEmail = 'no-reply-' . uniqid() . '@aksanti.local';
+            }
+            
+            if ($repNome !== '' || $repTelefone !== '') {
+                $stmtContacto->execute([
+                    'client_id' => $novoCliente['id'],
+                    'email'     => $repEmail,
+                    'full_name' => $repNome,
+                    'phone'     => $repTelefone !== '' ? $repTelefone : null
+                ]);
+            }
+        }
     }
 
     echo json_encode([

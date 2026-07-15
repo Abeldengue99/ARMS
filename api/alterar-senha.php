@@ -1,6 +1,7 @@
 <?php
 require_once 'auth.php';
 require_once 'senha-util.php';
+require_once 'senha-politica.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -36,6 +37,7 @@ if ($novaSenha !== $confirmarSenha) {
 
 try {
     $userId = $_SESSION['arms_user_id'];
+    armsSenhaPoliticaGarantirEstrutura($pdo);
 
     $stmt = $pdo->prepare("
         SELECT id, password_hash, is_active
@@ -60,7 +62,8 @@ try {
 
     $stmtUpdate = $pdo->prepare("
         UPDATE arms.auth_user
-        SET password_hash = :password_hash
+        SET password_hash = :password_hash,
+            password_changed_at = NOW()
         WHERE id = :id
     ");
     $stmtUpdate->execute([
@@ -68,7 +71,9 @@ try {
         ':id' => $userId,
     ]);
 
-    echo json_encode(['sucesso' => true, 'mensagem' => 'Senha alterada com sucesso.']);
+    $_SESSION['arms_password_expired'] = false;
+
+    echo json_encode(['sucesso' => true, 'mensagem' => 'Senha alterada com sucesso.', 'password_expired' => false]);
 } catch (Exception $e) {
     http_response_code(500);
     error_log('[ARMS] Erro ao alterar senha: ' . $e->getMessage());

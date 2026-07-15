@@ -71,21 +71,7 @@
 
     /* Mostrar o botão de menu (Hambúrguer) para aceder à gaveta no lado esquerdo */
     .btn-menu-mobile, #btn-menu-mobile {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 44px !important;
-        height: 44px !important;
-        min-width: 44px !important;
-        min-height: 44px !important;
-        border-radius: 999px !important;
-        border: none !important;
-        background-color: var(--aksanti-dark) !important;
-        color: white !important;
-        cursor: pointer !important;
-        transition: transform 0.2s ease-in-out !important;
-        z-index: 1001 !important;
-        padding: 0 !important;
+        display: none !important;
     }
 
     .btn-menu-mobile svg, #btn-menu-mobile svg {
@@ -141,19 +127,15 @@
         padding: 0;
     }
 
-    /* Em telas pequenas, esconder o bottom-nav para evitar duplicação de navegação */
+    /* Em telas pequenas, MOSTRAR o bottom-nav */
     .bottom-nav {
-        display: none !important;
+        display: block !important;
     }
 
-    /* Adicionar espaço generoso no fim da página para o conteúdo (gráficos/tabelas) não ficar bloqueado debaixo da barra inferior */
-    .layout-principal {
-        padding-bottom: calc(90px + env(safe-area-inset-bottom));
-    }
-
-    /* Em ecrãs móveis, o conteúdo não tem margem esquerda */
+    /* Em ecrãs móveis, o conteúdo não tem margem esquerda e tem margem de fundo para a navbar */
     .area-conteudo {
         margin-left: 0;
+        padding-bottom: calc(120px + env(safe-area-inset-bottom)) !important;
     }
 }
 
@@ -170,5 +152,148 @@
     
     .cabecalho-principal {
         padding: 12px 16px;
+    }
+}
+
+/* Esconder itens redundantes na sidebar mobile (já estão no bottom-nav) */
+@media (max-width: 1024px) {
+    .barra-lateral a[href="dashboard.html"],
+    .barra-lateral a[href="pedidos.html"],
+    .barra-lateral a[href="calendario.html"] {
+        display: none !important;
+    }
+    
+    /* Ocupar o lado esquerdo libertado pelo menu */
+    .cabecalho-principal {
+        justify-content: flex-end !important;
+        background-color: rgba(255, 255, 255, 0.85) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .cabecalho-acoes {
+        width: auto;
+    }
+
+    /* Esconder o seletor de idioma no telemóvel para poupar espaço */
+    #select-idioma-aksanti, 
+    #select-idioma-aksanti + div,
+    .cabecalho-acoes > div[style*="width: 1px"] {
+        display: none !important;
+    }
+    /* Configuração da barra de pesquisa no topo (esticada ao lado das notificações) */
+    .titulo-pagina-desktop {
+        display: none !important;
+    }
+
+    #barra-pesquisa-topo {
+        display: block !important;
+        width: auto !important;
+        flex: 1;
+        margin-right: auto;
+    }
+    
+    #barra-pesquisa-topo input {
+        width: 100% !important;
+        background-color: rgba(248, 250, 252, 0.7) !important;
+    }
+    
+    /* Efeito premium na barra inferior */
+    .bottom-nav {
+        background-color: rgba(255, 255, 255, 0.92) !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        border-top: 1px solid rgba(0,0,0,0.03) !important;
+    }
+    
+    /* Na barra inferior, garantir que o botão "Painel de Controlo" encaixe na perfeição sem quebrar em duas linhas de forma inestética */
+    .bottom-nav-item span {
+        white-space: pre-wrap;
+    }
+}
+
+/* Adaptações profundas para ecrãs mais pequenos (telemóveis) */
+@media (max-width: 768px) {
+    /* Forçar todas as grelhas inline a empilharem verticalmente para não esconder conteúdo à direita */
+    .area-conteudo div[style*="display: grid"] {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Exceção para a grelha de KPIs (5 colunas) - no telemóvel vão empilhar 1 a 1 para o texto não ficar minúsculo */
+    .area-conteudo div[style*="repeat(5"] {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Evitar que flexbox horizontais sem wrap escondam conteúdo */
+    .area-conteudo div[style*="display: flex"] {
+        flex-wrap: wrap !important;
+    }
+    
+    /* Alguns elementos flexíveis (como botões dentro dos flex wrap) precisam de manter o seu formato original */
+    .area-conteudo button {
+        flex-wrap: nowrap !important;
+    }
+    
+    /* Garantir que canvas não quebram o layout horizontal */
+    .area-conteudo canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+    /* Garantir que modal se comporta bem em telas pequenas */
+    .modal-content div[style*="display: grid"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Tabela de pedidos estilo cartões (Mobile) para não esconder colunas */
+    .tabela-responsiva,
+    .tabela-responsiva tbody,
+    .tabela-responsiva tr,
+    .tabela-responsiva td {
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    .tabela-responsiva thead {
+        display: none !important;
+    }
+    
+    .tabela-responsiva tr {
+        margin-bottom: 16px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+    }
+    
+    .tabela-responsiva td {
+        border: none !important;
+        border-bottom: 1px solid #f8fafc !important;
+        position: relative !important;
+        padding: 12px 16px 12px 40% !important;
+        text-align: right !important;
+        min-height: 48px;
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+    }
+    
+    .tabela-responsiva td:last-child {
+        border-bottom: none !important;
+    }
+    
+    .tabela-responsiva td::before {
+        content: attr(data-label);
+        position: absolute !important;
+        left: 16px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 35% !important;
+        text-align: left !important;
+        font-weight: 600 !important;
+        color: var(--texto-secundario) !important;
+        font-size: 0.85rem !important;
     }
 }

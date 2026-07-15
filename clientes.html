@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Estou a espetar na aba superior do browser o letreiro para saberes que tàs nos teus Clientes -->
     <title>Clientes - ARMS</title>
-    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-    <link rel="shortcut icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
     <meta name="theme-color" content="#111111">
     <!-- Script Anti-Flicker: Ocultar imediatamente links admin para clientes usando localStorage antes de renderizar a página -->
     <script>
@@ -79,6 +79,12 @@
                 
                 <hr class="menu-admin-only" style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
                 
+                <a href="admin-configuracoes.html" class="menu-item menu-super-admin-only">
+                    <span data-i18n="nav.configuracoes">Configurações SaaS</span>
+                </a>
+                <a href="admin-seguranca.html" class="menu-item menu-super-admin-only">
+                    <span data-i18n="nav.seguranca">Segurança</span>
+                </a>
                 <a href="admin-utilizadores.html" class="menu-item menu-admin-only">
                     <span data-i18n="nav.admin">Administração</span>
                 </a>
@@ -137,7 +143,7 @@
                     </div>
 
                     <div style="overflow-x: auto;">
-                        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                        <table class="tabela-responsiva" style="width: 100%; text-align: left; border-collapse: collapse;">
                             <thead>
                                 <tr style="border-bottom: 1px solid #e4e4e7;">
                                     <!-- Estou a puxar nomes diretos na tabela para "Empresa, Identidade, Pessoal para chatear (Contato), e a Ação no fim! -->
@@ -168,7 +174,7 @@
     <script src="js/modal.js"></script>
     <script src="js/exportacoes.js"></script>
     <!-- O Cérebro do Real-Time Engine para a página de clientes -->
-    <script src="js/tempo-real.js?v=5"></script>
+    <script src="js/tempo-real.js?v=8"></script>
 
     <!-- Estou a trazer e invocar o script de manipulação da tela, os teus clientes listados em loops For -->
     <script src="js/clientes.js"></script>
@@ -195,23 +201,45 @@
                     <div class="formulario-grid">
                         <div class="largura-total">
                             <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Nome da Empresa <span style="color: var(--cor-perigo);">*</span></label>
-                            <input type="text" id="campo-nome-empresa" class="input-controlo" placeholder="Ex: Aksanti Group, Lda.">
+                            <input type="text" id="campo-nome-empresa" class="input-controlo" placeholder="Ex: Empresa XYZ, Lda.">
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Email Principal <span style="color: var(--cor-perigo);">*</span></label>
                             <input type="email" id="campo-email-empresa" class="input-controlo" placeholder="geral@empresa.co.ao">
                         </div>
                         <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">NIF</label>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">NIF <span style="color: var(--cor-perigo);">*</span></label>
                             <input type="text" id="campo-nif-empresa" class="input-controlo" placeholder="Número de Identificação Fiscal">
                         </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Localização</label>
+                        <div class="largura-total">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Localização <span style="color: var(--cor-perigo);">*</span></label>
                             <input type="text" id="campo-localizacao-empresa" class="input-controlo" placeholder="Ex: Luanda, Angola">
                         </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Pessoa de Contacto</label>
-                            <input type="text" id="campo-contacto-nome" class="input-controlo" placeholder="Nome do representante">
+                        
+                        <div class="largura-total" style="margin-top: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #e4e4e7; padding-bottom: 8px;">
+                                <h4 style="font-size: 1rem; color: var(--texto-principal);">Representantes <span style="color: var(--cor-perigo); font-size: 0.8rem; font-weight: normal;">(Pelo menos 1 obrigatório)</span></h4>
+                                <button type="button" id="btn-add-representante" class="btn btn-secundario" style="padding: 4px 12px; font-size: 0.85rem;">+ Adicionar</button>
+                            </div>
+                            
+                            <div id="lista-representantes">
+                                <div class="representante-item" style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2e8f0; position: relative;">
+                                    <div class="formulario-grid">
+                                        <div class="largura-total">
+                                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Nome do Representante <span style="color: var(--cor-perigo);">*</span></label>
+                                            <input type="text" class="input-controlo rep-nome" placeholder="Nome do representante">
+                                        </div>
+                                        <div>
+                                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Email do Contacto <span style="color: var(--cor-perigo);">*</span></label>
+                                            <input type="email" class="input-controlo rep-email" placeholder="email@exemplo.com">
+                                        </div>
+                                        <div>
+                                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Contacto Telefónico <span style="color: var(--cor-perigo);">*</span></label>
+                                            <input type="text" class="input-controlo rep-telefone" placeholder="+244 900 000 000">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div id="modal-feedback-cliente" style="display:none; padding: 12px 16px; border-radius: var(--raio-borda); margin-top: 16px; font-size: 0.9rem;"></div>
@@ -220,24 +248,69 @@
                         <button class="btn btn-primario" id="btn-guardar-cliente">Guardar Cliente</button>
                     </div>
                 `;
-                abrirModal('Adicionar Novo Cliente', formHTML, { largura: '560px' });
+                abrirModal('Adicionar Novo Cliente', formHTML, { largura: '600px' });
+
+                document.getElementById('btn-add-representante').addEventListener('click', () => {
+                    const lista = document.getElementById('lista-representantes');
+                    const div = document.createElement('div');
+                    div.className = 'representante-item';
+                    div.style.cssText = 'background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2e8f0; position: relative;';
+                    div.innerHTML = `
+                        <button type="button" onclick="this.parentElement.remove()" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--cor-perigo); cursor: pointer; padding: 4px;">&times; Remover</button>
+                        <div class="formulario-grid" style="margin-top: 16px;">
+                            <div class="largura-total">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Nome do Representante <span style="color: var(--cor-perigo);">*</span></label>
+                                <input type="text" class="input-controlo rep-nome" placeholder="Nome do representante secundário">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Email do Contacto <span style="color: var(--cor-perigo);">*</span></label>
+                                <input type="email" class="input-controlo rep-email" placeholder="email@exemplo.com">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Contacto Telefónico <span style="color: var(--cor-perigo);">*</span></label>
+                                <input type="text" class="input-controlo rep-telefone" placeholder="+244 900 000 000">
+                            </div>
+                        </div>
+                    `;
+                    lista.appendChild(div);
+                });
 
                 // Ligar o botão de guardar é API
                 document.getElementById('btn-guardar-cliente').addEventListener('click', () => {
                     const feedback = document.getElementById('modal-feedback-cliente');
+                    
+                    const representantes = [];
+                    document.querySelectorAll('.representante-item').forEach(item => {
+                        const n = item.querySelector('.rep-nome').value.trim();
+                        const e = item.querySelector('.rep-email').value.trim();
+                        const t = item.querySelector('.rep-telefone').value.trim();
+                        if (n || e || t) {
+                            representantes.push({ nome: n, email: e, telefone: t });
+                        }
+                    });
+
                     const dados = {
                         nome:          document.getElementById('campo-nome-empresa').value.trim(),
                         email:         document.getElementById('campo-email-empresa').value.trim(),
                         nif:           document.getElementById('campo-nif-empresa').value.trim(),
                         localizacao:   document.getElementById('campo-localizacao-empresa').value.trim(),
-                        contacto_nome: document.getElementById('campo-contacto-nome').value.trim()
+                        representantes: representantes
                     };
 
-                    if (!dados.nome || !dados.email) {
+                    // Validação Front-end rigorosa
+                    if (!dados.nome || !dados.email || !dados.nif || !dados.localizacao) {
                         feedback.style.display = 'block';
                         feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
                         feedback.style.color = '#ef4444';
-                        feedback.textContent = 'Nome e Email são obrigatórios.';
+                        feedback.textContent = 'Por favor, preencha todos os dados da empresa (Nome, Email, NIF, Localização).';
+                        return;
+                    }
+
+                    if (representantes.length === 0 || !representantes[0].nome || !representantes[0].email || !representantes[0].telefone) {
+                        feedback.style.display = 'block';
+                        feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
+                        feedback.style.color = '#ef4444';
+                        feedback.textContent = 'Tem de preencher todos os dados de pelo menos um Representante (Nome, Email e Contacto).';
                         return;
                     }
 
@@ -297,8 +370,53 @@
 
                     const nifVal = cliente.tax_id === '?' ? '' : cliente.tax_id;
                     const locVal = cliente.location === '?' ? '' : cliente.location;
-                    const contactoVal = cliente.contact_name === 'Sem contacto' ? '' : cliente.contact_name;
                     const isAtivo = cliente.status === 'ACTIVE';
+                    
+                    let repHTML = '';
+                    if (cliente.representantes && cliente.representantes.length > 0) {
+                        cliente.representantes.forEach((r, idx) => {
+                            const isFirst = (idx === 0);
+                            repHTML += `
+                                <div class="representante-item" style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2e8f0; position: relative;">
+                                    ${!isFirst ? '<button type="button" onclick="this.parentElement.remove()" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--cor-perigo); cursor: pointer; padding: 4px;">&times; Remover</button>' : ''}
+                                    <div class="formulario-grid" style="${!isFirst ? 'margin-top: 16px;' : ''}">
+                                        <div class="largura-total">
+                                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Nome do Representante ${isFirst ? '<span style="color: var(--cor-perigo);">*</span>' : ''}</label>
+                                            <input type="text" class="input-controlo rep-nome" placeholder="Nome do representante" value="${r.nome || ''}">
+                                        </div>
+                                        <div>
+                                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Email do Contacto ${isFirst ? '<span style="color: var(--cor-perigo);">*</span>' : ''}</label>
+                                            <input type="email" class="input-controlo rep-email" placeholder="email@exemplo.com" value="${r.email && !r.email.startsWith('no-reply') ? r.email : ''}">
+                                        </div>
+                                        <div>
+                                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Contacto Telefónico ${isFirst ? '<span style="color: var(--cor-perigo);">*</span>' : ''}</label>
+                                            <input type="text" class="input-controlo rep-telefone" placeholder="+244 900 000 000" value="${r.telefone || ''}">
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        // Se não houver nenhum, cria um vazio obrigatório
+                        repHTML = `
+                            <div class="representante-item" style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2e8f0; position: relative;">
+                                <div class="formulario-grid">
+                                    <div class="largura-total">
+                                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Nome do Representante <span style="color: var(--cor-perigo);">*</span></label>
+                                        <input type="text" class="input-controlo rep-nome" placeholder="Nome do representante">
+                                    </div>
+                                    <div>
+                                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Email do Contacto <span style="color: var(--cor-perigo);">*</span></label>
+                                        <input type="email" class="input-controlo rep-email" placeholder="email@exemplo.com">
+                                    </div>
+                                    <div>
+                                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Contacto Telefónico <span style="color: var(--cor-perigo);">*</span></label>
+                                        <input type="text" class="input-controlo rep-telefone" placeholder="+244 900 000 000">
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
 
                     const formHTML = `
                         <div class="formulario-grid">
@@ -311,20 +429,27 @@
                                 <input type="email" id="editar-email" class="input-controlo" value="${cliente.contact_email}">
                             </div>
                             <div>
-                                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">NIF</label>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">NIF <span style="color: var(--cor-perigo);">*</span></label>
                                 <input type="text" id="editar-nif" class="input-controlo" value="${nifVal}" placeholder="Número de Identificação Fiscal">
                             </div>
-                            <div>
-                                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Localização</label>
+                            <div class="largura-total">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Localização <span style="color: var(--cor-perigo);">*</span></label>
                                 <input type="text" id="editar-localizacao" class="input-controlo" value="${locVal}" placeholder="Ex: Luanda, Angola">
                             </div>
-                            <div>
-                                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Pessoa de Contacto</label>
-                                <input type="text" id="editar-contacto" class="input-controlo" value="${contactoVal}" placeholder="Nome do representante">
+                            
+                            <div class="largura-total" style="margin-top: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #e4e4e7; padding-bottom: 8px;">
+                                    <h4 style="font-size: 1rem; color: var(--texto-principal);">Representantes <span style="color: var(--cor-perigo); font-size: 0.8rem; font-weight: normal;">(Pelo menos 1 obrigatório)</span></h4>
+                                    <button type="button" id="btn-add-representante-edit" class="btn btn-secundario" style="padding: 4px 12px; font-size: 0.85rem;">+ Adicionar</button>
+                                </div>
+                                <div id="lista-representantes-edit">
+                                    ${repHTML}
+                                </div>
                             </div>
-                            <div>
-                                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Estado</label>
-                                <select id="editar-estado" class="input-controlo">
+                            
+                            <div class="largura-total" style="margin-top: 8px; padding-top: 16px; border-top: 1px dashed #e4e4e7;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Estado da Empresa</label>
+                                <select id="editar-estado" class="input-controlo" style="width: auto;">
                                     <option value="true" ${isAtivo ? 'selected' : ''}>Ativo</option>
                                     <option value="false" ${!isAtivo ? 'selected' : ''}>Inativo</option>
                                 </select>
@@ -336,26 +461,69 @@
                             <button class="btn btn-primario" id="btn-salvar-edicao">Guardar Alterações</button>
                         </div>
                     `;
-                    abrirModal('Editar Cliente', formHTML, { largura: '560px' });
+                    abrirModal('Editar Cliente', formHTML, { largura: '600px' });
+
+                    document.getElementById('btn-add-representante-edit').addEventListener('click', () => {
+                        const lista = document.getElementById('lista-representantes-edit');
+                        const div = document.createElement('div');
+                        div.className = 'representante-item';
+                        div.style.cssText = 'background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2e8f0; position: relative;';
+                        div.innerHTML = `
+                            <button type="button" onclick="this.parentElement.remove()" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--cor-perigo); cursor: pointer; padding: 4px;">&times; Remover</button>
+                            <div class="formulario-grid" style="margin-top: 16px;">
+                                <div class="largura-total">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Nome do Representante <span style="color: var(--cor-perigo);">*</span></label>
+                                    <input type="text" class="input-controlo rep-nome" placeholder="Nome do representante secundário">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Email do Contacto <span style="color: var(--cor-perigo);">*</span></label>
+                                    <input type="email" class="input-controlo rep-email" placeholder="email@exemplo.com">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Contacto Telefónico <span style="color: var(--cor-perigo);">*</span></label>
+                                    <input type="text" class="input-controlo rep-telefone" placeholder="+244 900 000 000">
+                                </div>
+                            </div>
+                        `;
+                        lista.appendChild(div);
+                    });
 
                     // Ligar botão de guardar edição
                     document.getElementById('btn-salvar-edicao').addEventListener('click', () => {
                         const feedback = document.getElementById('modal-feedback-editar');
+                        const representantes = [];
+                        document.querySelectorAll('#lista-representantes-edit .representante-item').forEach(item => {
+                            const n = item.querySelector('.rep-nome').value.trim();
+                            const e = item.querySelector('.rep-email').value.trim();
+                            const t = item.querySelector('.rep-telefone').value.trim();
+                            if (n || e || t) {
+                                representantes.push({ nome: n, email: e, telefone: t });
+                            }
+                        });
+
                         const dados = {
                             id:            clienteId,
                             nome:          document.getElementById('editar-nome').value.trim(),
                             email:         document.getElementById('editar-email').value.trim(),
                             nif:           document.getElementById('editar-nif').value.trim(),
                             localizacao:   document.getElementById('editar-localizacao').value.trim(),
-                            contacto_nome: document.getElementById('editar-contacto').value.trim(),
+                            representantes: representantes,
                             ativo:         document.getElementById('editar-estado').value === 'true'
                         };
 
-                        if (!dados.nome || !dados.email) {
+                        if (!dados.nome || !dados.email || !dados.nif || !dados.localizacao) {
                             feedback.style.display = 'block';
                             feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
                             feedback.style.color = '#ef4444';
-                            feedback.textContent = 'Nome e Email são obrigatórios.';
+                            feedback.textContent = 'Por favor, preencha todos os dados da empresa (Nome, Email, NIF, Localização).';
+                            return;
+                        }
+
+                        if (representantes.length === 0 || !representantes[0].nome || !representantes[0].email || !representantes[0].telefone) {
+                            feedback.style.display = 'block';
+                            feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
+                            feedback.style.color = '#ef4444';
+                            feedback.textContent = 'Tem de preencher todos os dados de pelo menos um Representante (Nome, Email e Contacto).';
                             return;
                         }
 
@@ -399,26 +567,33 @@
         };
     </script>
         <!-- Bottom Navigation Bar (Apenas Mobile) -->
-    <nav class="bottom-nav">
+            <nav class="bottom-nav">
         <div class="bottom-nav-container">
             <a href="dashboard.html" class="bottom-nav-item">
                 <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                <span>Painel</span>
+                <span data-i18n="nav.dashboard">Painel</span>
             </a>
             <a href="pedidos.html" class="bottom-nav-item">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                <span>Pedidos</span>
+                <span data-i18n="nav.pedidos">Pedidos</span>
             </a>
+            <div class="bottom-nav-fab-container">
+                <a href="pedidos.html?action=novo" class="bottom-nav-fab">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </a>
+            </div>
             <a href="calendario.html" class="bottom-nav-item">
                 <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span>Calendário</span>
+                <span data-i18n="nav.calendario">Calendário</span>
             </a>
-            <a href="perfil.html" class="bottom-nav-item activo">
-                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <span>Perfil</span>
+            <a href="#" class="bottom-nav-item" id="btn-bottom-menu">
+                <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <span>Menu</span>
             </a>
         </div>
     </nav>
+
+
 </body>
 </html>
 

@@ -15,7 +15,8 @@ try {
             c.tax_id,
             c.location,
             CASE WHEN c.is_active THEN 'ACTIVE' ELSE 'INACTIVE' END as status,
-            (SELECT full_name FROM arms.client_contact cc WHERE cc.client_id = c.id LIMIT 1) as contact_name
+            (SELECT full_name FROM arms.client_contact cc WHERE cc.client_id = c.id LIMIT 1) as contact_name,
+            (SELECT json_agg(json_build_object('nome', full_name, 'email', email, 'telefone', phone)) FROM arms.client_contact cc WHERE cc.client_id = c.id) as representantes
         FROM arms.client c
         ORDER BY c.name ASC
     ");
@@ -32,6 +33,13 @@ try {
         }
         if (!$c['contact_name']) {
             $c['contact_name'] = 'Sem contacto';
+        }
+        
+        // Descodificar JSON de representantes
+        if (!empty($c['representantes'])) {
+            $c['representantes'] = json_decode($c['representantes'], true);
+        } else {
+            $c['representantes'] = [];
         }
     }
     

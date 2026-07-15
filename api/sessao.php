@@ -6,12 +6,16 @@
 require_once 'db.php';
 require_once 'auth.php';
 require_once 'utilizador-identidade.php';
+require_once 'senha-politica.php';
 require_once 'permissoes.php';
 require_once 'seguranca-servico.php';
 
 armsAuthIniciarSessao();
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 function armsApiBool($valor) {
     return $valor === true || $valor === 1 || $valor === '1' || $valor === 't' || $valor === 'true' || $valor === 'TRUE';
@@ -22,10 +26,13 @@ $acao = $_GET['acao'] ?? 'verificar';
 switch ($acao) {
     case 'verificar':
         if (!empty($_SESSION['arms_logado']) && $_SESSION['arms_logado'] === true) {
+            armsSenhaPoliticaGarantirEstrutura($pdo);
+
             $stmt = $pdo->prepare("
                 SELECT
                     au.id,
                     au.email,
+                    au.password_changed_at,
                     au.user_type,
                     au.is_admin,
                     au.is_active,
@@ -37,7 +44,8 @@ switch ($acao) {
                     cliente.client_tax_id,
                     cliente.client_location,
                     cliente.client_primary_email,
-                    cliente.client_is_active
+                    cliente.client_is_active,
+                    COALESCE(areas.area_ids, '[]'::json) AS area_ids
                 FROM arms.auth_user au
                 LEFT JOIN arms.user_profile up ON au.id = up.user_id
                 LEFT JOIN LATERAL (
@@ -54,6 +62,11 @@ switch ($acao) {
                     ORDER BY cc.created_at DESC
                     LIMIT 1
                 ) cliente ON TRUE
+                LEFT JOIN LATERAL (
+                    SELECT json_agg(area_id) AS area_ids
+                    FROM arms.area_membership
+                    WHERE user_id = au.id
+                ) areas ON TRUE
                 WHERE au.id = :id
             ");
             $stmt->execute(['id' => $_SESSION['arms_user_id']]);
@@ -74,6 +87,8 @@ switch ($acao) {
             $_SESSION['arms_client_id'] = $user['client_id'];
             $_SESSION['arms_client_name'] = $user['client_name'];
             $permissoes = armsPermissoesDoUtilizador($pdo, $user['id'], armsApiBool($user['is_admin']));
+            $senhaPolitica = armsSenhaPoliticaDados($user['password_changed_at']);
+            $_SESSION['arms_password_expired'] = $senhaPolitica['password_expired'];
             armsSegurancaAtualizarSessao($pdo, $user['id']);
 
             $cliente = null;
@@ -103,7 +118,13 @@ switch ($acao) {
                     'iniciais' => $iniciais,
                     'locale' => $user['locale'] ?? 'pt-PT',
                     'client_id' => $user['client_id'],
-                    'cliente' => $cliente
+                    'senha_expirada' => $senhaPolitica['password_expired'],
+                    'password_expired' => $senhaPolitica['password_expired'],
+                    'password_changed_at' => $senhaPolitica['password_changed_at'],
+                    'password_expires_at' => $senhaPolitica['password_expires_at'],
+                    'password_days_remaining' => $senhaPolitica['password_days_remaining'],
+                    'cliente' => $cliente,
+                    'area_ids' => json_decode($user['area_ids'] ?? '[]')
                 ]
             ]);
         } else {

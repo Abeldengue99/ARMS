@@ -9,8 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Estou a pôr o Letreiro do Tétulo no pequeno canto acima do browser, nos separadores lé no PC para identificares muito bem que aba é a da nossa App -->
     <title>Login - ARMS (Aksanti Request Management System)</title>
-    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-    <link rel="shortcut icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
     <meta name="theme-color" content="#111111">
 
     <!-- Estou a chamar por fios na linha com as partes essenciais: Primeiro carrega a Vassoura a limpar bugs de estilo velhos dos computadores! -->
@@ -414,8 +414,12 @@
                 if (data.sucesso) {
                     localStorage.setItem('arms_utilizador_logado', 'true');
                     localStorage.setItem('arms_utilizador_dados', JSON.stringify(data.utilizador));
-                    
-                    window.location.href = 'dashboard.html';
+
+                    if (data.utilizador?.senha_expirada === true || data.utilizador?.password_expired === true) {
+                        window.location.href = 'perfil.html?senha_expirada=1';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
                 } else {
                     mostrarMensagem('Atenção', data.erro || 'Não foi possível iniciar sesséo.');
                     btn.textContent = textoOriginal;

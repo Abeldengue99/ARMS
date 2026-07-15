@@ -18,6 +18,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 function armsUtilizadoresBool($valor) {
     return $valor === true || $valor === 1 || $valor === '1' || $valor === 't' || $valor === 'true' || $valor === 'TRUE';
@@ -46,7 +49,8 @@ try {
             cliente.tax_id AS client_tax_id,
             cliente.location AS client_location,
             cliente.primary_email AS client_primary_email,
-            COALESCE(permissoes.permissoes, '[]'::json) AS permissoes
+            COALESCE(permissoes.permissoes, '[]'::json) AS permissoes,
+            COALESCE(areas.area_ids, '[]'::json) AS area_ids
         FROM arms.auth_user u
         LEFT JOIN arms.user_profile p ON u.id = p.user_id
         LEFT JOIN LATERAL (
@@ -67,6 +71,11 @@ try {
             FROM arms.user_permission up
             WHERE up.user_id = u.id
         ) permissoes ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT json_agg(area_id) AS area_ids
+            FROM arms.area_membership
+            WHERE user_id = u.id
+        ) areas ON TRUE
         ORDER BY u.is_active DESC, p.full_name ASC NULLS LAST, u.email ASC
     ");
 
@@ -80,6 +89,8 @@ try {
         $u['last_name'] = $u['cargo'];
         $u['client_tax_id'] = $u['client_tax_id'] ?: '';
         $u['client_location'] = $u['client_location'] ?: '';
+        $u['permissoes'] = json_decode($u['permissoes'] ?? '[]');
+        $u['area_ids'] = json_decode($u['area_ids'] ?? '[]');
     }
 
     echo json_encode([

@@ -29,19 +29,36 @@ $nif = trim($input['nif'] ?? '');
 $localizacao = trim($input['localizacao'] ?? '');
 $contactoNome = trim($input['contacto_nome'] ?? '');
 
-// Validar campos obrigatórios
+// Validar campos obrigatórios (Empresa)
 if ($id === '') {
     echo json_encode(['sucesso' => false, 'erro' => 'ID do cliente é obrigatório.']);
     exit;
 }
 
-if ($nome === '' || $email === '') {
-    echo json_encode(['sucesso' => false, 'erro' => 'Nome e Email são obrigatórios.']);
+if ($nome === '' || $email === '' || $nif === '' || $localizacao === '') {
+    echo json_encode(['sucesso' => false, 'erro' => 'Nome, Email, NIF e Localização da empresa são obrigatórios.']);
     exit;
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(['sucesso' => false, 'erro' => 'Informe um e-mail válido antes de atualizar o cliente.']);
+    echo json_encode(['sucesso' => false, 'erro' => 'Informe um e-mail válido para a empresa.']);
+    exit;
+}
+
+// Validar representantes
+$representantes = $input['representantes'] ?? [];
+if (!is_array($representantes) || count($representantes) === 0) {
+    echo json_encode(['sucesso' => false, 'erro' => 'É obrigatório registar pelo menos um representante.']);
+    exit;
+}
+
+$primeiroRep = $representantes[0];
+$repNome = trim($primeiroRep['nome'] ?? '');
+$repEmail = trim($primeiroRep['email'] ?? '');
+$repTelefone = trim($primeiroRep['telefone'] ?? '');
+
+if ($repNome === '' || $repEmail === '' || $repTelefone === '') {
+    echo json_encode(['sucesso' => false, 'erro' => 'O Representante principal deve ter Nome, Email e Contacto preenchidos.']);
     exit;
 }
 
@@ -121,19 +138,37 @@ try {
         exit;
     }
 
-    // 2. Atualizar ou criar contacto principal sem duplicar (client_id, email)
-    if ($contactoNome !== '') {
+    // 2. Atualizar representantes (Apaga os antigos e insere os novos para manter sincronia)
+    $stmtDel = $pdo->prepare("DELETE FROM arms.client_contact WHERE client_id = :client_id");
+    $stmtDel->execute(['client_id' => $id]);
+
+    if (count($representantes) > 0) {
         $stmtContacto = $pdo->prepare("
-            INSERT INTO arms.client_contact (client_id, email, full_name)
-            VALUES (:client_id, :email, :full_name)
+            INSERT INTO arms.client_contact (client_id, email, full_name, phone)
+            VALUES (:client_id, :email, :full_name, :phone)
             ON CONFLICT (client_id, email) DO UPDATE
-            SET full_name = EXCLUDED.full_name
+            SET full_name = EXCLUDED.full_name,
+                phone = EXCLUDED.phone
         ");
-        $stmtContacto->execute([
-            'client_id' => $id,
-            'email'     => $email,
-            'full_name' => $contactoNome
-        ]);
+        
+        foreach ($representantes as $rep) {
+            $repNome = trim($rep['nome'] ?? '');
+            $repEmail = strtolower(trim($rep['email'] ?? ''));
+            $repTelefone = trim($rep['telefone'] ?? '');
+            
+            if ($repEmail === '') {
+                $repEmail = 'no-reply-' . uniqid() . '@aksanti.local';
+            }
+            
+            if ($repNome !== '' || $repTelefone !== '') {
+                $stmtContacto->execute([
+                    'client_id' => $id,
+                    'email'     => $repEmail,
+                    'full_name' => $repNome,
+                    'phone'     => $repTelefone !== '' ? $repTelefone : null
+                ]);
+            }
+        }
     }
 
     $pdo->commit();

@@ -46,13 +46,17 @@ try {
     $stmtReq = $pdo->prepare("
         SELECT
             r.id,
+            r.reference,
             r.status,
             r.area_id,
             r.client_id,
             r.created_by,
             COALESCE(r.destination_type, 'CLIENT') AS destination_type,
             r.recipient_user_id,
-            cc.user_id as client_user_id
+            cc.user_id as client_user_id,
+            r.title,
+            r.description,
+            to_char(r.deadline_at, 'YYYY-MM-DD HH24:MI:SS') AS deadline_at_iso
         FROM arms.request r
         LEFT JOIN arms.client_contact cc ON r.client_id = cc.client_id
         WHERE r.reference = ?
@@ -168,6 +172,48 @@ try {
     }
 
     $pdo->commit();
+
+    if ($novoStatus === 'SENT' && !empty($reqData['deadline_at_iso'])) {
+        try {
+            require_once 'email.php';
+            
+            $deadlineIso = $reqData['deadline_at_iso'];
+            $dataFim = gmdate('Ymd\THis\Z', strtotime($deadlineIso));
+            $dataInicio = gmdate('Ymd\THis\Z', strtotime($deadlineIso) - 3600);
+            $stamp = gmdate('Ymd\THis\Z');
+            $uid = md5($reqData['reference'] . $deadlineIso) . '@arms.local';
+            $tituloSeguro = str_replace(["\r", "\n", ","], ["", "\\n", "\\,"], $reqData['title'] ?? 'Pedido');
+            $descSegura = str_replace(["\r", "\n", ","], ["", "\\n", "\\,"], $reqData['description'] ?? '');
+            
+            $ics = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Aksanti//ARMS//PT\r\nCALSCALE:GREGORIAN\r\nMETHOD:REQUEST\r\nBEGIN:VEVENT\r\nUID:{$uid}\r\nDTSTAMP:{$stamp}\r\nDTSTART:{$dataInicio}\r\nDTEND:{$dataFim}\r\nSUMMARY:{$tituloSeguro} (Deadline)\r\nDESCRIPTION:{$descSegura}\r\nSTATUS:CONFIRMED\r\nSEQUENCE:0\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+            
+            $stmtEmails = $pdo->prepare("
+                SELECT DISTINCT au.email
+                FROM arms.notification n
+                INNER JOIN arms.auth_user au ON au.id = n.recipient_id
+                WHERE n.request_id = ? AND n.type = 'NEW_REQUEST' AND n.channel = 'IN_APP' AND n.created_at >= NOW() - INTERVAL '1 minute'
+            ");
+            $stmtEmails->execute([$reqData['id']]);
+            $emails = $stmtEmails->fetchAll(PDO::FETCH_COLUMN);
+            
+            if ($emails) {
+                $assunto = "Novo Pedido: " . $reqData['title'];
+                $tituloEmail = "Notificação de Novo Pedido";
+                $html = "<p>O pedido <strong>{$reqData['reference']}</strong> foi enviado e tem um deadline definido para <strong>{$deadlineIso}</strong>.</p><p>Foi anexado um evento ao seu calendário para garantir que o prazo não é esquecido.</p>";
+                
+                $anexos = [
+                    ['nome' => 'deadline.ics', 'conteudo' => $ics, 'tipo' => 'text/calendar']
+                ];
+                
+                foreach ($emails as $email) {
+                    armsEnviarEmail($email, $assunto, $tituloEmail, $html, $anexos);
+                }
+            }
+        } catch (Throwable $e) {
+            error_log('[ARMS] Erro ao enviar email ICS do pedido: ' . $e->getMessage());
+        }
+    }
+
     echo json_encode(['sucesso' => true, 'novo_status' => $novoStatus]);
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {

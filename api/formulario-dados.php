@@ -4,6 +4,9 @@ require_once 'auth.php';
 require_once 'acesso-pedidos.php';
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 armsAuthExigirLogin();
 
@@ -56,16 +59,27 @@ try {
                 au.email,
                 COALESCE(up.full_name, au.email) AS full_name,
                 COALESCE(up.phone, '') AS cargo,
-                COALESCE(au.is_admin, FALSE) AS is_admin
+                COALESCE(au.is_admin, FALSE) AS is_admin,
+                COALESCE(areas.area_ids, '[]'::json) AS area_ids
             FROM arms.auth_user au
             LEFT JOIN arms.user_profile up ON up.user_id = au.id
+            LEFT JOIN LATERAL (
+                SELECT json_agg(area_id) AS area_ids
+                FROM arms.area_membership
+                WHERE user_id = au.id
+            ) areas ON TRUE
             WHERE au.user_type = 'AKSANTI'
               AND au.is_active = TRUE
               AND au.id <> :user_id
             ORDER BY COALESCE(au.is_admin, FALSE) DESC, COALESCE(up.full_name, au.email) ASC
         ");
         $stmtMembros->execute([':user_id' => $userId]);
-        $membrosAksanti = $stmtMembros->fetchAll();
+        $membrosAksantiDb = $stmtMembros->fetchAll();
+        
+        foreach ($membrosAksantiDb as $m) {
+            $m['area_ids'] = json_decode($m['area_ids'] ?? '[]');
+            $membrosAksanti[] = $m;
+        }
     }
 
     echo json_encode([

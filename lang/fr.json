@@ -8,12 +8,15 @@
     "notificacoes": "Notifications",
     "perfil": "Mon Profil",
     "admin": "Administration",
+    "seguranca": "Sécurité",
+    "configuracoes": "Paramètres SaaS",
     "sair": "Se Déconnecter"
   },
   "dashboard": {
     "titulo": "Tableau de Bord",
     "total_pedidos": "Total des Demandes",
     "pedidos_abertos": "Demandes Ouvertes",
+    "pedidos_vencidos": "Demandes en Retard",
     "taxa_resposta": "Taux de Réponse",
     "sla_medio": "SLA Moyen",
     "pedidos_recentes": "Demandes Récentes",

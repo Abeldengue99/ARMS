@@ -7,6 +7,7 @@ require_once 'db.php';
 require_once 'auth.php';
 require_once 'utilizador-identidade.php';
 require_once 'senha-util.php';
+require_once 'senha-politica.php';
 require_once 'permissoes.php';
 require_once 'seguranca-servico.php';
 
@@ -34,6 +35,8 @@ if (empty($email) || empty($senha)) {
 }
 
 try {
+    armsSenhaPoliticaGarantirEstrutura($pdo);
+
     $bloqueio = armsSegurancaBloqueioAtual($pdo, $email);
     if ($bloqueio) {
         armsSegurancaRegistarEvento($pdo, $email, null, 'LOGIN_BLOCKED', false, 'Bloqueio temporário ativo.');
@@ -49,6 +52,7 @@ try {
             au.id,
             au.email,
             au.password_hash,
+            au.password_changed_at,
             au.user_type,
             au.is_admin,
             au.is_active,
@@ -119,6 +123,8 @@ try {
     $nome = $user['full_name'] ?? $user['email'];
     $iniciais = armsIniciaisUtilizador($nome, $user['email']);
     $permissoes = armsPermissoesDoUtilizador($pdo, $user['id'], armsApiBool($user['is_admin']));
+    $senhaPolitica = armsSenhaPoliticaDados($user['password_changed_at']);
+    $_SESSION['arms_password_expired'] = $senhaPolitica['password_expired'];
 
     $cliente = null;
     if (!empty($user['client_id'])) {
@@ -147,6 +153,11 @@ try {
             'iniciais' => $iniciais,
             'locale' => $user['locale'] ?? 'pt-PT',
             'client_id' => $user['client_id'] ?? null,
+            'senha_expirada' => $senhaPolitica['password_expired'],
+            'password_expired' => $senhaPolitica['password_expired'],
+            'password_changed_at' => $senhaPolitica['password_changed_at'],
+            'password_expires_at' => $senhaPolitica['password_expires_at'],
+            'password_days_remaining' => $senhaPolitica['password_days_remaining'],
             'cliente' => $cliente
         ]
     ]);

@@ -675,23 +675,7 @@
     box-shadow: 0 12px 34px rgba(15, 23, 42, 0.06);
 }
 
-.permissoes-admin-card {
-    margin-top: 28px;
-    padding: 0;
-    overflow: hidden;
-    border: 1px solid #eceff3;
-    border-radius: 12px;
-    box-shadow: 0 12px 34px rgba(15, 23, 42, 0.06);
-}
 
-.seguranca-admin-card {
-    margin-top: 28px;
-    padding: 0;
-    overflow: hidden;
-    border: 1px solid #eceff3;
-    border-radius: 12px;
-    box-shadow: 0 12px 34px rgba(15, 23, 42, 0.06);
-}
 
 .qualidade-admin-card {
     margin-top: 28px;
@@ -712,15 +696,7 @@
     box-shadow: 0 12px 34px rgba(15, 23, 42, 0.06);
 }
 
-.permissoes-admin-card:hover {
-    transform: none;
-    box-shadow: 0 12px 34px rgba(15, 23, 42, 0.06);
-}
 
-.seguranca-admin-card:hover {
-    transform: none;
-    box-shadow: 0 12px 34px rgba(15, 23, 42, 0.06);
-}
 
 .retencao-admin-card:hover {
     transform: none;
@@ -1232,23 +1208,7 @@
     font-weight: 800;
 }
 
-.tabela-permissoes {
-    min-width: 820px;
-}
 
-.tabela-permissoes td {
-    vertical-align: top;
-}
-
-.tabela-permissoes td:first-child {
-    width: 220px;
-}
-
-.tabela-permissoes td:nth-child(2),
-.tabela-permissoes td:nth-child(3) {
-    color: var(--texto-secundario);
-    line-height: 1.45;
-}
 
 .tabela-retencao td span,
 .tabela-retencao td small {

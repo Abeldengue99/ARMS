@@ -23,6 +23,7 @@ const ArmsTempoReal = (function() {
     let _errosConsecutivos = 0;
     let _ativo = true;
     let _ref = null; // Para pedido-detalhe
+    let _filtros = {};
     let _intervaloAtual = CONFIG.INTERVALO_PADRAO;
     let _emConsulta = false;
 
@@ -72,10 +73,19 @@ const ArmsTempoReal = (function() {
     }
 
     /**
-     * Força uma atualização imediata (ex: após criar um pedido)
+     * Define filtros adicionais para as consultas (ex: empresa, departamento)
+     */
+    function definirFiltros(filtros) {
+        _filtros = filtros || {};
+        _ultimoTimestamp = null;
+    }
+
+    /**
+     * Força uma atualização imediata (ex: após criar um pedido ou mudar filtros)
      */
     function forcarAtualizacao() {
         _ultimoTimestamp = null; // Resetar para buscar tudo
+        _emConsulta = false; // Forçar que o consultar avance
         consultar();
     }
 
@@ -89,6 +99,11 @@ const ArmsTempoReal = (function() {
         let url = `${CONFIG.URL_BASE}?modulo=${_modulo}`;
         if (_ultimoTimestamp) url += `&desde=${encodeURIComponent(_ultimoTimestamp)}`;
         if (_ref) url += `&ref=${encodeURIComponent(_ref)}`;
+        Object.entries(_filtros).forEach(([chave, valor]) => {
+            if (valor) url += `&${encodeURIComponent(chave)}=${encodeURIComponent(valor)}`;
+        });
+        
+        console.log('[ARMS-RT] Fetching URL:', url, 'com filtros:', _filtros);
 
         fetch(url)
             .then(res => {
@@ -145,7 +160,8 @@ const ArmsTempoReal = (function() {
         iniciar,
         parar,
         forcarAtualizacao,
-        definirReferencia
+        definirReferencia,
+        definirFiltros
     };
 
 })();
@@ -254,6 +270,13 @@ const ArmsSessao = (function() {
                 localStorage.setItem('arms_utilizador_logado', 'true');
                 localStorage.setItem('arms_utilizador_dados', JSON.stringify(_utilizador));
 
+                if (_utilizador.senha_expirada === true || _utilizador.password_expired === true) {
+                    if (!window.location.pathname.endsWith('perfil.html')) {
+                        window.location.href = 'perfil.html?senha_expirada=1';
+                        return null;
+                    }
+                }
+
                 // Cliente e colaborador Aksanti sem perfil de Super Admin ficam restritos.
                 if (!_validarAcessoPagina()) {
                     return null;
@@ -301,11 +324,22 @@ const ArmsSessao = (function() {
         document.documentElement.classList.remove('role-pending');
 
         // Atualizar iniciais no avatar
-        const iniciais = _calcularIniciais(_utilizador);
+        let iniciais = _calcularIniciais(_utilizador);
+        if (!iniciais) iniciais = 'U'; // Fallback
+        
+        let isAdmin = _utilizador.is_admin === true || _utilizador.is_admin === 1 || _utilizador.is_admin === '1' || _utilizador.is_admin === 't' || String(_utilizador.is_admin).toLowerCase() === 'true';
+        let avatarColor = 'var(--aksanti-gold)'; // Cor padrão (Colaborador Aksanti)
+        if (isAdmin) {
+            avatarColor = '#3b82f6'; // Azul para Admin
+        } else if (_utilizador.user_type === 'CLIENT') {
+            avatarColor = '#10b981'; // Verde para Cliente
+        }
+        
         const avatares = document.querySelectorAll('[data-arms-avatar]');
         avatares.forEach(el => {
-            el.textContent = iniciais || '';
+            el.textContent = iniciais;
             el.setAttribute('aria-label', _utilizador.nome || _utilizador.email || 'Utilizador');
+            el.style.setProperty('background-color', avatarColor, 'important');
         });
 
         // Atualizar nome do utilizador onde existir

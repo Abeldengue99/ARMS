@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     let clientesCarregados = [];
     let termoAtualPesquisa = '';
+    let paginaAtualClientes = 1;
+    const TAMANHO_PAGINA_CLIENTES = 15;
 
     function texto(valor) {
         return String(valor ?? '');
@@ -42,6 +44,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderizarTabelaClientes(clientesFiltrados) {
         const corpoTabela = document.getElementById('tabela-corpo-clientes');
+        const totalPaginas = Math.ceil(clientesFiltrados.length / TAMANHO_PAGINA_CLIENTES) || 1;
+        
+        if (paginaAtualClientes > totalPaginas) {
+            paginaAtualClientes = totalPaginas;
+        }
+
+        const btnRecuar = document.getElementById('btn-clientes-recuar');
+        const btnAvancar = document.getElementById('btn-clientes-avancar');
+        const indicador = document.getElementById('clientes-indicador');
+        
+        if (btnRecuar) btnRecuar.disabled = paginaAtualClientes === 1;
+        if (btnAvancar) btnAvancar.disabled = paginaAtualClientes === totalPaginas;
+        if (indicador) indicador.textContent = `${paginaAtualClientes} / ${totalPaginas}`;
+
         if (!corpoTabela) return;
 
         corpoTabela.innerHTML = '';
@@ -51,23 +67,27 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        clientesFiltrados.forEach((cliente) => {
+        const inicio = (paginaAtualClientes - 1) * TAMANHO_PAGINA_CLIENTES;
+        const fim = inicio + TAMANHO_PAGINA_CLIENTES;
+        const clientesPaginados = clientesFiltrados.slice(inicio, fim);
+
+        clientesPaginados.forEach((cliente) => {
             const corBadge = cliente.status === 'ACTIVE' ? 'badge-sucesso' : 'badge-perigo';
             const linhaHTML = `
                 <tr style="border-bottom: 1px solid #f4f4f5; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
-                    <td style="padding: 16px; font-weight: 700; color: var(--texto-principal);">${escaparHtml(cliente.company_name)}</td>
-                    <td style="padding: 16px;">${escaparHtml(cliente.tax_id || '-')}</td>
-                    <td style="padding: 16px; color: var(--texto-secundario);">${escaparHtml(cliente.location || '-')}</td>
-                    <td style="padding: 16px;">
+                    <td data-label="Empresa" style="padding: 16px; font-weight: 700; color: var(--texto-principal);">${escaparHtml(cliente.company_name)}</td>
+                    <td data-label="NIF" style="padding: 16px;">${escaparHtml(cliente.tax_id || '-')}</td>
+                    <td data-label="Localização" style="padding: 16px; color: var(--texto-secundario);">${escaparHtml(cliente.location || '-')}</td>
+                    <td data-label="Contacto" style="padding: 16px;">
                         <div style="display: flex; flex-direction: column;">
                             <span style="font-weight: 600;">${escaparHtml(cliente.contact_name || '-')}</span>
                             <span style="font-size: 0.85rem; color: var(--texto-secundario);">${escaparHtml(cliente.contact_email || '-')}</span>
                         </div>
                     </td>
-                    <td style="padding: 16px;">
+                    <td data-label="Estado" style="padding: 16px;">
                         <span class="badge ${corBadge}">${estadoLegivel(cliente)}</span>
                     </td>
-                    <td style="padding: 16px; text-align: right;">
+                    <td data-label="Ações" style="padding: 16px; text-align: right;">
                         <button type="button" onclick="abrirEditarCliente('${escaparHtml(cliente.id)}')" style="color: var(--aksanti-gold); font-weight: 700; font-size: 0.9rem; text-decoration: none; background: transparent; border: 0; cursor: pointer;">Editar Conta</button>
                     </td>
                 </tr>
@@ -77,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function aplicarFiltros() {
+        paginaAtualClientes = 1;
         renderizarTabelaClientes(obterClientesFiltrados());
     }
 
@@ -144,5 +165,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnExcel = document.getElementById('btn-exportar-excel-clientes');
     if (btnExcel) {
         btnExcel.addEventListener('click', () => ArmsExportacoes.baixarExcel(opcoesExportacaoClientes()));
+    }
+
+    const btnRecuar = document.getElementById('btn-clientes-recuar');
+    if (btnRecuar) {
+        btnRecuar.addEventListener('click', () => {
+            if (paginaAtualClientes > 1) {
+                paginaAtualClientes--;
+                renderizarTabelaClientes(obterClientesFiltrados());
+            }
+        });
+    }
+
+    const btnAvancar = document.getElementById('btn-clientes-avancar');
+    if (btnAvancar) {
+        btnAvancar.addEventListener('click', () => {
+            const clientesFiltrados = obterClientesFiltrados();
+            const totalPaginas = Math.ceil(clientesFiltrados.length / TAMANHO_PAGINA_CLIENTES) || 1;
+            if (paginaAtualClientes < totalPaginas) {
+                paginaAtualClientes++;
+                renderizarTabelaClientes(clientesFiltrados);
+            }
+        });
     }
 });

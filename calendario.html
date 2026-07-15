@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendário - ARMS</title>
-    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-    <link rel="shortcut icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
     <meta name="theme-color" content="#111111">
     <script>
         (function () {
@@ -48,7 +48,7 @@
     <link rel="stylesheet" href="css/formularios.css?v=4">
     <link rel="stylesheet" href="css/animacoes.css?v=4">
     <link rel="stylesheet" href="css/responsivo.css?v=5">
-    <link rel="stylesheet" href="css/calendario.css?v=2">
+    <link rel="stylesheet" href="css/calendario.css?v=4">
 </head>
 <body class="pagina-calendario">
     <div class="layout-principal">
@@ -76,6 +76,12 @@
 
                 <hr class="menu-admin-only" style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
 
+                <a href="admin-configuracoes.html" class="menu-item menu-super-admin-only">
+                    <span data-i18n="nav.configuracoes">Configurações SaaS</span>
+                </a>
+                <a href="admin-seguranca.html" class="menu-item menu-super-admin-only">
+                    <span data-i18n="nav.seguranca">Segurança</span>
+                </a>
                 <a href="admin-utilizadores.html" class="menu-item menu-admin-only">
                     <span data-i18n="nav.admin">Administração</span>
                 </a>
@@ -110,15 +116,22 @@
             </header>
 
             <div class="conteudo-pagina">
-                <section class="calendario-topo">
-                    <div>
-                        <h1 data-i18n="nav.calendario">Calendário</h1>
+                <header class="isaf-cabecalho">
+                    <div class="isaf-cabecalho-esq">
+                        <h1 class="isaf-titulo">Calendário de Pedidos</h1>
+                        <p class="isaf-subtitulo" style="margin-top: 4px; color: var(--texto-secundario);">Visão geral do volume de trabalho e prazos.</p>
                     </div>
-                    <div class="calendario-acoes">
-                        <button type="button" class="btn btn-secundario" id="btn-baixar-pdf-calendario">Baixar PDF</button>
-                        <button type="button" class="btn btn-secundario" id="btn-vincular-calendario">Vincular Calendário</button>
+                    <div class="isaf-acoes">
+                        <button type="button" class="btn btn-contorno" id="btn-baixar-pdf-calendario">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            Baixar PDF
+                        </button>
+                        <button type="button" class="btn btn-primario" id="btn-vincular-calendario">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                            Vincular Calendário
+                        </button>
                     </div>
-                </section>
+                </header>
 
                 <section class="calendario-toolbar" aria-label="Controlo do calendário">
                     <div class="calendario-navegacao">
@@ -135,33 +148,44 @@
                     <div class="calendario-modos">
                         <button type="button" class="calendario-modo ativo" id="btn-modo-mensal">Mensal</button>
                         <button type="button" class="calendario-modo" id="btn-modo-semanal">Semanal</button>
-                        <select id="filtro-calendario" class="input-controlo" style="width: 210px;">
-                            <option value="">Todos os eventos</option>
-                            <option value="prazos">Prazos</option>
-                            <option value="urgente">Urgentes</option>
-                            <option value="pedido">Pedidos criados</option>
-                            <option value="movimentos">Movimentos</option>
-                            <option value="decisoes">Decisões</option>
-                        </select>
+                        <div class="calendario-filtros-pills" id="filtro-calendario-pills">
+                            <button type="button" class="calendario-pill ativo" data-filtro="">Todos os eventos</button>
+                            <button type="button" class="calendario-pill pill-alerta" data-filtro="urgente">🔥 Só Urgentes</button>
+                            <button type="button" class="calendario-pill pill-aviso" data-filtro="prazos">⏳ Prazos</button>
+                            <button type="button" class="calendario-pill pill-info" data-filtro="movimentos">📬 Movimentos</button>
+                            <button type="button" class="calendario-pill pill-sucesso" data-filtro="decisoes">✅ Decisões</button>
+                        </div>
                     </div>
                 </section>
 
                 <section class="calendario-kpis" aria-label="Resumo do calendário">
                     <div class="calendario-kpi">
-                        <span>Total</span>
-                        <strong id="calendario-kpi-total">0</strong>
+                        <div class="kpi-icone" style="background: #e0f2fe; color: #0284c7;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg></div>
+                        <div class="kpi-conteudo">
+                            <span>Total Eventos</span>
+                            <strong id="calendario-kpi-total">0</strong>
+                        </div>
                     </div>
                     <div class="calendario-kpi">
-                        <span>Prazos</span>
-                        <strong id="calendario-kpi-prazos">0</strong>
+                        <div class="kpi-icone" style="background: #fef3c7; color: #d97706;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+                        <div class="kpi-conteudo">
+                            <span>Prazos Ativos</span>
+                            <strong id="calendario-kpi-prazos">0</strong>
+                        </div>
                     </div>
                     <div class="calendario-kpi">
-                        <span>Urgentes</span>
-                        <strong id="calendario-kpi-urgentes">0</strong>
+                        <div class="kpi-icone" style="background: #fee2e2; color: #dc2626;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+                        <div class="kpi-conteudo">
+                            <span style="color: #dc2626; font-weight: 600;">Urgentes</span>
+                            <strong id="calendario-kpi-urgentes" style="color: #dc2626;">0</strong>
+                        </div>
                     </div>
                     <div class="calendario-kpi">
-                        <span>Decisões</span>
-                        <strong id="calendario-kpi-decisoes">0</strong>
+                        <div class="kpi-icone" style="background: #ecfdf5; color: #059669;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+                        <div class="kpi-conteudo">
+                            <span>Decisões</span>
+                            <strong id="calendario-kpi-decisoes">0</strong>
+                        </div>
                     </div>
                 </section>
 
@@ -204,8 +228,8 @@
     <script src="js/modal.js"></script>
     <script src="js/exportacoes.js"></script>
     <script src="js/notificacoes.js?v=5"></script>
-    <script src="js/tempo-real.js?v=5"></script>
-    <script src="js/calendario.js?v=2"></script>
+    <script src="js/tempo-real.js?v=8"></script>
+    <script src="js/calendario.js?v=4"></script>
     <script src="js/app.js"></script>
     <script>
         document.getElementById('btn-sair').addEventListener('click', (evento) => {
@@ -219,26 +243,33 @@
         });
     </script>
         <!-- Bottom Navigation Bar (Apenas Mobile) -->
-    <nav class="bottom-nav">
+            <nav class="bottom-nav">
         <div class="bottom-nav-container">
             <a href="dashboard.html" class="bottom-nav-item">
                 <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                <span>Painel</span>
+                <span data-i18n="nav.dashboard">Painel</span>
             </a>
             <a href="pedidos.html" class="bottom-nav-item">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                <span>Pedidos</span>
+                <span data-i18n="nav.pedidos">Pedidos</span>
             </a>
-            <a href="calendario.html" class="bottom-nav-item activo">
+            <div class="bottom-nav-fab-container">
+                <a href="pedidos.html?action=novo" class="bottom-nav-fab">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </a>
+            </div>
+            <a href="calendario.html" class="bottom-nav-item">
                 <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span>Calendário</span>
+                <span data-i18n="nav.calendario">Calendário</span>
             </a>
-            <a href="perfil.html" class="bottom-nav-item">
-                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <span>Perfil</span>
+            <a href="#" class="bottom-nav-item" id="btn-bottom-menu">
+                <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <span>Menu</span>
             </a>
         </div>
     </nav>
+
+
 </body>
 </html>
 

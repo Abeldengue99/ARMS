@@ -8,12 +8,15 @@
     "notificacoes": "Notificações",
     "perfil": "O Meu Perfil",
     "admin": "Administração",
+    "seguranca": "Segurança",
+    "configuracoes": "Configurações SaaS",
     "sair": "Terminar Sessão"
   },
   "dashboard": {
     "titulo": "Painel de Controlo",
     "total_pedidos": "Total de Pedidos",
     "pedidos_abertos": "Pedidos Abertos",
+    "pedidos_vencidos": "Pedidos Vencidos",
     "taxa_resposta": "Taxa de Resposta",
     "sla_medio": "SLA Médio",
     "pedidos_recentes": "Pedidos Recentes",

@@ -51,14 +51,42 @@ try {
         case 'dashboard':
             [$filtroAcesso, $params] = armsPedidosFiltroSql('r', 'rt_dashboard');
 
+            // Filtros opcionais do dashboard admin (por empresa/departamento)
+            $filtroClienteId = !empty($_GET['filter_client_id']) ? $_GET['filter_client_id'] : null;
+            $filtroAreaId = !empty($_GET['filter_area_id']) ? $_GET['filter_area_id'] : null;
+            $filtroDestinoTipo = isset($_GET['filter_destination_type']) ? $_GET['filter_destination_type'] : null;
+            $filtroFuncionarioId = !empty($_GET['filter_recipient_user_id']) ? $_GET['filter_recipient_user_id'] : null;
+
+            if ($filtroClienteId) {
+                $filtroAcesso .= ' AND r.client_id = :filter_client_id';
+                $params[':filter_client_id'] = $filtroClienteId;
+            }
+            if ($filtroAreaId) {
+                $filtroAcesso .= ' AND r.area_id = :filter_area_id';
+                $params[':filter_area_id'] = $filtroAreaId;
+            }
+            if ($filtroDestinoTipo === 'AKSANTI') {
+                $filtroAcesso .= " AND COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI'";
+            } elseif ($filtroDestinoTipo === 'CLIENT') {
+                $filtroAcesso .= " AND COALESCE(r.destination_type, 'CLIENT') != 'AKSANTI'";
+            }
+            if ($filtroFuncionarioId) {
+                $filtroAcesso .= ' AND r.recipient_user_id = :filter_recipient_user_id';
+                $params[':filter_recipient_user_id'] = $filtroFuncionarioId;
+            }
+
             // Estatísticas atualizadas
-            $stmt1 = $pdo->prepare("SELECT COUNT(*) as total FROM arms.request r WHERE 1=1 $filtroAcesso");
+            $stmt1 = $pdo->prepare("SELECT COUNT(*) as total FROM arms.request r WHERE r.status != 'DRAFT' $filtroAcesso");
             $stmt1->execute($params);
             $total = (int)$stmt1->fetch()['total'];
 
-            $stmt2 = $pdo->prepare("SELECT COUNT(*) as total FROM arms.request r WHERE r.status IN ('DRAFT', 'SENT', 'RECEIVED', 'CLIENT_RESPONDED') $filtroAcesso");
+            $stmt2 = $pdo->prepare("SELECT COUNT(*) as total FROM arms.request r WHERE r.status IN ('SENT', 'RECEIVED', 'CLIENT_RESPONDED') $filtroAcesso");
             $stmt2->execute($params);
             $abertos = (int)$stmt2->fetch()['total'];
+
+            $stmtVencidos = $pdo->prepare("SELECT COUNT(*) as total FROM arms.request r WHERE r.deadline_at < NOW() AND r.status NOT IN ('DRAFT', 'ACCEPTED', 'REJECTED', 'CLOSED') $filtroAcesso");
+            $stmtVencidos->execute($params);
+            $vencidos = (int)$stmtVencidos->fetch()['total'];
 
             $stmt3 = $pdo->prepare("SELECT COUNT(*) as total FROM arms.request r WHERE r.status NOT IN ('DRAFT', 'SENT') $filtroAcesso");
             $stmt3->execute($params);
@@ -80,7 +108,7 @@ try {
                 LEFT JOIN arms.area a ON r.area_id = a.id
                 LEFT JOIN arms.auth_user au_recente ON r.recipient_user_id = au_recente.id
                 LEFT JOIN arms.user_profile up_recente ON r.recipient_user_id = up_recente.user_id
-                WHERE 1=1 $filtroAcesso
+                WHERE r.status != 'DRAFT' $filtroAcesso
                 ORDER BY r.created_at DESC LIMIT 10
             ");
             $stmt4->execute($params);
@@ -89,7 +117,7 @@ try {
             // Distribuição por área
             $stmt5 = $pdo->prepare("
                 SELECT a.name as area_name, COUNT(r.id) as total
-                FROM arms.area a LEFT JOIN arms.request r ON a.id = r.area_id
+                FROM arms.area a LEFT JOIN arms.request r ON a.id = r.area_id AND r.status != 'DRAFT'
                 WHERE 1=1 $filtroAcesso
                 GROUP BY a.id, a.name ORDER BY total DESC
             ");
@@ -102,7 +130,7 @@ try {
                        TO_CHAR(r.created_at, 'Mon') as mes_nome,
                        COUNT(r.id) as total
                 FROM arms.request r
-                WHERE r.created_at >= NOW() - INTERVAL '6 months' $filtroAcesso
+                WHERE r.created_at >= NOW() - INTERVAL '6 months' AND r.status != 'DRAFT' $filtroAcesso
                 GROUP BY mes_num, mes_nome ORDER BY mes_num ASC
             ");
             $stmt6->execute($params);
@@ -112,6 +140,7 @@ try {
                 'kpis' => [
                     'total_pedidos' => $total,
                     'pedidos_abertos' => $abertos,
+                    'pedidos_vencidos' => $vencidos,
                     'taxa_resposta' => $taxa,
                     'sla_medio' => '2.4h'
                 ],

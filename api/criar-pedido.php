@@ -40,9 +40,14 @@ $destinationType = strtoupper(trim($input['destination_type'] ?? 'CLIENT'));
 if (!in_array($destinationType, ['CLIENT', 'AKSANTI'], true)) {
     $destinationType = 'CLIENT';
 }
+$recipientScope = strtoupper(trim($input['recipient_scope'] ?? 'DEPARTMENT'));
+if (!in_array($recipientScope, ['USER', 'DEPARTMENT'], true)) {
+    $recipientScope = 'DEPARTMENT';
+}
 
 if ($userType === 'CLIENT' || !$isAdmin) {
     $destinationType = 'AKSANTI';
+    $recipientScope = 'DEPARTMENT';
 }
 
 // Validar campos obrigatórios
@@ -50,7 +55,7 @@ $campos = ['titulo', 'descricao', 'area_id', 'deadline'];
 if ($userType !== 'CLIENT' && $isAdmin && $destinationType === 'CLIENT') {
     $campos[] = 'client_id';
     $campos[] = 'client_email';
-} elseif ($userType !== 'CLIENT' && $isAdmin && $destinationType === 'AKSANTI') {
+} elseif ($userType !== 'CLIENT' && $isAdmin && $destinationType === 'AKSANTI' && $recipientScope === 'USER') {
     $campos[] = 'recipient_user_id';
 }
 foreach ($campos as $campo) {
@@ -102,12 +107,16 @@ try {
     } elseif ($destinationType === 'AKSANTI') {
         $recipientUserId = trim($input['recipient_user_id'] ?? '');
 
-        if ($recipientUserId === (string)$createdBy) {
+        if ($recipientScope === 'USER' && $recipientUserId === (string)$createdBy) {
             echo json_encode(['sucesso' => false, 'erro' => 'Escolha outro membro Aksanti como destinatÃ¡rio.']);
             exit;
         }
 
-        $stmtDestinatario = $pdo->prepare("
+        if ($recipientScope !== 'USER') {
+            $recipientUserId = null;
+            $destinatario = null;
+        } else {
+            $stmtDestinatario = $pdo->prepare("
             SELECT au.id, au.email, COALESCE(up.full_name, au.email) AS full_name
             FROM arms.auth_user au
             LEFT JOIN arms.user_profile up ON up.user_id = au.id
@@ -124,6 +133,8 @@ try {
             exit;
         }
 
+        }
+
         $clienteInterno = armsPedidosClienteInternoAksanti($pdo);
         if (!$clienteInterno) {
             echo json_encode(['sucesso' => false, 'erro' => 'NÃ£o foi possÃ­vel preparar o destino interno Aksanti.']);
@@ -131,7 +142,7 @@ try {
         }
 
         $clientId = $clienteInterno['id'];
-        $clientEmail = $destinatario['email'];
+        $clientEmail = $destinatario ? $destinatario['email'] : $clienteInterno['primary_email'];
     }
     
     // Se o prazo vier apenas como data (YYYY-MM-DD), adicionar a hora 23:59:59
@@ -143,10 +154,10 @@ try {
 
     $pdo->beginTransaction();
 
-    // Inserir o pedido na tabela request (o reference é gerado automaticamente pela função next_request_reference)
+    // Inserir o pedido na tabela request (entra sempre como DRAFT inicialmente)
     $stmt = $pdo->prepare("
-        INSERT INTO arms.request (title, description, area_id, client_id, client_email, created_by, deadline_at, destination_type, recipient_user_id)
-        VALUES (:titulo, :descricao, :area_id, :client_id, :client_email, :created_by, :deadline, :destination_type, :recipient_user_id)
+        INSERT INTO arms.request (title, description, area_id, client_id, client_email, created_by, deadline_at, destination_type, recipient_user_id, status)
+        VALUES (:titulo, :descricao, :area_id, :client_id, :client_email, :created_by, :deadline, :destination_type, :recipient_user_id, 'DRAFT')
         RETURNING id, reference, status, to_char(created_at, 'DD/MM/YYYY') as date
     ");
 
@@ -163,6 +174,22 @@ try {
     ]);
 
     $novoPedido = $stmt->fetch();
+
+    $areaIds = [];
+    if (!empty($input['area_ids']) && is_array($input['area_ids'])) {
+        $areaIds = $input['area_ids'];
+    }
+
+    armsPedidosRegistrarDestinatarios(
+        $pdo,
+        $novoPedido['id'],
+        $destinationType,
+        $clientId,
+        $input['area_id'],
+        $createdBy,
+        $recipientUserId,
+        $areaIds
+    );
 
     /*
         $stmtNotificar = $pdo->prepare("

@@ -35,6 +35,7 @@ CREATE TABLE auth_user (
     id              UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
     email           CITEXT       NOT NULL UNIQUE,
     password_hash   TEXT         NOT NULL,
+    password_changed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     user_type       VARCHAR(16)  NOT NULL,
     is_active       BOOLEAN      NOT NULL DEFAULT TRUE,
     is_admin        BOOLEAN      NOT NULL DEFAULT FALSE,

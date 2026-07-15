@@ -2,6 +2,7 @@
 require_once 'db.php';
 require_once 'email.php';
 require_once 'utilizador-convite.php';
+require_once 'senha-politica.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     $sessionDir = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'arms-sessions';
@@ -43,6 +44,8 @@ if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
 }
 
 try {
+    armsSenhaPoliticaGarantirEstrutura($pdo);
+
     $pdo->beginTransaction();
 
     $stmt = $pdo->prepare("
@@ -131,7 +134,8 @@ try {
 
     $stmtUpdate = $pdo->prepare("
         UPDATE arms.auth_user
-        SET password_hash = :password_hash
+        SET password_hash = :password_hash,
+            password_changed_at = NOW()
         WHERE id = :id
     ");
     $stmtUpdate->execute([

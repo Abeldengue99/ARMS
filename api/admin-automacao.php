@@ -5,6 +5,7 @@ require_once 'acesso-pedidos.php';
 require_once 'configuracoes-servico.php';
 require_once 'email.php';
 require_once 'utilizador-convite.php';
+require_once 'senha-politica.php';
 require_once 'permissoes.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -36,7 +37,7 @@ function armsAutomacaoConfiguracoes(PDO $pdo) {
         'invite_resend_enabled' => armsConfiguracaoInteiro($pdo, 'automation_invite_resend_enabled', 0, 0, 1) === 1,
         'invite_resend_days' => armsConfiguracaoInteiro($pdo, 'automation_invite_resend_days', 2, 1, 90),
         'deadline_warning_enabled' => armsConfiguracaoInteiro($pdo, 'automation_deadline_warning_enabled', 1, 0, 1) === 1,
-        'deadline_warning_hours' => armsConfiguracaoInteiro($pdo, 'automation_deadline_warning_hours', 24, 1, 168),
+        'deadline_warning_hours' => armsConfiguracaoInteiro($pdo, 'automation_deadline_warning_hours', 72, 1, 168),
         'deadline_overdue_enabled' => armsConfiguracaoInteiro($pdo, 'automation_deadline_overdue_enabled', 1, 0, 1) === 1,
         'retention_cleanup_enabled' => armsConfiguracaoInteiro($pdo, 'automation_retention_cleanup_enabled', 0, 0, 1) === 1,
         'attachment_max_size_mb' => armsConfiguracaoInteiro($pdo, 'attachment_max_size_mb', 50, 1, 10240),
@@ -137,7 +138,7 @@ function armsAutomacaoSalvar(PDO $pdo, array $entrada, $executedBy = null) {
         'automation_invite_resend_enabled' => armsAutomacaoBool($entrada['invite_resend_enabled'] ?? false) ? 1 : 0,
         'automation_invite_resend_days' => armsAutomacaoInt($entrada['invite_resend_days'] ?? 2, 2, 1, 90),
         'automation_deadline_warning_enabled' => armsAutomacaoBool($entrada['deadline_warning_enabled'] ?? false) ? 1 : 0,
-        'automation_deadline_warning_hours' => armsAutomacaoInt($entrada['deadline_warning_hours'] ?? 24, 24, 1, 168),
+        'automation_deadline_warning_hours' => armsAutomacaoInt($entrada['deadline_warning_hours'] ?? 72, 72, 1, 168),
         'automation_deadline_overdue_enabled' => armsAutomacaoBool($entrada['deadline_overdue_enabled'] ?? false) ? 1 : 0,
         'automation_retention_cleanup_enabled' => armsAutomacaoBool($entrada['retention_cleanup_enabled'] ?? false) ? 1 : 0,
     ];
@@ -158,7 +159,7 @@ function armsAutomacaoSalvar(PDO $pdo, array $entrada, $executedBy = null) {
     return $cfg;
 }
 
-function armsAutomacaoNotificarDeadlines(PDO $pdo, $tipo, $horas = 24, $executedBy = null) {
+function armsAutomacaoNotificarDeadlines(PDO $pdo, $tipo, $horas = 72, $executedBy = null) {
     armsPedidosGarantirDestinoInterno($pdo);
 
     $tipoAutomacao = $tipo === 'warning' ? 'deadline_warning' : 'deadline_overdue';
@@ -242,8 +243,20 @@ function armsAutomacaoNotificarDeadlines(PDO $pdo, $tipo, $horas = 24, $executed
         $stmt->bindValue(':horas', (int)$horas, PDO::PARAM_INT);
     }
     $stmt->execute();
+    $notificacoesGeradas = $stmt->rowCount();
 
-    return $stmt->rowCount();
+    if ($tipo === 'overdue') {
+        $stmtUpdate = $pdo->prepare("
+            UPDATE arms.request
+            SET is_urgent = TRUE
+            WHERE status IN ('SENT', 'RECEIVED')
+              AND deadline_at < NOW()
+              AND is_urgent = FALSE
+        ");
+        $stmtUpdate->execute();
+    }
+
+    return $notificacoesGeradas;
 }
 
 function armsAutomacaoUtilizadorElegivel(PDO $pdo, $id, $dias) {
@@ -286,6 +299,8 @@ function armsAutomacaoUtilizadorElegivel(PDO $pdo, $id, $dias) {
 }
 
 function armsAutomacaoReenviarConvites(PDO $pdo, $dias, $executedBy = null) {
+    armsSenhaPoliticaGarantirEstrutura($pdo);
+
     $stmtIds = $pdo->prepare("
         SELECT u.id
         FROM arms.auth_user u
@@ -346,7 +361,8 @@ function armsAutomacaoReenviarConvites(PDO $pdo, $dias, $executedBy = null) {
 
             $stmtUpdate = $pdo->prepare("
                 UPDATE arms.auth_user
-                SET password_hash = :password_hash
+                SET password_hash = :password_hash,
+                    password_changed_at = NOW()
                 WHERE id = :id
             ");
             $stmtUpdate->execute([':password_hash' => $hash, ':id' => $utilizador['id']]);
@@ -368,8 +384,35 @@ function armsAutomacaoReenviarConvites(PDO $pdo, $dias, $executedBy = null) {
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) $pdo->rollBack();
             $resultado['falhados']++;
-            $resultado['erros'][] = armsEmailErroAmigavel($e);
+            $erroMsg = armsEmailErroAmigavel($e);
+            $resultado['erros'][] = $erroMsg;
             error_log('[ARMS] Automacao de convite falhou: ' . $e->getMessage());
+
+            try {
+                $pdo->beginTransaction();
+                // Notificar o proprio utilizador para o historico
+                $stmtErro = $pdo->prepare("
+                    INSERT INTO arms.notification (recipient_id, type, channel, payload)
+                    VALUES (:recipient_id, 'SYSTEM_ERROR', 'EMAIL', CAST(:payload AS jsonb))
+                ");
+                $stmtErro->execute([
+                    ':recipient_id' => $id,
+                    ':payload' => json_encode(['message' => 'Falha ao enviar convite via SMTP.', 'erro_tecnico' => $erroMsg], JSON_UNESCAPED_UNICODE),
+                ]);
+
+                // Notificar Super Admins
+                $stmtAdmins = $pdo->query("SELECT id FROM arms.auth_user WHERE is_admin = TRUE AND is_active = TRUE AND user_type = 'AKSANTI'");
+                $admins = $stmtAdmins->fetchAll(PDO::FETCH_COLUMN);
+                foreach ($admins as $adminId) {
+                    $stmtErro->execute([
+                        ':recipient_id' => $adminId,
+                        ':payload' => json_encode(['message' => 'Alerta: Falha ao reenviar convite via automação.', 'email_destino' => $utilizador['email'] ?? 'Desconhecido', 'erro_tecnico' => $erroMsg], JSON_UNESCAPED_UNICODE),
+                    ]);
+                }
+                $pdo->commit();
+            } catch (Throwable $e2) {
+                if ($pdo->inTransaction()) $pdo->rollBack();
+            }
         }
     }
 

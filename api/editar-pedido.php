@@ -65,11 +65,12 @@ try {
     }
 
     $userId = (string)($_SESSION['arms_user_id'] ?? '');
+    $userType = $_SESSION['arms_user_type'] ?? 'AKSANTI';
     $isAdmin = armsAuthBool($_SESSION['arms_is_admin'] ?? false);
     $pedidoCriadoPeloUtilizador = strcasecmp((string)$pedido['created_by'], $userId) === 0;
 
-    if (!$isAdmin && !$pedidoCriadoPeloUtilizador) {
-        echo json_encode(['sucesso' => false, 'erro' => 'NÃ£o tem permissÃ£o para editar este pedido.']);
+    if (!$isAdmin && !$pedidoCriadoPeloUtilizador && $userType !== 'AKSANTI') {
+        echo json_encode(['sucesso' => false, 'erro' => 'Não tem permissão para editar este pedido.']);
         exit;
     }
 
@@ -82,9 +83,16 @@ try {
     $sql = "UPDATE arms.request SET title = :titulo, description = :descricao";
     $params = ['titulo' => $titulo, 'descricao' => $descricao, 'pedido_id' => $pedido['id']];
 
-    if ($areaId) {
-        $sql .= ", area_id = :area_id";
-        $params['area_id'] = $areaId;
+    $areaIds = $input['area_id'] ?? [];
+    if (!is_array($areaIds) && !empty($areaIds)) {
+        $areaIds = [$areaIds];
+    }
+    $areaIds = array_filter($areaIds);
+
+    if (!empty($areaIds)) {
+        $sql .= ", area_id = :area_id, area_ids = :area_ids";
+        $params['area_id'] = array_values($areaIds)[0];
+        $params['area_ids'] = json_encode(array_values($areaIds));
     }
     if ($clientId) {
         $sql .= ", client_id = :client_id";

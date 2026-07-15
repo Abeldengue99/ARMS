@@ -26,6 +26,15 @@ try {
     $stmtAbertos->execute($params);
     $pedidosAbertos = (int)($stmtAbertos->fetch()['total'] ?? 0);
 
+    $stmtVencidos = $pdo->prepare("
+        SELECT COUNT(*) as total
+        FROM arms.request r
+        WHERE r.deadline_at < NOW()
+          AND r.status NOT IN ('ACCEPTED', 'REJECTED', 'CLOSED') $filtroAcesso
+    ");
+    $stmtVencidos->execute($params);
+    $pedidosVencidos = (int)($stmtVencidos->fetch()['total'] ?? 0);
+
     $stmtRespondidos = $pdo->prepare("
         SELECT COUNT(*) as total
         FROM arms.request r
@@ -112,6 +121,7 @@ try {
         'kpis' => [
             'total_pedidos' => $totalPedidos,
             'pedidos_abertos' => $pedidosAbertos,
+            'pedidos_vencidos' => $pedidosVencidos,
             'taxa_resposta' => (int)$taxaResposta,
             'sla_medio' => '2.4h'
         ],

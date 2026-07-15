@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil - ARMS</title>
-    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-    <link rel="shortcut icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
     <meta name="theme-color" content="#111111">
     <!-- Script Anti-Flicker: Ocultar imediatamente links admin para clientes usando localStorage antes de renderizar a página -->
     <script>
@@ -236,6 +236,12 @@
                 <hr class="menu-admin-only" style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
                 
                 <!-- Estou a destacar que o utilizador está exatamente nesta página do seu perfil -->
+                <a href="admin-configuracoes.html" class="menu-item menu-super-admin-only">
+                    <span data-i18n="nav.configuracoes">Configurações SaaS</span>
+                </a>
+                <a href="admin-seguranca.html" class="menu-item menu-super-admin-only">
+                    <span data-i18n="nav.seguranca">Segurança</span>
+                </a>
                 <a href="admin-utilizadores.html" class="menu-item menu-admin-only"><span data-i18n="nav.admin">Administração</span></a>
                 <a href="#" class="menu-item" style="color: #ef4444;" id="btn-sair"><span data-i18n="nav.sair">Terminar Sessão</span></a>
             </nav>
@@ -246,13 +252,7 @@
             
             <header class="cabecalho-principal">
                 <div style="display: flex; align-items: center;">
-                    <button id="btn-menu-mobile" class="btn-menu-mobile mobile-only" type="button" aria-label="Abrir menu">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
+
             <h2 style="font-size: 1.25rem;" data-i18n="nav.perfil">O Meu Perfil</h2>
                 </div>
 
@@ -289,6 +289,10 @@
                                 <div class="perfil-campo">
                                     <label class="etiqueta-formulario" for="perfil-cargo">Cargo</label>
                                     <input type="text" class="input-controlo" id="perfil-cargo" data-admin-editavel="true" maxlength="160" readonly>
+                                </div>
+                                <div class="perfil-campo largura-total" id="bloco-perfil-departamentos" hidden>
+                                    <label class="etiqueta-formulario">Departamentos Associados</label>
+                                    <div id="perfil-departamentos-lista" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; min-height: 44px;"></div>
                                 </div>
                                 <div class="perfil-campo">
                                     <label class="etiqueta-formulario" for="perfil-tipo">Tipo de Acesso</label>
@@ -392,7 +396,7 @@
     <script src="js/sidebar.js?v=5"></script>
     <script src="js/modal.js"></script>
     <script src="js/notificacoes.js?v=5"></script>
-    <script src="js/tempo-real.js?v=5"></script>
+    <script src="js/tempo-real.js?v=8"></script>
     <script src="js/app.js"></script>
 
     <script>
@@ -419,10 +423,21 @@
         };
 
         const tipoAcessoLegivel = (tipo) => {
-            if (tipo === 'CLIENT') return 'Cliente';
-            if (tipo === 'AKSANTI') return 'Membro da equipa Aksanti';
+            if (tipo === 'CLIENT') return 'Empresa / Cliente Final';
+            if (tipo === 'AKSANTI') return 'Equipa Interna';
             return valorPerfil(tipo);
         };
+
+        function mostrarMensagem(titulo, mensagem) {
+            alert(`${titulo}\n\n${mensagem}`);
+        }
+
+        function escaparHtml(texto) {
+            if (!texto) return '';
+            const div = document.createElement('div');
+            div.textContent = texto;
+            return div.innerHTML;
+        }
 
         function preencherPerfil(utilizador) {
             if (!utilizador) return;
@@ -436,6 +451,49 @@
             campoPerfil('perfil-estado', utilizador.ativo === false ? 'Desativada' : 'Ativa');
             campoPerfil('perfil-idioma', utilizador.locale || 'pt-PT');
             campoPerfil('perfil-id', utilizador.id);
+
+            const blocoDept = document.getElementById('bloco-perfil-departamentos');
+            const listaDept = document.getElementById('perfil-departamentos-lista');
+            let areasArray = [];
+            if (utilizador.area_ids) {
+                if (Array.isArray(utilizador.area_ids)) {
+                    areasArray = utilizador.area_ids;
+                } else if (typeof utilizador.area_ids === 'string') {
+                    try {
+                        areasArray = JSON.parse(utilizador.area_ids);
+                        if (!Array.isArray(areasArray)) areasArray = [];
+                    } catch (e) {
+                        areasArray = [];
+                    }
+                }
+            }
+
+            if (areasArray.length > 0) {
+                blocoDept.hidden = false;
+                listaDept.innerHTML = '<span style="color:var(--texto-secundario); font-size:0.9rem;">A carregar departamentos...</span>';
+                
+                fetch('api/formulario-dados.php')
+                    .then(res => res.json())
+                    .then(dados => {
+                        if (dados.sucesso && dados.areas) {
+                            const nomes = areasArray.map(id => {
+                                const d = dados.areas.find(a => a.id === id);
+                                return d ? d.name : '';
+                            }).filter(n => n);
+
+                            if (nomes.length > 0) {
+                                listaDept.innerHTML = nomes.map(n => `<span style="background:var(--fundo-primario); padding:6px 12px; border-radius:6px; border:1px solid var(--borda-suave); font-weight:500; color:var(--texto-principal);">${escaparHtml(n)}</span>`).join('');
+                            } else {
+                                listaDept.innerHTML = '<span style="color:var(--texto-secundario); font-size:0.9rem;">Nenhum departamento encontrado.</span>';
+                            }
+                        }
+                    })
+                    .catch(() => {
+                        listaDept.innerHTML = '<span style="color:var(--cor-perigo); font-size:0.9rem;">Erro ao carregar departamentos.</span>';
+                    });
+            } else {
+                blocoDept.hidden = true;
+            }
 
             const empresaCard = document.getElementById('perfil-empresa-card');
             const cliente = utilizador.cliente || null;
@@ -613,6 +671,12 @@
                 if (data.sucesso) {
                     mostrarMensagem('Sucesso', data.mensagem || 'Senha alterada com sucesso.');
                     document.getElementById('form-alterar-senha').reset();
+                    try {
+                        const dados = JSON.parse(localStorage.getItem('arms_utilizador_dados') || '{}');
+                        dados.senha_expirada = false;
+                        dados.password_expired = false;
+                        localStorage.setItem('arms_utilizador_dados', JSON.stringify(dados));
+                    } catch (erroLocalStorage) {}
                 } else {
                     mostrarMensagem('Atenção', data.erro || 'Erro ao alterar a senha.');
                 }
@@ -634,26 +698,33 @@
         });
     </script>
         <!-- Bottom Navigation Bar (Apenas Mobile) -->
-    <nav class="bottom-nav">
+            <nav class="bottom-nav">
         <div class="bottom-nav-container">
             <a href="dashboard.html" class="bottom-nav-item">
                 <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                <span>Painel</span>
+                <span data-i18n="nav.dashboard">Painel</span>
             </a>
             <a href="pedidos.html" class="bottom-nav-item">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                <span>Pedidos</span>
+                <span data-i18n="nav.pedidos">Pedidos</span>
             </a>
+            <div class="bottom-nav-fab-container">
+                <a href="pedidos.html?action=novo" class="bottom-nav-fab">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </a>
+            </div>
             <a href="calendario.html" class="bottom-nav-item">
                 <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span>Calendário</span>
+                <span data-i18n="nav.calendario">Calendário</span>
             </a>
-            <a href="perfil.html" class="bottom-nav-item activo">
-                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <span>Perfil</span>
+            <a href="#" class="bottom-nav-item" id="btn-bottom-menu">
+                <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <span>Menu</span>
             </a>
         </div>
     </nav>
+
+
 </body>
 </html>
 

@@ -8,12 +8,15 @@
     "notificacoes": "Notifications",
     "perfil": "My Profile",
     "admin": "Administration",
+    "seguranca": "Security",
+    "configuracoes": "SaaS Settings",
     "sair": "Sign Out"
   },
   "dashboard": {
     "titulo": "Dashboard",
     "total_pedidos": "Total Requests",
     "pedidos_abertos": "Open Requests",
+    "pedidos_vencidos": "Overdue Requests",
     "taxa_resposta": "Response Rate",
     "sla_medio": "Average SLA",
     "pedidos_recentes": "Recent Requests",

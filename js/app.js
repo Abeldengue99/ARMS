@@ -11,4 +11,33 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'index.html';
         }
     }
+
+    carregarIdentidadePlataforma();
 });
+
+function carregarIdentidadePlataforma() {
+    fetch('api/identidade-plataforma.php')
+        .then(r => r.json())
+        .then(data => {
+            if (data.sucesso && data.dados) {
+                const settings = data.dados;
+                // 1. Aplicar a Cor Primária (Whitelabel Color Override)
+                if (settings.primary_color) {
+                    document.documentElement.style.setProperty('--aksanti-gold', settings.primary_color);
+                }
+                
+                // 2. Atualizar todos os Logótipos
+                if (settings.logo_url) {
+                    document.querySelectorAll('.logo-svg').forEach(img => {
+                        img.src = settings.logo_url;
+                    });
+                }
+                
+                // 3. Atualizar o nome do sistema no Title
+                if (settings.system_name) {
+                    document.title = document.title.replace('ARMS', settings.system_name);
+                }
+            }
+        })
+        .catch(e => console.error('Falha ao carregar identidade visual da plataforma:', e));
+}

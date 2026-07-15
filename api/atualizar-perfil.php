@@ -134,6 +134,15 @@ try {
     $stmtCliente->execute([':user_id' => $userId]);
     $clienteRow = $stmtCliente->fetch();
 
+    $stmtAreas = $pdo->prepare("
+        SELECT json_agg(area_id) AS area_ids
+        FROM arms.area_membership
+        WHERE user_id = :user_id
+    ");
+    $stmtAreas->execute([':user_id' => $userId]);
+    $areasRow = $stmtAreas->fetch();
+    $user['area_ids'] = $areasRow['area_ids'] ?? '[]';
+
     $pdo->commit();
 
     $_SESSION['arms_user_email'] = $user['email'];
@@ -167,7 +176,9 @@ try {
             'iniciais' => armsIniciaisUtilizador($nome, $user['email']),
             'locale' => $profile['locale'] ?? 'pt-PT',
             'client_id' => $cliente['id'] ?? null,
-            'cliente' => $cliente
+            'cliente' => $cliente,
+            'area_ids' => json_decode($user['area_ids'] ?? '[]'),
+            'permissoes' => $permissoes
         ]
     ]);
 } catch (PDOException $e) {

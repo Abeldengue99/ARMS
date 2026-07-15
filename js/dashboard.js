@@ -1,17 +1,5 @@
 // Estou a ordenar o teu grande sistema a fechar as portões da rua à chave e a abri-los só mesmo quando o esqueleto inteiro e completo da Dashboard estiver de pé e desenhado à perfeição na página! (Graças à escuta do evento DOMContentLoaded)
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // Estou a invocar a suprema e divina magia de introdução do espetáculo do Preloader animado, com o poder extraído de forma descarada mas genial dos amigos do site Cacimbo, antes de as tuas listagens feias do sistema começarem sequer a chatear e aparecer no branco!
-    
-    // Estou a gerar de raiz e forjar ao ar livre com o poder do código JavaScript puro (Um document Create), a fabulosa placa preta do vazio (a etiqueta "div" solta) a voar e preparar as suas garras para te tapar o sol do ecrã inteiro
-    const telaLoading = document.createElement('div');
-    // Estou a vestir e assinalar àquela escura e grande tela vazia, as nossas mais bonitas e apertadas fardas e vestidos oficiais dourados da ISAF e da Aksanti, a dar a classe do CSS de marca "preloader-aksanti" (Que dura à volta de uns longos 1s ou 2s até se vaporizar e desaparecer pelo ar!)
-    telaLoading.className = 'preloader-aksanti';
-    // Estou a gravar na pedra e a escrever entalhando à força e à unha, a mítica palavra em ouros a pulsar "Aksanti" lá cravada precisamente no meio exato e centro dessa enorme e sombria placa e tela div!
-    telaLoading.innerHTML = '<span class="preloader-texto">Aksanti</span>';
-    // Estou a atirar à força e espetar finalmente esse grande quadro na primeiríssima fila das cadeiras do teu enorme corpo HTML ("No Body ali pendurada numa corrente ao fundo") para reinar sendo ela sim, a anfitriã da belíssima entrada de gala da tua vida na ARMS!
-    document.body.appendChild(telaLoading);
-
     // ==============================================================
     // A Lógica Superior para injetar à força os teus falsos dados Mock da grande base de PostgreSQL em frente aos olhos de todos no Ecrã!
     // ==============================================================

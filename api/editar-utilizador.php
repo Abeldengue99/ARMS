@@ -51,6 +51,10 @@ $email = strtolower(trim($data['email'] ?? ''));
 $tipoAcesso = trim($data['tipo_acesso'] ?? 'AKSANTI');
 $userType = ($tipoAcesso === 'Cliente' || strtoupper($tipoAcesso) === 'CLIENT') ? 'CLIENT' : 'AKSANTI';
 $clientId = trim($data['client_id'] ?? '');
+$areaIds = $data['area_ids'] ?? [];
+if (!is_array($areaIds)) {
+    $areaIds = $data['area_id'] ? [$data['area_id']] : [];
+}
 $isAdmin = $userType === 'AKSANTI' && armsEditarUtilizadorBool($data['is_admin'] ?? false);
 $permissoesExtras = $isAdmin ? [] : armsPermissoesNormalizar($data['permissoes'] ?? []);
 
@@ -193,13 +197,17 @@ try {
     $stmtLimparContactos = $pdo->prepare("DELETE FROM arms.client_contact WHERE user_id = :user_id");
     $stmtLimparContactos->execute([':user_id' => $id]);
 
+    $stmtLimparAreas = $pdo->prepare("DELETE FROM arms.area_membership WHERE user_id = :user_id");
+    $stmtLimparAreas->execute([':user_id' => $id]);
+
     if ($userType === 'CLIENT') {
         $stmtContacto = $pdo->prepare("
-            INSERT INTO arms.client_contact (client_id, user_id, email, full_name)
-            VALUES (:client_id, :user_id, :email, :full_name)
+            INSERT INTO arms.client_contact (client_id, user_id, email, full_name, area_id)
+            VALUES (:client_id, :user_id, :email, :full_name, NULL)
             ON CONFLICT (client_id, email) DO UPDATE
             SET user_id = EXCLUDED.user_id,
-                full_name = EXCLUDED.full_name
+                full_name = EXCLUDED.full_name,
+                area_id = NULL
         ");
         $stmtContacto->execute([
             ':client_id' => $clientId,
@@ -207,6 +215,21 @@ try {
             ':email' => $email,
             ':full_name' => $fullName
         ]);
+    }
+
+    if (!$isAdmin && !empty($areaIds)) {
+        $stmtArea = $pdo->prepare("
+            INSERT INTO arms.area_membership (user_id, area_id, role)
+            VALUES (:user_id, :area_id::uuid, 'MEMBER')
+            ON CONFLICT DO NOTHING
+        ");
+        foreach ($areaIds as $aId) {
+            if (empty($aId)) continue;
+            $stmtArea->execute([
+                ':user_id' => $id,
+                ':area_id' => $aId
+            ]);
+        }
     }
 
     armsPermissoesSalvarUtilizador($pdo, $id, $permissoesExtras, $_SESSION['arms_user_id'] ?? null);
@@ -222,8 +245,8 @@ try {
     if ($e->getCode() == '23505') {
         echo json_encode(['sucesso' => false, 'erro' => 'Já existe um utilizador com este e-mail.']);
     } else {
-        error_log('[ARMS] Erro ao editar utilizador: ' . $e->getMessage());
-        echo json_encode(['sucesso' => false, 'erro' => 'Erro interno ao atualizar o utilizador.']);
+        error_log('Erro ao atualizar utilizador: ' . $e->getMessage());
+        echo json_encode(['sucesso' => false, 'erro' => 'Erro interno ao atualizar o utilizador: ' . $e->getMessage()]);
     }
 }
 ?>

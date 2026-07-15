@@ -1,4 +1,4 @@
-﻿// Sidebar mobile helpers: cria botão hambúrguer no header e adiciona o cabeçalho mobile dentro da sidebar.
+// Sidebar mobile helpers: cria botão hambúrguer no header e adiciona o cabeçalho mobile dentro da sidebar.
 function initSidebarMobile() {
     const barraLateral = document.getElementById('barra-lateral');
     const cabecalho = document.querySelector('.cabecalho-principal');
@@ -37,48 +37,17 @@ function initSidebarMobile() {
     }
 
     function ensureMenuButton() {
-        if (!document.getElementById('btn-menu-mobile')) {
-            const btn = createMenuButton();
-            cabecalho.insertBefore(btn, cabecalho.firstChild);
-        }
+        // O botão de menu já não é injetado no cabeçalho.
+        // Em vez disso, usamos o botão "Menu" na barra inferior (bottom-nav).
     }
 
     function ensureMobileMenuHeader() {
-        if (!document.querySelector('.menu-mobile-header')) {
-            const mobileHeader = document.createElement('div');
-            mobileHeader.className = 'menu-mobile-header';
-            mobileHeader.style.display = 'none';
-            mobileHeader.style.width = '100%';
-            mobileHeader.style.padding = '16px 20px';
-            mobileHeader.style.boxSizing = 'border-box';
-            mobileHeader.style.justifyContent = 'space-between';
-            mobileHeader.style.alignItems = 'center';
-            mobileHeader.style.backgroundColor = 'var(--aksanti-dark)';
-            mobileHeader.style.position = 'absolute';
-            mobileHeader.style.top = '0';
-            mobileHeader.style.left = '0';
-            mobileHeader.style.zIndex = '1002';
-            mobileHeader.innerHTML = `
-                <span style="color: white; font-weight: 600;">Menu</span>
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <button id="btn-fechar-menu-mobile" type="button" aria-label="Voltar" style="border:none;background:transparent;color:white;font-size:0.95rem;cursor:pointer;">Voltar</button>
-                </div>`;
-            barraLateral.insertBefore(mobileHeader, barraLateral.firstChild);
-        }
+        // Removido para que o logótipo fique naturalmente no topo (sem redundância de botão Voltar)
     }
 
     function updateMobileUI() {
-        const mobileToggleButton = document.getElementById('btn-menu-mobile');
         const mobileHeader = document.querySelector('.menu-mobile-header');
         const isMobile = window.innerWidth <= 1024;
-
-        if (mobileToggleButton) {
-            mobileToggleButton.style.display = isMobile ? 'inline-flex' : 'none';
-            mobileToggleButton.style.width = '44px';
-            mobileToggleButton.style.height = '44px';
-            mobileToggleButton.style.minWidth = '44px';
-            mobileToggleButton.style.minHeight = '44px';
-        }
 
         if (mobileHeader) {
             mobileHeader.style.display = isMobile ? 'flex' : 'none';
@@ -91,24 +60,19 @@ function initSidebarMobile() {
     }
 
     function bindSidebarEvents() {
-        const mobileToggleButton = document.getElementById('btn-menu-mobile');
-        const mobileCloseButton = document.getElementById('btn-fechar-menu-mobile');
-
+        // Nova referência para o botão na barra inferior
+        const mobileToggleButton = document.getElementById('btn-bottom-menu');
+        
         if (mobileToggleButton) {
-            mobileToggleButton.addEventListener('click', () => {
+            mobileToggleButton.addEventListener('click', (e) => {
+                e.preventDefault(); // Evita navegar para #
                 barraLateral.classList.toggle('aberta');
-            });
-        }
-
-        if (mobileCloseButton) {
-            mobileCloseButton.addEventListener('click', () => {
-                barraLateral.classList.remove('aberta');
             });
         }
     }
 
     function closeSidebarOnOutsideClick(event) {
-        const mobileToggleButton = document.getElementById('btn-menu-mobile');
+        const mobileToggleButton = document.getElementById('btn-bottom-menu');
         if (window.innerWidth <= 1024 && barraLateral.classList.contains('aberta')) {
             if (!barraLateral.contains(event.target) && !(mobileToggleButton && mobileToggleButton.contains(event.target))) {
                 barraLateral.classList.remove('aberta');
@@ -117,7 +81,7 @@ function initSidebarMobile() {
     }
 
     function markActiveMenuItem() {
-        const linksDaSidebar = document.querySelectorAll('.menu-item');
+        const linksDaSidebar = document.querySelectorAll('.menu-item, .bottom-nav-item');
         const caminhoDaNossaPaginaAtual = window.location.pathname;
 
         linksDaSidebar.forEach(link => {
@@ -130,6 +94,17 @@ function initSidebarMobile() {
         });
     }
 
+    function moveSearchBar() {
+        const barraPesquisa = document.getElementById('barra-pesquisa-topo');
+        const cabecalhoAcoes = document.querySelector('.cabecalho-acoes');
+        if (barraPesquisa && cabecalhoAcoes) {
+            // Remove margin-left para alinhar bem na direita
+            barraPesquisa.style.marginLeft = '0';
+            cabecalhoAcoes.insertBefore(barraPesquisa, cabecalhoAcoes.firstChild);
+        }
+    }
+
+    moveSearchBar();
     ensureMenuButton();
     ensureMobileMenuHeader();
     bindSidebarEvents();
@@ -144,4 +119,66 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initSidebarMobile);
 } else {
     initSidebarMobile();
+}
+
+// Intercetar cliques no botão '+' (Novo Pedido) em qualquer ecrã
+document.addEventListener('click', function(e) {
+    const btnNovo = e.target.closest('a[href*="action=novo"], #btn-criar-pedido');
+    if (btnNovo) {
+        e.preventDefault();
+        
+        // Função para abrir o modal
+        const abrir = () => {
+            if (typeof window.abrirModalNovoPedido === 'function') {
+                window.abrirModalNovoPedido();
+            }
+        };
+
+        // Se o JS global do modal já estiver carregado
+        if (typeof window.abrirModalNovoPedido === 'function') {
+            abrir();
+        } else {
+            // Carregar modal.css se não existir
+            if (!document.querySelector('link[href="css/modal.css"]')) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'css/modal.css';
+                document.head.appendChild(link);
+            }
+
+            // Carregar modal.js e novo-pedido-global.js
+            const s1 = document.createElement('script');
+            s1.src = 'js/modal.js';
+            s1.onload = () => {
+                const s2 = document.createElement('script');
+                s2.src = 'js/novo-pedido-global.js';
+                s2.onload = abrir;
+                document.body.appendChild(s2);
+            };
+            document.body.appendChild(s1);
+        }
+    }
+});
+
+// Garantir que todas as telas têm o mesmo cabeçalho (barra de pesquisa) no telemóvel
+const headerEsq = document.querySelector('.cabecalho-principal > div:first-child');
+if (headerEsq) {
+    headerEsq.style.flex = '1';
+    
+    // Se não tiver a barra de pesquisa, injectamos
+    if (!document.getElementById('barra-pesquisa-topo')) {
+        const barraHtml = <div style="position: relative; margin-left: 0; width: 300px; display: none;" id="barra-pesquisa-topo">
+            <input type="text" id="input-pesquisa-geral" class="input-controlo" placeholder="Pesquisar pedidos..." style="padding-left: 40px; border-radius: 20px; background-color: #f8fafc; border: 1px solid #e2e8f0; width: 100%;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 11px;">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </div>;
+        headerEsq.insertAdjacentHTML('beforeend', barraHtml);
+        
+        const h2 = headerEsq.querySelector('h2');
+        if (h2) {
+            h2.classList.add('titulo-pagina-desktop');
+        }
+    }
 }

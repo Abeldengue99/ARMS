@@ -38,8 +38,27 @@ function armsPedidosGarantirDestinoInterno(PDO $pdo = null) {
     try {
         $pdo->exec("ALTER TABLE arms.request ADD COLUMN IF NOT EXISTS destination_type VARCHAR(16) NOT NULL DEFAULT 'CLIENT'");
         $pdo->exec("ALTER TABLE arms.request ADD COLUMN IF NOT EXISTS recipient_user_id UUID");
+        $pdo->exec("ALTER TABLE arms.client_contact ADD COLUMN IF NOT EXISTS area_id UUID REFERENCES arms.area(id) ON DELETE SET NULL");
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_request_destination_type ON arms.request (destination_type)");
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_request_recipient_user ON arms.request (recipient_user_id)");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_client_contact_area ON arms.client_contact (client_id, area_id)");
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS arms.request_recipient (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                request_id UUID NOT NULL REFERENCES arms.request(id) ON DELETE CASCADE,
+                user_id UUID NOT NULL REFERENCES arms.auth_user(id) ON DELETE CASCADE,
+                client_id UUID NULL REFERENCES arms.client(id) ON DELETE CASCADE,
+                area_id UUID NULL REFERENCES arms.area(id) ON DELETE SET NULL,
+                recipient_type VARCHAR(20) NOT NULL DEFAULT 'USER',
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                received_at TIMESTAMPTZ NULL,
+                viewed_at TIMESTAMPTZ NULL,
+                responded_at TIMESTAMPTZ NULL,
+                CONSTRAINT uq_request_recipient_user UNIQUE (request_id, user_id)
+            )
+        ");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_request_recipient_request ON arms.request_recipient (request_id)");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_request_recipient_user ON arms.request_recipient (user_id)");
         $disponivel = true;
     } catch (Throwable $e) {
         error_log('[ARMS] Nao foi possivel preparar destino interno de pedidos: ' . $e->getMessage());
@@ -47,6 +66,148 @@ function armsPedidosGarantirDestinoInterno(PDO $pdo = null) {
     }
 
     return $disponivel;
+}
+
+function armsPedidosNormalizarAreas($areaId, array $areaIds = []) {
+    $ids = [];
+    foreach (array_merge([$areaId], $areaIds) as $id) {
+        $id = trim((string)$id);
+        if (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $id)) {
+            $ids[strtolower($id)] = $id;
+        }
+    }
+
+    return array_values($ids);
+}
+
+function armsPedidosTemDestinatarios(PDO $pdo, $requestId) {
+    armsPedidosGarantirDestinoInterno($pdo);
+
+    $stmt = $pdo->prepare("
+        SELECT 1
+        FROM arms.request_recipient
+        WHERE request_id = :request_id
+        LIMIT 1
+    ");
+    $stmt->execute([':request_id' => $requestId]);
+
+    return (bool)$stmt->fetchColumn();
+}
+
+function armsPedidosUtilizadorEDestinatario(PDO $pdo, $requestId, $userId) {
+    if (!$requestId || !$userId) {
+        return false;
+    }
+
+    armsPedidosGarantirDestinoInterno($pdo);
+
+    $stmt = $pdo->prepare("
+        SELECT 1
+        FROM arms.request_recipient
+        WHERE request_id = :request_id
+          AND user_id = :user_id
+        LIMIT 1
+    ");
+    $stmt->execute([
+        ':request_id' => $requestId,
+        ':user_id' => $userId,
+    ]);
+
+    return (bool)$stmt->fetchColumn();
+}
+
+function armsPedidosDestinatariosIds(PDO $pdo, $requestId) {
+    armsPedidosGarantirDestinoInterno($pdo);
+
+    $stmt = $pdo->prepare("
+        SELECT user_id
+        FROM arms.request_recipient
+        WHERE request_id = :request_id
+    ");
+    $stmt->execute([':request_id' => $requestId]);
+
+    return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+}
+
+function armsPedidosRegistrarDestinatarios(PDO $pdo, $requestId, $destinationType, $clientId, $areaId, $createdBy, $recipientUserId = null, array $areaIds = []) {
+    armsPedidosGarantirDestinoInterno($pdo);
+
+    $areas = armsPedidosNormalizarAreas($areaId, $areaIds);
+    if (!$areas) {
+        $areas = [$areaId];
+    }
+
+    $stmtLimpar = $pdo->prepare("DELETE FROM arms.request_recipient WHERE request_id = :request_id");
+    $stmtLimpar->execute([':request_id' => $requestId]);
+
+    if (strtoupper((string)$destinationType) === 'AKSANTI') {
+        if ($recipientUserId) {
+            $stmt = $pdo->prepare("
+                INSERT INTO arms.request_recipient (request_id, user_id, area_id, recipient_type)
+                SELECT :request_id::uuid, au.id, :area_id::uuid, 'USER'
+                FROM arms.auth_user au
+                WHERE au.id = :user_id::uuid
+                  AND au.user_type = 'AKSANTI'
+                  AND au.is_active = TRUE
+                ON CONFLICT (request_id, user_id) DO NOTHING
+            ");
+            $stmt->execute([
+                ':request_id' => $requestId,
+                ':user_id' => $recipientUserId,
+                ':area_id' => $areaId,
+            ]);
+        } else {
+            $placeholders = [];
+            $params = [
+                ':request_id' => $requestId,
+                ':created_by' => $createdBy,
+            ];
+            foreach ($areas as $index => $id) {
+                $chave = ':area_' . $index;
+                $placeholders[] = $chave . '::uuid';
+                $params[$chave] = $id;
+            }
+
+            $stmt = $pdo->prepare("
+                INSERT INTO arms.request_recipient (request_id, user_id, area_id, recipient_type)
+                SELECT DISTINCT :request_id::uuid, au.id, am.area_id, 'DEPARTMENT'
+                FROM arms.auth_user au
+                LEFT JOIN arms.area_membership am ON am.user_id = au.id
+                WHERE au.is_active = TRUE
+                  AND au.user_type = 'AKSANTI'
+                  AND au.id <> :created_by::uuid
+                  AND (au.is_admin = TRUE OR am.area_id IN (" . implode(',', $placeholders) . "))
+                ON CONFLICT (request_id, user_id) DO NOTHING
+            ");
+            $stmt->execute($params);
+        }
+    } else {
+        $placeholders = [];
+        $params = [
+            ':request_id' => $requestId,
+            ':client_id' => $clientId,
+        ];
+        foreach ($areas as $index => $id) {
+            $chave = ':client_area_' . $index;
+            $placeholders[] = $chave . '::uuid';
+            $params[$chave] = $id;
+        }
+
+        $stmt = $pdo->prepare("
+            INSERT INTO arms.request_recipient (request_id, user_id, client_id, area_id, recipient_type)
+            SELECT DISTINCT :request_id::uuid, cc.user_id, cc.client_id, cc.area_id, 'DEPARTMENT'
+            FROM arms.client_contact cc
+            INNER JOIN arms.auth_user au ON au.id = cc.user_id
+            WHERE cc.client_id = :client_id::uuid
+              AND cc.user_id IS NOT NULL
+              AND au.is_active = TRUE
+              AND (cc.area_id IN (" . implode(',', $placeholders) . ") OR cc.area_id IS NULL)
+            ON CONFLICT (request_id, user_id) DO NOTHING
+        ");
+        $stmt->execute($params);
+    }
+
+    return armsPedidosDestinatariosIds($pdo, $requestId);
 }
 
 function armsPedidosGarantirTransicoes(PDO $pdo = null) {
@@ -120,11 +281,29 @@ function armsPedidosFiltroSql($alias = 'r', $prefixo = 'acesso') {
         }
 
         return [
-            " AND {$alias}.client_id = :{$prefixo}_client_id
-              AND ({$alias}.status <> 'DRAFT' OR {$alias}.created_by = :{$prefixo}_user_id)",
+            " AND (
+                {$alias}.created_by = :{$prefixo}_user_id
+                OR EXISTS (
+                    SELECT 1
+                    FROM arms.request_recipient {$prefixo}_rec
+                    WHERE {$prefixo}_rec.request_id = {$alias}.id
+                      AND {$prefixo}_rec.user_id = :{$prefixo}_recipient_user_id
+                      AND {$alias}.status <> 'DRAFT'
+                )
+                OR (
+                    NOT EXISTS (
+                        SELECT 1
+                        FROM arms.request_recipient {$prefixo}_rec_old
+                        WHERE {$prefixo}_rec_old.request_id = {$alias}.id
+                    )
+                    AND {$alias}.client_id = :{$prefixo}_client_id
+                    AND ({$alias}.status <> 'DRAFT' OR {$alias}.created_by = :{$prefixo}_user_id)
+                )
+            )",
             [
                 ":{$prefixo}_client_id" => $ctx['client_id'],
                 ":{$prefixo}_user_id" => $ctx['user_id'],
+                ":{$prefixo}_recipient_user_id" => $ctx['user_id'],
             ]
         ];
     }
@@ -140,8 +319,16 @@ function armsPedidosFiltroSql($alias = 'r', $prefixo = 'acesso') {
             OR (
                 {$alias}.recipient_user_id = :{$prefixo}_recipient_user_id
                 AND {$alias}.status <> 'DRAFT'
+            )
+            OR EXISTS (
+                SELECT 1
+                FROM arms.request_recipient {$prefixo}_rec
+                WHERE {$prefixo}_rec.request_id = {$alias}.id
+                  AND {$prefixo}_rec.user_id = :{$prefixo}_request_recipient_user_id
+                  AND {$alias}.status <> 'DRAFT'
             )";
         $paramsDestinatarioInterno[":{$prefixo}_recipient_user_id"] = $ctx['user_id'];
+        $paramsDestinatarioInterno[":{$prefixo}_request_recipient_user_id"] = $ctx['user_id'];
     }
 
     return [

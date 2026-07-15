@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let filtroStatusAtual = '';
     let filtroDataDe = '';
     let filtroDataAte = '';
+    let filtroEspecialPendencia = '';
     let utilizadorAtual = {};
 
     try {
@@ -25,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         SENT: 'Enviado',
         RECEIVED: 'Recebido',
         CLIENT_RESPONDED: 'Resposta recebida',
-        AKSANTI_RESPONDED: 'Respondido pela Aksanti',
+        AKSANTI_RESPONDED: 'Respondido pela equipa interna',
         ACCEPTED: 'Aceite',
         REJECTED: 'Rejeitado',
         CLOSED: 'Fechado'
@@ -67,14 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (status === 'CLIENT_RESPONDED' && pedido && texto(pedido.latest_response_actor_type).toUpperCase() === 'AKSANTI') {
-            return 'Respondido pela Aksanti';
+            return 'Respondido pela equipa interna';
         }
 
         return etiquetasEstado[status] || texto(status) || '-';
     }
 
     function obterNomeParceiroPedido(pedido) {
-        return isClientRole ? 'Aksanti' : (pedido.client_name || '-');
+        return isClientRole ? 'Pedido Interno' : (pedido.client_name || '-');
     }
 
     function obterRotuloEntidadePedido() {
@@ -129,6 +130,27 @@ document.addEventListener('DOMContentLoaded', () => {
             resultado = resultado.filter((pedido) => dataParaISO(pedido.date) <= filtroDataAte);
         }
 
+        if (filtroEspecialPendencia) {
+            if (filtroEspecialPendencia === 'pedidos-novos') {
+                resultado = resultado.filter(p => p.status === 'RECEIVED');
+            } else if (filtroEspecialPendencia === 'pedidos-alteracoes') {
+                resultado = resultado.filter(p => alteracaoSolicitada(p));
+            } else if (filtroEspecialPendencia === 'prazo-vencido') {
+                resultado = resultado.filter(p => valorAtivo(p.deadline_expirado));
+            } else if (filtroEspecialPendencia === 'prazo-proximo') {
+                resultado = resultado.filter(p => {
+                    if (valorAtivo(p.deadline_expirado) || !['SENT', 'RECEIVED', 'CLIENT_RESPONDED', 'AKSANTI_RESPONDED'].includes(p.status)) return false;
+                    const dIso = dataParaISO(p.deadline);
+                    if (!dIso || dIso === '-') return false;
+                    const deadline = new Date(dIso);
+                    const agora = new Date();
+                    const limite = new Date();
+                    limite.setDate(limite.getDate() + 3);
+                    return deadline >= agora && deadline <= limite;
+                });
+            }
+        }
+
         return resultado;
     }
 
@@ -140,9 +162,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'badge-aviso';
     }
 
+    let paginaAtualPedidos = 0;
+    const TAMANHO_PAGINA_PEDIDOS = 15;
+
     function renderizarTabelaPedidos(pedidosFiltrados) {
         const corpoTabela = document.getElementById('tabela-corpo-pedidos');
         const contadorEl = document.getElementById('pedidos-contador');
+        const btnRecuar = document.getElementById('btn-pedidos-recuar');
+        const btnAvancar = document.getElementById('btn-pedidos-avancar');
+        const indicador = document.getElementById('pedidos-indicador');
+        const navegacao = document.getElementById('pedidos-navegacao');
+
         if (!corpoTabela) return;
 
         corpoTabela.innerHTML = '';
@@ -150,22 +180,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!pedidosFiltrados.length) {
             corpoTabela.innerHTML = `<tr><td colspan="7" style="padding: 32px; text-align: center; color: var(--texto-secundario);">Nenhum pedido encontrado com os filtros selecionados.</td></tr>`;
             if (contadorEl) contadorEl.textContent = '0 pedidos';
+            if (navegacao) navegacao.style.display = 'none';
             return;
         }
 
-        pedidosFiltrados.forEach((pedido) => {
+        const totalPaginas = Math.ceil(pedidosFiltrados.length / TAMANHO_PAGINA_PEDIDOS);
+        if (paginaAtualPedidos >= totalPaginas) paginaAtualPedidos = Math.max(0, totalPaginas - 1);
+
+        const inicio = paginaAtualPedidos * TAMANHO_PAGINA_PEDIDOS;
+        const fim = Math.min(inicio + TAMANHO_PAGINA_PEDIDOS, pedidosFiltrados.length);
+        const pedidosPagina = pedidosFiltrados.slice(inicio, fim);
+
+        pedidosPagina.forEach((pedido) => {
             const referenciaValor = texto(pedido.id_str || pedido.reference);
             const referencia = escaparHtml(referenciaValor);
             const urlDetalhe = 'pedido-detalhe.html?ref=' + encodeURIComponent(referenciaValor);
+            const estadoBadge = `<span class="badge ${classeBadgeEstado(pedido.status, pedido)}">${escaparHtml(obterEstadoLegivel(pedido.status, pedido))}</span>`;
+            
             const linhaHTML = `
                 <tr style="border-bottom: 1px solid #f4f4f5; transition: background-color 0.2s; cursor: pointer;" onclick="window.location.href='${urlDetalhe}'" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
-                    <td style="padding: 16px; font-weight: 600;">${referencia}</td>
-                    <td style="padding: 16px;">${escaparHtml(obterNomeParceiroPedido(pedido))}</td>
-                    <td style="padding: 16px;">${escaparHtml(pedido.area_name || '-')}</td>
-                    <td style="padding: 16px;"><span class="badge ${classeBadgeEstado(pedido.status, pedido)}">${escaparHtml(obterEstadoLegivel(pedido.status, pedido))}</span></td>
-                    <td style="padding: 16px;">${escaparHtml(pedido.date || '-')}</td>
-                    <td style="padding: 16px;">${renderizarDeadline(pedido)}</td>
-                    <td style="padding: 16px; text-align: right;">
+                    <td data-label="Referência" style="padding: 16px; font-weight: 600;">${referencia}</td>
+                    <td data-label="Destino" style="padding: 16px;">${escaparHtml(obterNomeParceiroPedido(pedido))}</td>
+                    <td data-label="Área" style="padding: 16px;">${escaparHtml(pedido.area_name || '-')}</td>
+                    <td data-label="Estado" style="padding: 16px;">${estadoBadge}</td>
+                    <td data-label="Data" style="padding: 16px;">${escaparHtml(pedido.date || '-')}</td>
+                    <td data-label="Deadline" style="padding: 16px;">${renderizarDeadline(pedido)}</td>
+                    <td data-label="Ações" style="padding: 16px; text-align: right;">
                         <a href="${urlDetalhe}" style="color: var(--aksanti-gold); font-weight: 700; font-size: 0.9rem; text-decoration: none;">Ver Detalhes</a>
                     </td>
                 </tr>
@@ -174,11 +214,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (contadorEl) {
-            contadorEl.textContent = pedidosFiltrados.length + ' pedido' + (pedidosFiltrados.length !== 1 ? 's' : '');
+            contadorEl.textContent = `Mostrando ${inicio + 1} a ${fim} de ${pedidosFiltrados.length} pedido${pedidosFiltrados.length !== 1 ? 's' : ''}`;
+        }
+
+        if (navegacao && btnRecuar && btnAvancar && indicador) {
+            navegacao.style.display = totalPaginas > 1 ? 'flex' : 'none';
+            indicador.textContent = `${paginaAtualPedidos + 1} / ${totalPaginas}`;
+            btnRecuar.disabled = paginaAtualPedidos === 0;
+            btnAvancar.disabled = paginaAtualPedidos >= totalPaginas - 1;
         }
     }
 
     function aplicarFiltros() {
+        paginaAtualPedidos = 0;
         renderizarTabelaPedidos(obterPedidosFiltrados());
     }
 
@@ -228,6 +276,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (inputFiltro) inputFiltro.value = q;
     }
 
+    if (urlParams.get('action') === 'novo') {
+        const btnCriarPedido = document.getElementById('btn-criar-pedido');
+        if (btnCriarPedido) {
+            // Pequeno delay para garantir que a UI carregou
+            setTimeout(() => btnCriarPedido.click(), 100);
+        }
+    }
+
     if (typeof ArmsTempoReal !== 'undefined') {
         ArmsTempoReal.iniciar('pedidos', (data) => {
             if (data.pedidos) {
@@ -272,6 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
             filtroStatusAtual = '';
             filtroDataDe = '';
             filtroDataAte = '';
+            filtroEspecialPendencia = '';
             if (inputFiltro) inputFiltro.value = '';
             if (selectStatus) selectStatus.value = '';
             if (inputDataDe) inputDataDe.value = '';
@@ -279,6 +336,51 @@ document.addEventListener('DOMContentLoaded', () => {
             aplicarFiltros();
         });
     }
+
+    const btnRecuar = document.getElementById('btn-pedidos-recuar');
+    if (btnRecuar) {
+        btnRecuar.addEventListener('click', () => {
+            if (paginaAtualPedidos > 0) {
+                paginaAtualPedidos--;
+                renderizarTabelaPedidos(obterPedidosFiltrados());
+                document.querySelector('.tabela-pedidos-responsiva').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
+    const btnAvancar = document.getElementById('btn-pedidos-avancar');
+    if (btnAvancar) {
+        btnAvancar.addEventListener('click', () => {
+            const totalPaginas = Math.ceil(obterPedidosFiltrados().length / TAMANHO_PAGINA_PEDIDOS);
+            if (paginaAtualPedidos < totalPaginas - 1) {
+                paginaAtualPedidos++;
+                renderizarTabelaPedidos(obterPedidosFiltrados());
+                document.querySelector('.tabela-pedidos-responsiva').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
+    window.addEventListener('ArmsFiltrarPendencia', (e) => {
+        filtroEspecialPendencia = e.detail;
+        
+        // Limpar outros filtros para não confundir
+        termoAtualPesquisa = '';
+        filtroStatusAtual = '';
+        filtroDataDe = '';
+        filtroDataAte = '';
+        if (inputFiltro) inputFiltro.value = '';
+        if (selectStatus) selectStatus.value = '';
+        if (inputDataDe) inputDataDe.value = '';
+        if (inputDataAte) inputDataAte.value = '';
+        
+        aplicarFiltros();
+        
+        // Fazer scroll até à tabela
+        const tabela = document.querySelector('.card.deslizar-cima-isaf');
+        if (tabela) {
+            tabela.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
 
     const btnPDF = document.getElementById('btn-exportar-pdf');
     if (btnPDF) {

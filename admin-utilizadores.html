@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administração de Utilizadores - ARMS</title>
-    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-    <link rel="shortcut icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
     <meta name="theme-color" content="#111111">
     <script>
         (function () {
@@ -61,6 +61,12 @@
 
                 <hr class="menu-admin-only menu-admin-separador">
 
+                <a href="admin-configuracoes.html" class="menu-item menu-super-admin-only">
+                    <span data-i18n="nav.configuracoes">Configurações SaaS</span>
+                </a>
+                <a href="admin-seguranca.html" class="menu-item menu-super-admin-only">
+                    <span data-i18n="nav.seguranca">Segurança</span>
+                </a>
                 <a href="admin-utilizadores.html" class="menu-item menu-admin-only activo"><span data-i18n="nav.admin">Administração</span></a>
                 <a href="#" class="menu-item menu-sair" id="btn-sair"><span data-i18n="nav.sair">Terminar Sessão</span></a>
             </nav>
@@ -117,7 +123,7 @@
                                 <label for="filtro-tipo-utilizador">Tipo</label>
                                 <select id="filtro-tipo-utilizador" class="input-controlo">
                                     <option value="">Todos os tipos</option>
-                                    <option value="AKSANTI">Membro Aksanti</option>
+                                    <option value="AKSANTI">Equipa Interna</option>
                                     <option value="CLIENT">Cliente</option>
                                 </select>
                             </div>
@@ -175,50 +181,6 @@
                     </section>
                 </section>
 
-                <details class="card admin-modulo-card permissoes-admin-card deslizar-cima-isaf menu-super-admin-only" id="secao-permissoes">
-                    <summary class="admin-modulo-resumo" aria-labelledby="permissoes-admin-titulo">
-                        <div>
-                            <span class="admin-secao-etiqueta">Secção de acesso</span>
-                            <h2 id="permissoes-admin-titulo" class="retencao-titulo">Gestão Inteligente de Permissões</h2>
-                        </div>
-                        <div class="admin-modulo-resumo-status">
-                            <span><strong>3</strong> modelos</span>
-                            <span><strong>Auto</strong> bloqueio</span>
-                            <em>Ver detalhes</em>
-                        </div>
-                    </summary>
-
-                    <div class="retencao-conteudo permissoes-conteudo">
-                        <div class="retencao-tabela-contentor">
-                            <table class="tabela-arms tabela-retencao tabela-permissoes">
-                                <thead>
-                                    <tr>
-                                        <th>Perfil</th>
-                                        <th>Pode fazer</th>
-                                        <th>Bloqueado automaticamente</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>Super Admin</strong><span>Gestores da Aksanti</span></td>
-                                        <td>Administração completa, clientes, departamentos, utilizadores, automação, retenção, qualidade de dados e todos os pedidos.</td>
-                                        <td><span class="retencao-badge retencao-badge-ok">Sem bloqueio interno</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Colaborador</strong><span>Membro Aksanti</span></td>
-                                        <td>Painel, pedidos próprios, pedidos destinados a ele, calendário e perfil.</td>
-                                        <td>Clientes, departamentos, utilizadores, retenção, qualidade, automação e pedidos administrativos.</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Cliente</strong><span>Conta associada a empresa</span></td>
-                                        <td>Painel, pedidos da empresa associada, calendário e alteração de senha.</td>
-                                        <td>Dados internos da Aksanti, outros clientes, departamentos, utilizadores e área administrativa.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </details>
 
                 <details class="card admin-modulo-card automacao-admin-card deslizar-cima-isaf menu-admin-only" id="secao-automacao" data-requer-permissao="automacao.gerir">
                     <summary class="admin-modulo-resumo" aria-labelledby="automacao-admin-titulo">
@@ -392,69 +354,6 @@
                     </div>
                 </details>
 
-                <details class="card admin-modulo-card seguranca-admin-card deslizar-cima-isaf menu-admin-only" id="secao-seguranca" data-requer-permissao="seguranca.gerir">
-                    <summary class="admin-modulo-resumo" aria-labelledby="seguranca-admin-titulo">
-                        <div>
-                            <span class="admin-secao-etiqueta">Secção de segurança</span>
-                            <h2 id="seguranca-admin-titulo" class="retencao-titulo">Segurança Automatizada</h2>
-                        </div>
-                        <div class="admin-modulo-resumo-status">
-                            <span><strong id="seguranca-resumo-bloqueios">0</strong> bloqueios</span>
-                            <span><strong id="seguranca-resumo-alertas">0</strong> alertas</span>
-                            <em>Ver detalhes</em>
-                        </div>
-                    </summary>
-
-                    <div class="retencao-conteudo seguranca-conteudo">
-                        <div id="seguranca-feedback" class="retencao-feedback" hidden></div>
-                        <div class="retencao-resumo-grid">
-                            <div class="retencao-kpi"><span>Bloqueios ativos</span><strong id="seguranca-bloqueios">0</strong><small>Login temporariamente bloqueado</small></div>
-                            <div class="retencao-kpi"><span>Alertas abertos</span><strong id="seguranca-alertas">0</strong><small>Eventos suspeitos</small></div>
-                            <div class="retencao-kpi"><span>Sessões ativas</span><strong id="seguranca-sessoes">0</strong><small>Últimos 60 minutos</small></div>
-                            <div class="retencao-kpi"><span>Falhas 24h</span><strong id="seguranca-falhas">0</strong><small>Tentativas recusadas</small></div>
-                        </div>
-
-                        <details class="admin-expansivel retencao-bloco" open>
-                            <summary class="admin-expansivel-resumo"><h3>Bloqueios temporários</h3></summary>
-                            <div class="retencao-tabela-contentor">
-                                <table class="tabela-arms tabela-retencao">
-                                    <thead><tr><th>E-mail</th><th>IP</th><th>Tentativas</th><th>Tempo</th><th>Ação</th></tr></thead>
-                                    <tbody id="seguranca-bloqueios-corpo"><tr class="linha-estado"><td colspan="5">A carregar segurança...</td></tr></tbody>
-                                </table>
-                            </div>
-                        </details>
-
-                        <details class="admin-expansivel retencao-bloco">
-                            <summary class="admin-expansivel-resumo"><h3>Alertas abertos</h3></summary>
-                            <div class="retencao-tabela-contentor">
-                                <table class="tabela-arms tabela-retencao">
-                                    <thead><tr><th>E-mail</th><th>IP</th><th>Severidade</th><th>Mensagem</th><th>Data</th></tr></thead>
-                                    <tbody id="seguranca-alertas-corpo"><tr class="linha-estado"><td colspan="5">A carregar alertas...</td></tr></tbody>
-                                </table>
-                            </div>
-                        </details>
-
-                        <details class="admin-expansivel retencao-bloco">
-                            <summary class="admin-expansivel-resumo"><h3>Sessões ativas</h3></summary>
-                            <div class="retencao-tabela-contentor">
-                                <table class="tabela-arms tabela-retencao">
-                                    <thead><tr><th>Utilizador</th><th>Perfil</th><th>IP</th><th>Início</th><th>Última atividade</th></tr></thead>
-                                    <tbody id="seguranca-sessoes-corpo"><tr class="linha-estado"><td colspan="5">A carregar sessões...</td></tr></tbody>
-                                </table>
-                            </div>
-                        </details>
-
-                        <details class="admin-expansivel retencao-bloco">
-                            <summary class="admin-expansivel-resumo"><h3>Histórico recente</h3></summary>
-                            <div class="retencao-tabela-contentor">
-                                <table class="tabela-arms tabela-retencao">
-                                    <thead><tr><th>Utilizador</th><th>Evento</th><th>IP</th><th>Motivo</th><th>Data</th></tr></thead>
-                                    <tbody id="seguranca-historico-corpo"><tr class="linha-estado"><td colspan="5">A carregar histórico...</td></tr></tbody>
-                                </table>
-                            </div>
-                        </details>
-                    </div>
-                </details>
 
                 <details class="card admin-modulo-card retencao-admin-card deslizar-cima-isaf menu-admin-only" id="secao-retencao" data-requer-permissao="retencao.gerir">
                     <summary class="admin-modulo-resumo" aria-labelledby="retencao-admin-titulo">
@@ -606,11 +505,14 @@
         }[char]));
 
         let clientesParaUtilizadores = [];
+        let areasParaUtilizadores = [];
         let utilizadoresCarregados = [];
         let filtroTextoUtilizador = '';
         let filtroTipoUtilizador = '';
         let filtroEstadoUtilizador = '';
         let filtroAdminUtilizador = '';
+        let paginaAtualUtilizadores = 1;
+        const TAMANHO_PAGINA_UTILIZADORES = 15;
 
         const normalizarTipoAcesso = (valor) => {
             const texto = String(valor ?? '').toUpperCase();
@@ -621,7 +523,7 @@
         const estaAtivo = (valor) => valor === true || valor === 1 || valor === '1' || valor === 't' || valor === 'true' || valor === 'TRUE';
         const ehSuperAdmin = (valor) => estaAtivo(valor);
         const textoBusca = (valor) => String(valor ?? '').toLowerCase();
-        const tipoLegivelUtilizador = (tipo) => tipo === 'CLIENT' ? 'Cliente' : 'Membro Aksanti';
+        const tipoLegivelUtilizador = (tipo) => tipo === 'CLIENT' ? 'Cliente' : 'Equipa Interna';
         const convitePendente = (utilizador) => estaAtivo(utilizador.is_active) && !String(utilizador.last_login_at || '').trim();
         const estadoOperacionalUtilizador = (utilizador) => {
             if (!estaAtivo(utilizador.is_active)) return 'desativado';
@@ -694,6 +596,22 @@
                 });
         }
 
+        function carregarAreasParaUtilizadores() {
+            if (areasParaUtilizadores.length) {
+                return Promise.resolve(areasParaUtilizadores);
+            }
+
+            return fetch('api/areas.php')
+                .then((res) => res.json())
+                .then((data) => {
+                    if (!data.sucesso) {
+                        throw new Error(data.erro || 'Erro ao carregar departamentos.');
+                    }
+                    areasParaUtilizadores = data.dados || [];
+                    return areasParaUtilizadores;
+                });
+        }
+
         function montarCamposCliente(prefixo) {
             return `
                 <div id="${prefixo}-cliente-bloco" class="campo-formulario largura-total campo-cliente-associado" hidden>
@@ -725,7 +643,7 @@
         function montarCampoSuperAdmin(prefixo, selecionado = false) {
             return `
                 <div id="${prefixo}-perfil-admin-bloco" class="campo-formulario">
-                    <label for="${prefixo}-user-admin">Perfil na Aksanti</label>
+                    <label for="${prefixo}-user-admin">Perfil Interno</label>
                     <select id="${prefixo}-user-admin" class="input-controlo">
                         <option value="0" ${selecionado ? '' : 'selected'}>Colaborador</option>
                         <option value="1" ${selecionado ? 'selected' : ''}>Super Admin</option>
@@ -751,6 +669,35 @@
                     <small>Estas permissões não transformam o utilizador em Super Admin.</small>
                 </div>
             `;
+        }
+
+        function montarCamposAreas(prefixo, selecionadas = []) {
+            const ativas = new Set(selecionadas);
+            let opcoes = '';
+            if (areasParaUtilizadores.length === 0) {
+                opcoes = '<small style="color:var(--cor-perigo);">Nenhum departamento cadastrado no sistema.</small>';
+            } else {
+                opcoes = areasParaUtilizadores.map((area) => `
+                    <label class="permissao-extra-opcao" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 6px; cursor: pointer;">
+                        <input type="checkbox" class="${prefixo}-area-extra" value="${area.id}" ${ativas.has(area.id) ? 'checked' : ''}>
+                        <span style="font-weight:500;">${escaparHtml(area.name)}</span>
+                    </label>
+                `).join('');
+            }
+
+            return `
+                <div id="${prefixo}-areas-bloco" class="campo-formulario largura-total">
+                    <label>Departamentos Associados</label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 8px;">
+                        ${opcoes}
+                    </div>
+                    <small style="display:block; margin-top:8px; color:var(--texto-secundario);">Pode associar o utilizador a múltiplos departamentos.</small>
+                </div>
+            `;
+        }
+
+        function obterAreasSelecionadas(prefixo) {
+            return Array.from(document.querySelectorAll(`.${prefixo}-area-extra:checked`)).map((input) => input.value);
         }
 
         function configurarCamposPermissoes(prefixo) {
@@ -926,11 +873,12 @@
                 const tipo = escaparHtml(utilizador.user_type);
                 const clienteId = escaparHtml(utilizador.client_id || '');
                 const permissoes = encodeURIComponent(JSON.stringify(obterPermissoesUtilizador(utilizador)));
+                const areasEncoded = encodeURIComponent(JSON.stringify(utilizador.area_ids || []));
                 const empresaCliente = utilizador.user_type === 'CLIENT' && utilizador.client_company_name
                     ? `<span class="subtexto-cliente">${escaparHtml(utilizador.client_company_name)}</span>`
                     : '';
                 const badgeTipo = utilizador.user_type === 'AKSANTI'
-                    ? '<span class="badge badge-aksanti">Membro Aksanti</span>'
+                    ? '<span class="badge badge-aksanti">Equipa Interna</span>'
                     : '<span class="badge badge-info">Cliente</span>';
                 const badgeAdmin = superAdmin ? '<span class="badge badge-perigo badge-admin">Super Admin</span>' : '';
                 const estadoOperacional = estadoOperacionalUtilizador(utilizador);
@@ -945,14 +893,27 @@
                     ? `<button type="button" class="link-acao link-acao-aviso js-reenviar-convite-utilizador" title="Reenviar convite" data-id="${id}" data-nome-completo="${nomeCompleto}" data-email="${email}">Reenviar</button>`
                     : '';
 
+                let textoDepartamentos = '';
+                if (utilizador.area_ids && utilizador.area_ids.length > 0) {
+                    const nomes = utilizador.area_ids.map(id => {
+                        const d = areasParaUtilizadores.find(a => a.id === id);
+                        return d ? d.name : '';
+                    }).filter(n => n);
+                    if (nomes.length > 0) {
+                        textoDepartamentos = `<div style="font-size:0.75rem; color:var(--texto-secundario); margin-top:4px; display:flex; flex-wrap:wrap; gap:4px;">` + 
+                            nomes.map(n => `<span style="background:var(--fundo-secundario); padding:2px 6px; border-radius:4px; border:1px solid var(--borda-suave);">${escaparHtml(n)}</span>`).join('') + 
+                            `</div>`;
+                    }
+                }
+
                 const trHTML = `
                     <tr class="${ativo ? '' : 'linha-desativada'}">
-                        <td class="celula-nome"><span>${nomeCompleto}</span>${empresaCliente}</td>
+                        <td class="celula-nome"><span>${nomeCompleto}</span>${empresaCliente}${textoDepartamentos}</td>
                         <td class="celula-email"><span class="texto-celula-limitado" title="${email}">${email}</span></td>
                         <td class="celula-cargo"><span class="texto-celula-limitado" title="${cargo}">${cargo}</span></td>
                         <td><div class="badges-acesso">${badgeTipo}${badgeAdmin}${badgeEstado}</div></td>
                         <td class="celula-acoes">
-                            <button type="button" class="link-acao js-editar-utilizador" data-id="${id}" data-nome="${nomeCompleto}" data-cargo="${escaparHtml(cargoValor)}" data-email="${email}" data-tipo="${tipo}" data-cliente-id="${clienteId}" data-is-admin="${superAdmin ? '1' : '0'}" data-permissoes="${permissoes}">Editar</button>
+                            <button type="button" class="link-acao js-editar-utilizador" data-id="${id}" data-nome="${nomeCompleto}" data-cargo="${escaparHtml(cargoValor)}" data-email="${email}" data-tipo="${tipo}" data-cliente-id="${clienteId}" data-is-admin="${superAdmin ? '1' : '0'}" data-permissoes="${permissoes}" data-areas="${areasEncoded}">Editar</button>
                             ${botaoReenviarConvite}
                             <button type="button" class="link-acao ${classeAcaoEstado} js-alternar-estado-utilizador" data-id="${id}" data-nome-completo="${nomeCompleto}" data-ativo="${ativo ? '1' : '0'}">${textoAcaoEstado}</button>
                         </td>
@@ -972,8 +933,9 @@
         function carregarTabelaUtilizadores(corpo) {
             corpo.innerHTML = '';
 
-            fetch('api/utilizadores.php')
-                .then((res) => res.json())
+            carregarAreasParaUtilizadores().then(() => {
+                fetch('api/utilizadores.php')
+                    .then((res) => res.json())
                 .then((data) => {
                     if (!data.sucesso) {
                         corpo.innerHTML = `<tr class="linha-estado erro"><td colspan="5">${escaparHtml(data.erro || 'Não foi possível carregar os utilizadores.')}</td></tr>`;
@@ -992,6 +954,7 @@
                     console.error('Erro ao carregar utilizadores:', err);
                     corpo.innerHTML = '<tr class="linha-estado erro"><td colspan="5">Erro de ligação ao servidor.</td></tr>';
                 });
+            });
         }
 
         function mostrarErroFormulario(id, mensagem) {
@@ -1320,167 +1283,6 @@
                 });
         }
 
-        function mostrarFeedbackSeguranca(tipo, mensagem) {
-            const feedback = document.getElementById('seguranca-feedback');
-            if (!feedback) return;
-
-            feedback.hidden = false;
-            feedback.className = `retencao-feedback ${tipo === 'erro' ? 'erro' : 'sucesso'}`;
-            feedback.textContent = mensagem;
-        }
-
-        function perfilSeguranca(item) {
-            if (ehSuperAdmin(item?.is_admin)) return 'Super Admin';
-            return normalizarTipoAcesso(item?.user_type) === 'CLIENT' ? 'Cliente' : 'Colaborador';
-        }
-
-        function eventoSegurancaTexto(tipo) {
-            const chave = String(tipo || '').toUpperCase();
-            return {
-                LOGIN_SUCCESS: 'Login com sucesso',
-                LOGIN_FAILED: 'Login falhado',
-                LOGIN_BLOCKED: 'Login bloqueado',
-                LOGOUT: 'Logout'
-            }[chave] || chave || '-';
-        }
-
-        function classeEventoSeguranca(tipo) {
-            const chave = String(tipo || '').toUpperCase();
-            if (chave.includes('SUCCESS')) return 'retencao-badge-ok';
-            if (chave.includes('BLOCK')) return 'retencao-badge-erro';
-            return 'retencao-badge-aviso';
-        }
-
-        function renderizarSegurancaAutomatizada(dados) {
-            const kpis = dados?.kpis || {};
-            const bloqueios = dados?.bloqueios || [];
-            const alertas = dados?.alertas || [];
-            const sessoes = dados?.sessoes || [];
-            const historico = dados?.historico || [];
-
-            definirTexto('seguranca-resumo-bloqueios', formatarNumeroRetencao(kpis.bloqueios || 0));
-            definirTexto('seguranca-resumo-alertas', formatarNumeroRetencao(kpis.alertas || 0));
-            definirTexto('seguranca-bloqueios', formatarNumeroRetencao(kpis.bloqueios || 0));
-            definirTexto('seguranca-alertas', formatarNumeroRetencao(kpis.alertas || 0));
-            definirTexto('seguranca-sessoes', formatarNumeroRetencao(kpis.sessoes || 0));
-            definirTexto('seguranca-falhas', formatarNumeroRetencao(kpis.falhas_24h || 0));
-
-            const corpoBloqueios = document.getElementById('seguranca-bloqueios-corpo');
-            if (corpoBloqueios) {
-                corpoBloqueios.innerHTML = bloqueios.length
-                    ? bloqueios.map((item) => `
-                        <tr>
-                            <td><strong>${escaparHtml(item.email || '-')}</strong></td>
-                            <td>${escaparHtml(item.ip_address || '-')}</td>
-                            <td>${formatarNumeroRetencao(item.attempts || 0)}</td>
-                            <td>${formatarNumeroRetencao(item.minutos_restantes || 0)} min</td>
-                            <td>
-                                <button type="button" class="link-acao js-desbloquear-seguranca" data-email="${escaparHtml(item.email || '')}" data-ip="${escaparHtml(item.ip_address || '')}">
-                                    Desbloquear
-                                </button>
-                            </td>
-                        </tr>
-                    `).join('')
-                    : '<tr class="linha-estado"><td colspan="5">Nenhum bloqueio ativo.</td></tr>';
-            }
-
-            const corpoAlertas = document.getElementById('seguranca-alertas-corpo');
-            if (corpoAlertas) {
-                corpoAlertas.innerHTML = alertas.length
-                    ? alertas.map((item) => {
-                        const severidade = String(item.severity || 'MEDIUM').toUpperCase();
-                        const classe = severidade === 'HIGH' || severidade === 'CRITICAL' ? 'retencao-badge-erro' : 'retencao-badge-aviso';
-                        return `
-                            <tr>
-                                <td><strong>${escaparHtml(item.email || '-')}</strong></td>
-                                <td>${escaparHtml(item.ip_address || '-')}</td>
-                                <td><span class="retencao-badge ${classe}">${escaparHtml(severidade)}</span></td>
-                                <td><small>${escaparHtml(item.message || '-')}</small></td>
-                                <td>${escaparHtml(item.created_at || '-')}</td>
-                            </tr>
-                        `;
-                    }).join('')
-                    : '<tr class="linha-estado"><td colspan="5">Nenhum alerta aberto.</td></tr>';
-            }
-
-            const corpoSessoes = document.getElementById('seguranca-sessoes-corpo');
-            if (corpoSessoes) {
-                corpoSessoes.innerHTML = sessoes.length
-                    ? sessoes.map((item) => `
-                        <tr>
-                            <td>
-                                <strong>${escaparHtml(item.nome || item.full_name || item.email || '-')}</strong>
-                                <span>${escaparHtml(item.email || '')}</span>
-                            </td>
-                            <td>${escaparHtml(perfilSeguranca(item))}</td>
-                            <td>${escaparHtml(item.ip_address || '-')}</td>
-                            <td>${escaparHtml(item.started_at || '-')}</td>
-                            <td>${escaparHtml(item.last_seen_at || '-')}</td>
-                        </tr>
-                    `).join('')
-                    : '<tr class="linha-estado"><td colspan="5">Nenhuma sessão ativa encontrada.</td></tr>';
-            }
-
-            const corpoHistorico = document.getElementById('seguranca-historico-corpo');
-            if (corpoHistorico) {
-                corpoHistorico.innerHTML = historico.length
-                    ? historico.map((item) => `
-                        <tr>
-                            <td>
-                                <strong>${escaparHtml(item.nome || item.full_name || item.email || '-')}</strong>
-                                <span>${escaparHtml(item.email || '')}</span>
-                            </td>
-                            <td><span class="retencao-badge ${classeEventoSeguranca(item.event_type)}">${escaparHtml(eventoSegurancaTexto(item.event_type))}</span></td>
-                            <td>${escaparHtml(item.ip_address || '-')}</td>
-                            <td><small>${escaparHtml(item.reason || '-')}</small></td>
-                            <td>${escaparHtml(item.created_at || '-')}</td>
-                        </tr>
-                    `).join('')
-                    : '<tr class="linha-estado"><td colspan="5">Nenhum acesso registado ainda.</td></tr>';
-            }
-        }
-
-        function carregarSegurancaAutomatizada() {
-            const bloco = document.querySelector('.seguranca-admin-card');
-            if (!bloco) return;
-
-            fetch('api/seguranca.php?acao=resumo')
-                .then((res) => res.json())
-                .then((data) => {
-                    if (!data.sucesso) {
-                        mostrarFeedbackSeguranca('erro', data.erro || 'Não foi possível carregar a segurança automatizada.');
-                        return;
-                    }
-
-                    renderizarSegurancaAutomatizada(data.dados);
-                })
-                .catch((err) => {
-                    console.error('Erro ao carregar segurança:', err);
-                    mostrarFeedbackSeguranca('erro', 'Erro de comunicação ao carregar a segurança automatizada.');
-                });
-        }
-
-        function desbloquearSeguranca(email, ip) {
-            fetch('api/seguranca.php?acao=desbloquear', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, ip_address: ip })
-            })
-            .then((res) => res.json())
-            .then((data) => {
-                if (!data.sucesso) {
-                    mostrarFeedbackSeguranca('erro', data.erro || 'Não foi possível desbloquear este acesso.');
-                    return;
-                }
-
-                mostrarFeedbackSeguranca('sucesso', data.mensagem || 'Bloqueio removido com sucesso.');
-                carregarSegurancaAutomatizada();
-            })
-            .catch((err) => {
-                console.error('Erro ao desbloquear acesso:', err);
-                mostrarFeedbackSeguranca('erro', 'Erro de comunicação ao desbloquear este acesso.');
-            });
-        }
 
         function formatarDiasRetencao(dias) {
             const total = Number(dias) || 0;
@@ -1765,7 +1567,8 @@
                             botaoEditar.dataset.tipo,
                             botaoEditar.dataset.clienteId,
                             botaoEditar.dataset.isAdmin === '1',
-                            JSON.parse(decodeURIComponent(botaoEditar.dataset.permissoes || '%5B%5D'))
+                            JSON.parse(decodeURIComponent(botaoEditar.dataset.permissoes || '%5B%5D')),
+                            JSON.parse(decodeURIComponent(botaoEditar.dataset.areas || '%5B%5D'))
                         );
                         return;
                     }
@@ -1875,23 +1678,8 @@
                 btnRetencaoLimpar.addEventListener('click', confirmarLimpezaRetencao);
             }
 
-            const secaoSeguranca = document.getElementById('secao-seguranca');
-            if (secaoSeguranca) {
-                secaoSeguranca.addEventListener('click', (evento) => {
-                    const botao = evento.target.closest('.js-desbloquear-seguranca');
-                    if (!botao) return;
-
-                    confirmarAcao(
-                        'Desbloquear acesso',
-                        `Deseja remover o bloqueio temporário de ${botao.dataset.email || 'este acesso'}?`,
-                        () => desbloquearSeguranca(botao.dataset.email || '', botao.dataset.ip || '')
-                    );
-                });
-            }
-
             carregarAutomacaoAdmin();
             carregarQualidadeDados();
-            carregarSegurancaAutomatizada();
             carregarRetencaoAdmin();
 
             const btnSair = document.getElementById('btn-sair');
@@ -1927,13 +1715,14 @@
                             <div class="campo-formulario">
                                 <label for="novo-user-tipo">Tipo de Acesso</label>
                                 <select id="novo-user-tipo" class="input-controlo">
-                                    <option value="AKSANTI">Aksanti Team</option>
+                                    <option value="AKSANTI">Equipa Interna</option>
                                     <option value="CLIENT">Cliente</option>
                                 </select>
                             </div>
                             ${montarCampoSuperAdmin('novo')}
                             ${montarCamposPermissoes('novo')}
                             ${montarCamposCliente('novo')}
+                            ${montarCamposAreas('novo')}
                         </div>
                         <div id="novo-user-erro" class="mensagem-erro-form"></div>
                         <div class="formulario-acoes">
@@ -1993,6 +1782,7 @@
                     tipo_acesso: tipo,
                     is_admin: isAdmin,
                     permissoes: obterPermissoesSelecionadas('novo'),
+                    area_ids: obterAreasSelecionadas('novo'),
                     client_id: tipo === 'CLIENT' ? clienteId : null
                 })
             })
@@ -2025,7 +1815,7 @@
             });
         };
 
-        window.abrirModalEdicaoUtilizador = function(id, nome, cargo, email, tipoOriginal, clienteId = '', isAdmin = false, permissoes = []) {
+        window.abrirModalEdicaoUtilizador = function(id, nome, cargo, email, tipoOriginal, clienteId = '', isAdmin = false, permissoes = [], area_ids = []) {
             const tipoNormalizado = normalizarTipoAcesso(tipoOriginal);
             const formHTML = `
                 <div class="formulario-grid admin-formulario">
@@ -2044,13 +1834,14 @@
                     <div class="campo-formulario">
                         <label for="edit-user-tipo">Tipo de Acesso</label>
                         <select id="edit-user-tipo" class="input-controlo">
-                            <option value="AKSANTI" ${tipoNormalizado === 'AKSANTI' ? 'selected' : ''}>Aksanti Team</option>
+                            <option value="AKSANTI" ${tipoNormalizado === 'AKSANTI' ? 'selected' : ''}>Equipa Interna</option>
                             <option value="CLIENT" ${tipoNormalizado === 'CLIENT' ? 'selected' : ''}>Cliente</option>
                         </select>
                     </div>
                     ${montarCampoSuperAdmin('edit', isAdmin)}
                     ${montarCamposPermissoes('edit', permissoes)}
                     ${montarCamposCliente('edit')}
+                    ${montarCamposAreas('edit', area_ids)}
                 </div>
                 <div id="edit-user-erro" class="mensagem-erro-form"></div>
                 <div class="formulario-acoes">
@@ -2110,6 +1901,7 @@
                     tipo_acesso: tipo,
                     is_admin: isAdmin,
                     permissoes: obterPermissoesSelecionadas('edit'),
+                    area_ids: obterAreasSelecionadas('edit'),
                     client_id: tipo === 'CLIENT' ? clienteId : null
                 })
             })

@@ -4,7 +4,9 @@
  */
 
 function armsEmailConfig() {
-    return [
+    global $pdo;
+
+    $config = [
         'host' => getenv('ARMS_SMTP_HOST') ?: 'smtp-relay.brevo.com',
         'port' => (int)(getenv('ARMS_SMTP_PORT') ?: 587),
         'user' => getenv('ARMS_SMTP_USER') ?: 'a2ea36001@smtp-brevo.com',
@@ -13,6 +15,25 @@ function armsEmailConfig() {
         'from_name' => getenv('ARMS_MAIL_FROM_NAME') ?: 'Aksanti Request Management System',
         'timeout' => (int)(getenv('ARMS_SMTP_TIMEOUT') ?: 20)
     ];
+
+    if (isset($pdo)) {
+        try {
+            $stmt = $pdo->query("SELECT * FROM arms.tenant_settings WHERE tenant_id = 1");
+            $dbConfig = $stmt->fetch();
+            if ($dbConfig) {
+                if (!empty($dbConfig['smtp_host'])) $config['host'] = $dbConfig['smtp_host'];
+                if (!empty($dbConfig['smtp_port'])) $config['port'] = (int)$dbConfig['smtp_port'];
+                if (!empty($dbConfig['smtp_user'])) $config['user'] = $dbConfig['smtp_user'];
+                if (!empty($dbConfig['smtp_pass'])) $config['pass'] = $dbConfig['smtp_pass'];
+                if (!empty($dbConfig['smtp_from_email'])) $config['from_email'] = $dbConfig['smtp_from_email'];
+                if (!empty($dbConfig['smtp_from_name'])) $config['from_name'] = $dbConfig['smtp_from_name'];
+            }
+        } catch (Exception $e) {
+            // Ignorar erros de DB e usar fallback
+        }
+    }
+
+    return $config;
 }
 
 function armsEmailEscapar($valor) {
@@ -25,8 +46,30 @@ function armsEmailCabecalho($valor) {
 }
 
 function armsEmailTemplate($titulo, $conteudoHtml) {
+    global $pdo;
+
     $ano = date('Y');
     $tituloSeguro = armsEmailEscapar($titulo);
+
+    $systemName = 'ARMS';
+    $systemSub = 'Aksanti Request Management System';
+    $primaryColor = '#e5a547';
+
+    if (isset($pdo)) {
+        try {
+            $stmt = $pdo->query("SELECT system_name, primary_color FROM arms.tenant_settings WHERE tenant_id = 1");
+            $dbConfig = $stmt->fetch();
+            if ($dbConfig) {
+                if (!empty($dbConfig['system_name'])) {
+                    $systemName = armsEmailEscapar($dbConfig['system_name']);
+                    $systemSub = '';
+                }
+                if (!empty($dbConfig['primary_color'])) {
+                    $primaryColor = armsEmailEscapar($dbConfig['primary_color']);
+                }
+            }
+        } catch (Exception $e) {}
+    }
 
     return <<<HTML
 <!DOCTYPE html>
@@ -38,16 +81,16 @@ function armsEmailTemplate($titulo, $conteudoHtml) {
 <body style="margin:0; padding:0; background:#f4f6f8; font-family:Segoe UI, Arial, sans-serif; color:#27272a;">
     <div style="max-width:640px; margin:32px auto; background:#ffffff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden;">
         <div style="background:#111111; padding:28px 32px; text-align:left;">
-            <h1 style="margin:0; color:#ffffff; font-size:22px; line-height:1.3;">ARMS</h1>
-            <p style="margin:6px 0 0; color:#e5a547; font-size:14px;">Aksanti Request Management System</p>
+            <h1 style="margin:0; color:#ffffff; font-size:22px; line-height:1.3;">{$systemName}</h1>
+            <p style="margin:6px 0 0; color:{$primaryColor}; font-size:14px;">{$systemSub}</p>
         </div>
         <div style="padding:34px 32px;">
             <h2 style="margin:0 0 18px; color:#18181b; font-size:22px; line-height:1.3;">{$tituloSeguro}</h2>
             {$conteudoHtml}
         </div>
         <div style="background:#f8fafc; padding:20px 32px; color:#71717a; font-size:12px; line-height:1.6;">
-            &copy; {$ano} Aksanti. Todos os direitos reservados.<br>
-            Esta mensagem foi enviada automaticamente pelo ARMS.
+            &copy; {$ano} {$systemName}. Todos os direitos reservados.<br>
+            Esta mensagem foi enviada automaticamente.
         </div>
     </div>
 </body>
@@ -124,7 +167,7 @@ function armsSmtpPrepararMensagem($mensagem) {
     return implode("\r\n", $linhas);
 }
 
-function armsEnviarEmail($destinatario, $assunto, $titulo, $conteudoHtml) {
+function armsEnviarEmail($destinatario, $assunto, $titulo, $conteudoHtml, $anexos = []) {
     $config = armsEmailConfig();
     $destinatario = trim((string)$destinatario);
 
@@ -142,18 +185,43 @@ function armsEnviarEmail($destinatario, $assunto, $titulo, $conteudoHtml) {
     $fromNomeSeguro = armsEmailCabecalho($config['from_name']);
     $messageId = sprintf('<%s@arms.local>', bin2hex(random_bytes(16)));
 
-    $mensagem = implode("\r\n", [
+    $cabecalhos = [
         'From: ' . $fromNomeSeguro . ' <' . $fromEmail . '>',
         'To: <' . $destinatario . '>',
         'Subject: ' . $assuntoSeguro,
         'MIME-Version: 1.0',
-        'Content-Type: text/html; charset=UTF-8',
-        'Content-Transfer-Encoding: 8bit',
         'Message-ID: ' . $messageId,
         'Date: ' . date(DATE_RFC2822),
-        '',
-        $html
-    ]);
+    ];
+
+    if (empty($anexos)) {
+        $cabecalhos[] = 'Content-Type: text/html; charset=UTF-8';
+        $cabecalhos[] = 'Content-Transfer-Encoding: 8bit';
+        $cabecalhos[] = '';
+        $cabecalhos[] = $html;
+        $mensagem = implode("\r\n", $cabecalhos);
+    } else {
+        $boundary = '=_NextPart_' . bin2hex(random_bytes(16));
+        $cabecalhos[] = 'Content-Type: multipart/mixed; boundary="' . $boundary . '"';
+        $cabecalhos[] = '';
+        $cabecalhos[] = '--' . $boundary;
+        $cabecalhos[] = 'Content-Type: text/html; charset=UTF-8';
+        $cabecalhos[] = 'Content-Transfer-Encoding: 8bit';
+        $cabecalhos[] = '';
+        $cabecalhos[] = $html;
+        
+        foreach ($anexos as $anexo) {
+            $cabecalhos[] = '';
+            $cabecalhos[] = '--' . $boundary;
+            $cabecalhos[] = 'Content-Type: ' . ($anexo['tipo'] ?? 'application/octet-stream') . '; name="' . $anexo['nome'] . '"';
+            $cabecalhos[] = 'Content-Transfer-Encoding: base64';
+            $cabecalhos[] = 'Content-Disposition: attachment; filename="' . $anexo['nome'] . '"';
+            $cabecalhos[] = '';
+            $cabecalhos[] = chunk_split(base64_encode($anexo['conteudo']));
+        }
+        $cabecalhos[] = '--' . $boundary . '--';
+        $mensagem = implode("\r\n", $cabecalhos);
+    }
 
     $errno = 0;
     $errstr = '';

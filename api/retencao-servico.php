@@ -167,6 +167,18 @@ function armsRetencaoAtualizarConfiguracoes(PDO $pdo, array $entrada, $executedB
         $alteracoes['attachment_max_size_mb'] = (int)$maxMb;
     }
 
+    if (array_key_exists('require_manual_cleanup', $entrada)) {
+        $requireManual = filter_var($entrada['require_manual_cleanup'], FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
+        armsConfiguracaoAtualizar(
+            $pdo,
+            'retention_require_manual_cleanup',
+            $requireManual,
+            'Exigir autorização manual para apagar dados sensíveis (pedidos, comentários, anexos).',
+            $executedBy
+        );
+        $alteracoes['require_manual_cleanup'] = $requireManual === '1';
+    }
+
     if (!empty($entrada['politicas']) && is_array($entrada['politicas'])) {
         $alteracoes['politicas'] = armsRetencaoAtualizarPoliticas($pdo, $entrada['politicas'], $executedBy);
     }

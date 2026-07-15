@@ -2,6 +2,7 @@
 require_once 'db.php';
 require_once 'email.php';
 require_once 'utilizador-convite.php';
+require_once 'senha-politica.php';
 require_once 'permissoes.php';
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -56,6 +57,10 @@ $senha = armsGerarSenhaInicial(12);
 $tipoAcesso = trim($data['tipo_acesso'] ?? 'AKSANTI');
 $userType = ($tipoAcesso === 'Cliente' || strtoupper($tipoAcesso) === 'CLIENT') ? 'CLIENT' : 'AKSANTI';
 $clientId = trim($data['client_id'] ?? '');
+$areaIds = $data['area_ids'] ?? [];
+if (!is_array($areaIds)) {
+    $areaIds = $data['area_id'] ? [$data['area_id']] : [];
+}
 $isAdmin = $userType === 'AKSANTI' && armsCriarUtilizadorBool($data['is_admin'] ?? false);
 $permissoesExtras = $isAdmin ? [] : armsPermissoesNormalizar($data['permissoes'] ?? []);
 
@@ -139,6 +144,8 @@ HTML
 }
 
 try {
+    armsSenhaPoliticaGarantirEstrutura($pdo);
+
     $pdo->beginTransaction();
 
     $clienteAssociado = null;
@@ -207,6 +214,7 @@ try {
         $stmtUser = $pdo->prepare("
             UPDATE arms.auth_user
             SET password_hash = :password,
+                password_changed_at = NOW(),
                 user_type = :type,
                 is_admin = :is_admin,
                 is_active = TRUE
@@ -220,8 +228,8 @@ try {
         ]);
     } else {
         $stmtUser = $pdo->prepare("
-            INSERT INTO arms.auth_user (email, password_hash, user_type, is_admin)
-            VALUES (:email, :password, :type, :is_admin)
+            INSERT INTO arms.auth_user (email, password_hash, password_changed_at, user_type, is_admin)
+            VALUES (:email, :password, NOW(), :type, :is_admin)
             RETURNING id
         ");
 
@@ -252,13 +260,17 @@ try {
     $stmtLimparContactos = $pdo->prepare("DELETE FROM arms.client_contact WHERE user_id = :user_id");
     $stmtLimparContactos->execute([':user_id' => $userId]);
 
+    $stmtLimparAreas = $pdo->prepare("DELETE FROM arms.area_membership WHERE user_id = :user_id");
+    $stmtLimparAreas->execute([':user_id' => $userId]);
+
     if ($userType === 'CLIENT') {
         $stmtContacto = $pdo->prepare("
-            INSERT INTO arms.client_contact (client_id, user_id, email, full_name)
-            VALUES (:client_id, :user_id, :email, :full_name)
+            INSERT INTO arms.client_contact (client_id, user_id, email, full_name, area_id)
+            VALUES (:client_id, :user_id, :email, :full_name, NULL)
             ON CONFLICT (client_id, email) DO UPDATE
             SET user_id = EXCLUDED.user_id,
-                full_name = EXCLUDED.full_name
+                full_name = EXCLUDED.full_name,
+                area_id = NULL
         ");
         $stmtContacto->execute([
             ':client_id' => $clientId,
@@ -266,6 +278,21 @@ try {
             ':email' => $email,
             ':full_name' => $fullName
         ]);
+    }
+
+    if (!$isAdmin && !empty($areaIds)) {
+        $stmtArea = $pdo->prepare("
+            INSERT INTO arms.area_membership (user_id, area_id, role)
+            VALUES (:user_id, :area_id::uuid, 'MEMBER')
+            ON CONFLICT DO NOTHING
+        ");
+        foreach ($areaIds as $aId) {
+            if (empty($aId)) continue;
+            $stmtArea->execute([
+                ':user_id' => $userId,
+                ':area_id' => $aId
+            ]);
+        }
     }
 
     armsPermissoesSalvarUtilizador($pdo, $userId, $permissoesExtras, $_SESSION['arms_user_id'] ?? null);

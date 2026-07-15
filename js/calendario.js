@@ -97,10 +97,9 @@ const ArmsCalendario = (function() {
     }
 
     function textoFiltroAtual() {
-        const select = $('filtro-calendario');
-        if (!select) return 'Todos os eventos';
-
-        return select.options[select.selectedIndex]?.textContent || 'Todos os eventos';
+        const ativo = document.querySelector('.calendario-pill.ativo');
+        if (!ativo) return 'Todos os eventos';
+        return ativo.textContent.replace(/[^\w\sÀ-ÿ]/g, '').trim(); // Remove emojis
     }
 
     function eventoVisivel(evento) {
@@ -136,6 +135,49 @@ const ArmsCalendario = (function() {
         }
     }
 
+    function obterIniciais(nome) {
+        if (!nome) return '?';
+        const p = nome.split(' ');
+        if (p.length === 1) return p[0].substring(0, 2).toUpperCase();
+        return (p[0][0] + p[p.length - 1][0]).toUpperCase();
+    }
+
+    function badgeEstado(categoria) {
+        const mapas = {
+            'urgente': { cls: 'badge-perigo', txt: 'Urgente' },
+            'deadline': { cls: 'badge-aviso', txt: 'Prazo' },
+            'enviado': { cls: 'badge-info', txt: 'Enviado' },
+            'recebido': { cls: 'badge-info', txt: 'Recebido' },
+            'aceite': { cls: 'badge-sucesso', txt: 'Aceite' },
+            'rejeitado': { cls: 'badge-perigo', txt: 'Rejeitado' },
+            'alteracao': { cls: 'badge-aviso', txt: 'Alteração' },
+            'pedido': { cls: 'badge-primario', txt: 'Pedido' }
+        };
+        const m = mapas[categoria] || { cls: 'badge-secundario', txt: categoria };
+        return `<span class="badge ${m.cls}">${m.txt}</span>`;
+    }
+
+    function renderizarEventoLista(evento) {
+        return `
+            <div class="evento-card" onclick="ArmsCalendario.abrirEvento('${escaparHtml(evento.id)}')">
+                ${badgeEstado(evento.categoria)}
+                <div class="evento-card-titulo">${escaparHtml(evento.hora)} · ${escaparHtml(evento.referencia)}</div>
+                <div class="evento-card-subtitulo">${escaparHtml(evento.titulo)}</div>
+                <div class="evento-card-subtitulo" style="margin-top: 4px; font-weight: 600;">${escaparHtml(evento.area || evento.cliente || '-')}</div>
+            </div>
+        `;
+    }
+
+    function renderizarEventoHover(evento) {
+        return `
+            <div style="margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                ${badgeEstado(evento.categoria)}
+                <div style="font-weight: 700; color: #0f172a; font-size: 0.8rem; margin-top: 2px;">${escaparHtml(evento.hora)} · ${escaparHtml(evento.referencia)}</div>
+                <div style="font-size: 0.75rem; color: #475569;">${escaparHtml(evento.titulo)}</div>
+            </div>
+        `;
+    }
+
     function renderizarEvento(evento, compacto = true) {
         const titulo = compacto && evento.titulo.length > 42
             ? evento.titulo.slice(0, 39) + '...'
@@ -167,23 +209,57 @@ const ArmsCalendario = (function() {
             const chave = chaveData(data);
             const lista = mapa.get(chave) || [];
             const foraMes = data.getMonth() !== dataFoco.getMonth();
+            let heatmapCls = '';
+            if (lista.length > 0) {
+                if (lista.length <= 2) heatmapCls = 'heatmap-baixo';
+                else if (lista.length <= 4) heatmapCls = 'heatmap-medio';
+                else if (lista.length <= 6) heatmapCls = 'heatmap-alto';
+                else heatmapCls = 'heatmap-critico';
+            }
+
             const classes = [
                 'calendario-dia',
                 foraMes ? 'fora-mes' : '',
                 chave === hoje ? 'hoje' : '',
-                chave === dataSelecionada ? 'selecionado' : ''
+                chave === dataSelecionada ? 'selecionado' : '',
+                heatmapCls
             ].filter(Boolean).join(' ');
+
+            // Extrair nomes únicos para criar avatares
+            const nomesUnicos = new Set();
+            lista.forEach(e => {
+                const nome = e.cliente || e.area;
+                if (nome) nomesUnicos.add(nome);
+            });
+            const avataresHTML = Array.from(nomesUnicos).slice(0, 3).map(nome => 
+                `<div class="calendario-avatar" title="${escaparHtml(nome)}">${obterIniciais(nome)}</div>`
+            ).join('');
+            
+            const avataresContainer = nomesUnicos.size > 0 
+                ? `<div class="calendario-avatar-container">${avataresHTML}${nomesUnicos.size > 3 ? `<div class="calendario-avatar" style="background:#94a3b8;">+${nomesUnicos.size-3}</div>` : ''}</div>` 
+                : '';
+
+            const hoverCard = lista.length > 0 ? `
+                <div class="calendario-hover-card">
+                    <div class="calendario-hover-card-titulo">${formatarDataLonga(chave)}</div>
+                    <div class="calendario-hover-card-lista">
+                        ${lista.slice(0, 8).map(e => renderizarEventoHover(e)).join('')}
+                        ${lista.length > 8 ? `<div style="text-align:center; font-size:0.75rem; color:#64748b;">+ ${lista.length - 8} eventos</div>` : ''}
+                    </div>
+                </div>
+            ` : '';
 
             dias.push(`
                 <div class="${classes}" onclick="ArmsCalendario.selecionarDia('${chave}')">
                     <div class="calendario-dia-topo">
                         <span class="calendario-dia-numero">${data.getDate()}</span>
-                        ${lista.length ? `<span class="calendario-dia-contador">${lista.length}</span>` : ''}
+                        ${avataresContainer}
                     </div>
                     <div class="calendario-eventos">
                         ${lista.slice(0, 3).map((evento) => renderizarEvento(evento)).join('')}
                         ${lista.length > 3 ? `<span class="calendario-mais">+${lista.length - 3} eventos</span>` : ''}
                     </div>
+                    ${hoverCard}
                 </div>
             `);
         }
@@ -231,8 +307,8 @@ const ArmsCalendario = (function() {
             : 'Sem eventos para este dia.';
 
         $('calendario-lista-dia').innerHTML = lista.length
-            ? lista.map((evento) => renderizarEvento(evento, false)).join('')
-            : '<div class="calendario-vazio">Escolhe outro dia ou altera o filtro.</div>';
+            ? lista.map((evento) => renderizarEventoLista(evento)).join('')
+            : '<div class="calendario-vazio">Sem eventos. Escolhe outro dia ou ajusta o filtro.</div>';
     }
 
     function renderizarResumo() {
@@ -374,9 +450,14 @@ const ArmsCalendario = (function() {
         $('btn-modo-semanal').addEventListener('click', () => mudarModo('semanal'));
         $('btn-vincular-calendario').addEventListener('click', vincularCalendario);
         $('btn-baixar-pdf-calendario').addEventListener('click', baixarPDFCalendario);
-        $('filtro-calendario').addEventListener('change', (evento) => {
-            filtro = evento.target.value;
-            renderizar();
+        const pills = document.querySelectorAll('.calendario-pill');
+        pills.forEach(pill => {
+            pill.addEventListener('click', (e) => {
+                pills.forEach(p => p.classList.remove('ativo'));
+                e.target.classList.add('ativo');
+                filtro = e.target.getAttribute('data-filtro');
+                renderizar();
+            });
         });
 
         carregarEventos();
