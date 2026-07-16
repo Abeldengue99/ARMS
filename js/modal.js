@@ -92,8 +92,8 @@ function confirmarAcao(titulo, mensagem, aoConfirmar) {
     const conteudo = `
         <p style="color: var(--texto-secundario); margin-bottom: 24px;">${mensagem}</p>
         <div style="display:flex; gap:12px; justify-content:flex-end;">
-            <button class="btn btn-secundario" onclick="fecharModal()">Cancelar</button>
-            <button class="btn btn-primario" id="modal-btn-confirmar">Confirmar</button>
+            <button class="btn btn-secundario" onclick="fecharModal()">${window.t ? window.t('acoes.cancelar', 'Cancelar') : 'Cancelar'}</button>
+            <button class="btn btn-primario" id="modal-btn-confirmar">${window.t ? window.t('acoes.confirmar', 'Confirmar') : 'Confirmar'}</button>
         </div>
     `;
     // Estou a abrir o modal com o conteúdo de confirmação que acabei de construir

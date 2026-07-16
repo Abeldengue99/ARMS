@@ -236,12 +236,6 @@
                 <hr class="menu-admin-only" style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
                 
                 <!-- Estou a destacar que o utilizador está exatamente nesta página do seu perfil -->
-                <a href="admin-configuracoes.html" class="menu-item menu-super-admin-only">
-                    <span data-i18n="nav.configuracoes">Configurações SaaS</span>
-                </a>
-                <a href="admin-seguranca.html" class="menu-item menu-super-admin-only">
-                    <span data-i18n="nav.seguranca">Segurança</span>
-                </a>
                 <a href="admin-utilizadores.html" class="menu-item menu-admin-only"><span data-i18n="nav.admin">Administração</span></a>
                 <a href="#" class="menu-item" style="color: #ef4444;" id="btn-sair"><span data-i18n="nav.sair">Terminar Sessão</span></a>
             </nav>
@@ -279,23 +273,23 @@
                             <h3 class="titulo-secao" style="margin-bottom: 24px;">Dados Pessoais</h3>
                             <div class="perfil-campos">
                                 <div class="perfil-campo largura-total">
-                                    <label class="etiqueta-formulario" for="perfil-nome">Nome Completo</label>
+                                    <label class="etiqueta-formulario" for="perfil-nome" data-i18n="perfil.nome_completo">Nome Completo</label>
                                     <input type="text" class="input-controlo" id="perfil-nome" data-admin-editavel="true" readonly>
                                 </div>
                                 <div class="perfil-campo largura-total">
-                                    <label class="etiqueta-formulario" for="perfil-email">Endereço de E-mail</label>
+                                    <label class="etiqueta-formulario" for="perfil-email" data-i18n="perfil.email">Endereço de E-mail</label>
                                     <input type="text" class="input-controlo" id="perfil-email" data-admin-editavel="true" readonly>
                                 </div>
                                 <div class="perfil-campo">
-                                    <label class="etiqueta-formulario" for="perfil-cargo">Cargo</label>
+                                    <label class="etiqueta-formulario" for="perfil-cargo" data-i18n="perfil.cargo">Cargo</label>
                                     <input type="text" class="input-controlo" id="perfil-cargo" data-admin-editavel="true" maxlength="160" readonly>
                                 </div>
                                 <div class="perfil-campo largura-total" id="bloco-perfil-departamentos" hidden>
-                                    <label class="etiqueta-formulario">Departamentos Associados</label>
+                                    <label class="etiqueta-formulario" data-i18n="perfil.departamentos_associados">Departamentos Associados</label>
                                     <div id="perfil-departamentos-lista" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; min-height: 44px;"></div>
                                 </div>
                                 <div class="perfil-campo">
-                                    <label class="etiqueta-formulario" for="perfil-tipo">Tipo de Acesso</label>
+                                    <label class="etiqueta-formulario" for="perfil-tipo" data-i18n="perfil.tipo_acesso">Tipo de Acesso</label>
                                     <input type="text" class="input-controlo" id="perfil-tipo" readonly>
                                 </div>
                                 <div class="perfil-campo">
@@ -317,7 +311,7 @@
                             </div>
                             <p class="perfil-nota" id="perfil-nota-permissoes">Os dados pessoais são geridos pela administração. O próprio utilizador pode alterar apenas a senha de acesso.</p>
                             <div class="perfil-acoes-admin" id="perfil-acoes-admin" hidden>
-                                <button type="button" class="btn btn-primario" id="btn-guardar-perfil-admin">Guardar Dados Pessoais</button>
+                                <button type="button" class="btn btn-primario" id="btn-guardar-perfil-admin" data-i18n="perfil.guardar_dados">Guardar Dados Pessoais</button>
                             </div>
                         </div>
 
@@ -354,12 +348,12 @@
                     </div>
 
                     <div class="card perfil-card deslizar-cima-isaf" style="animation-delay: 0.1s;">
-                        <h3 class="titulo-secao" style="margin-bottom: 24px;">Segurança</h3>
+                        <h3 class="titulo-secao" style="margin-bottom: 24px;" data-i18n="perfil.alterar_senha">Segurança</h3>
                         <form id="form-alterar-senha" class="perfil-seguranca-form" onsubmit="event.preventDefault(); window.alterarSenha();">
-                            <div class="grupo-formulario"><label class="etiqueta-formulario" for="senha-atual">Senha Atual</label><input type="password" class="input-controlo" id="senha-atual" required minlength="6" autocomplete="current-password"></div>
-                            <div class="grupo-formulario"><label class="etiqueta-formulario" for="nova-senha">Nova Senha</label><input type="password" class="input-controlo" id="nova-senha" required minlength="6" autocomplete="new-password"></div>
-                            <div class="grupo-formulario"><label class="etiqueta-formulario" for="confirmar-senha">Confirmar Nova Senha</label><input type="password" class="input-controlo" id="confirmar-senha" required minlength="6" autocomplete="new-password"></div>
-                            <div style="display: flex; justify-content: flex-end; margin-top: 8px;"><button type="submit" class="btn btn-primario" id="btn-salvar-senha" style="width: 100%; justify-content: center;">Alterar Senha</button></div>
+                            <div class="grupo-formulario"><label class="etiqueta-formulario" for="senha-atual" data-i18n="perfil.senha_atual">Senha Atual</label><input type="password" class="input-controlo" id="senha-atual" required minlength="6" autocomplete="current-password"></div>
+                            <div class="grupo-formulario"><label class="etiqueta-formulario" for="nova-senha" data-i18n="perfil.nova_senha">Nova Senha</label><input type="password" class="input-controlo" id="nova-senha" required minlength="6" autocomplete="new-password"></div>
+                            <div class="grupo-formulario"><label class="etiqueta-formulario" for="confirmar-senha" data-i18n="perfil.confirmar_senha">Confirmar Nova Senha</label><input type="password" class="input-controlo" id="confirmar-senha" required minlength="6" autocomplete="new-password"></div>
+                            <div style="display: flex; justify-content: flex-end; margin-top: 8px;"><button type="submit" class="btn btn-primario" id="btn-salvar-senha" style="width: 100%; justify-content: center;" data-i18n="perfil.guardar_senha">Alterar Senha</button></div>
                         </form>
                     </div>
                 </div>
@@ -397,7 +391,7 @@
     <script src="js/modal.js"></script>
     <script src="js/notificacoes.js?v=5"></script>
     <script src="js/tempo-real.js?v=8"></script>
-    <script src="js/app.js"></script>
+    <script src="js/app.js?v=2"></script>
 
     <script>
         let perfilUtilizadorAtual = null;
@@ -687,16 +681,7 @@
                 mostrarMensagem('Atenção', 'Erro de comunicação com o servidor.');
             });
         };
-        document.getElementById('btn-sair').addEventListener('click', (evento) => {
-            evento.preventDefault();
-            if (typeof ArmsSessao !== 'undefined') {
-                ArmsSessao.terminar();
-            } else {
-                localStorage.removeItem('arms_utilizador_logado');
-                window.location.href = 'index.html';
-            }
-        });
-    </script>
+</script>
         <!-- Bottom Navigation Bar (Apenas Mobile) -->
             <nav class="bottom-nav">
         <div class="bottom-nav-container">

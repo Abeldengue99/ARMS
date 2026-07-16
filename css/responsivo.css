@@ -201,10 +201,10 @@
     
     /* Efeito premium na barra inferior */
     .bottom-nav {
-        background-color: rgba(255, 255, 255, 0.92) !important;
+        background-color: var(--aksanti-dark) !important;
         backdrop-filter: blur(15px) !important;
         -webkit-backdrop-filter: blur(15px) !important;
-        border-top: 1px solid rgba(0,0,0,0.03) !important;
+        border-top: 1px solid rgba(255,255,255,0.05) !important;
     }
     
     /* Na barra inferior, garantir que o botão "Painel de Controlo" encaixe na perfeição sem quebrar em duas linhas de forma inestética */

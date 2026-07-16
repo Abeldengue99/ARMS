@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         corpoTabela.innerHTML = '';
 
         if (!clientesFiltrados.length) {
-            corpoTabela.innerHTML = '<tr><td colspan="6" style="padding: 28px 16px; color: var(--texto-secundario); text-align: center;">Nenhum cliente encontrado.</td></tr>';
+            corpoTabela.innerHTML = `<tr><td colspan="6" style="padding: 28px 16px; color: var(--texto-secundario); text-align: center;">${window.t('clientes.sem_clientes', 'Nenhum cliente encontrado.')}</td></tr>`;
             return;
         }
 
@@ -75,20 +75,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const corBadge = cliente.status === 'ACTIVE' ? 'badge-sucesso' : 'badge-perigo';
             const linhaHTML = `
                 <tr style="border-bottom: 1px solid #f4f4f5; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
-                    <td data-label="Empresa" style="padding: 16px; font-weight: 700; color: var(--texto-principal);">${escaparHtml(cliente.company_name)}</td>
-                    <td data-label="NIF" style="padding: 16px;">${escaparHtml(cliente.tax_id || '-')}</td>
-                    <td data-label="Localização" style="padding: 16px; color: var(--texto-secundario);">${escaparHtml(cliente.location || '-')}</td>
-                    <td data-label="Contacto" style="padding: 16px;">
+                    <td data-label="${window.t('clientes.nome_empresa', 'Empresa')}" style="padding: 16px; font-weight: 700; color: var(--texto-principal);">${escaparHtml(cliente.company_name)}</td>
+                    <td data-label="${window.t('clientes.nif', 'NIF')}" style="padding: 16px;">${escaparHtml(cliente.tax_id || '-')}</td>
+                    <td data-label="${window.t('clientes.morada', 'Localização')}" style="padding: 16px; color: var(--texto-secundario);">${escaparHtml(cliente.location || '-')}</td>
+                    <td data-label="${window.t('clientes.contacto_principal', 'Contacto')}" style="padding: 16px;">
                         <div style="display: flex; flex-direction: column;">
                             <span style="font-weight: 600;">${escaparHtml(cliente.contact_name || '-')}</span>
                             <span style="font-size: 0.85rem; color: var(--texto-secundario);">${escaparHtml(cliente.contact_email || '-')}</span>
                         </div>
                     </td>
-                    <td data-label="Estado" style="padding: 16px;">
+                    <td data-label="${window.t('tabela.status', 'Estado')}" style="padding: 16px;">
                         <span class="badge ${corBadge}">${estadoLegivel(cliente)}</span>
                     </td>
-                    <td data-label="Ações" style="padding: 16px; text-align: right;">
-                        <button type="button" onclick="abrirEditarCliente('${escaparHtml(cliente.id)}')" style="color: var(--aksanti-gold); font-weight: 700; font-size: 0.9rem; text-decoration: none; background: transparent; border: 0; cursor: pointer;">Editar Conta</button>
+                    <td data-label="${window.t('tabela.acoes', 'Ações')}" style="padding: 16px; text-align: right;">
+                        <button type="button" onclick="abrirEditarCliente('${escaparHtml(cliente.id)}')" style="color: var(--aksanti-gold); font-weight: 700; font-size: 0.9rem; text-decoration: none; background: transparent; border: 0; cursor: pointer;">${window.t('clientes.editar_cliente', 'Editar Conta')}</button>
                     </td>
                 </tr>
             `;

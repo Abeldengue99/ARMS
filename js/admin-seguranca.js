@@ -146,12 +146,12 @@ function renderizarHistorico() {
         });
         tabelaHistorico.innerHTML = html;
     } else {
-        tabelaHistorico.innerHTML = '<tr><td colspan="6" style="text-align: center;">Sem registos.</td></tr>';
+        tabelaHistorico.innerHTML = `<tr><td colspan="6" style="text-align: center;">${window.t('seguranca.sem_registos', 'Sem registos.')}</td></tr>`;
     }
 }
 
 function desbloquear(email, ip) {
-    if (!confirm(`Deseja remover o bloqueio temporário de ${email} (${ip})?`)) return;
+    if (!confirm(window.t('seguranca.confirmar_desbloqueio', 'Deseja remover o bloqueio temporário de {email} ({ip})?').replace('{email}', email).replace('{ip}', ip))) return;
 
     fetch('api/seguranca.php?acao=desbloquear', {
         method: 'POST',

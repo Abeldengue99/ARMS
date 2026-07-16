@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
@@ -80,12 +80,6 @@
                     style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
 
                 <!-- Estou a engatar lá debaixo nos cliques os botões de Admin que podes acessar em teu poder -->
-                <a href="admin-configuracoes.html" class="menu-item menu-super-admin-only activo">
-                    <span data-i18n="nav.configuracoes">Configurações SaaS</span>
-                </a>
-                <a href="admin-seguranca.html" class="menu-item menu-super-admin-only">
-                    <span data-i18n="nav.seguranca">Segurança</span>
-                </a>
                 <a href="admin-utilizadores.html" class="menu-item menu-admin-only">
                     <span data-i18n="nav.admin">Administração</span>
                 </a>
@@ -118,7 +112,30 @@
             </header>
 
                         <div class="conteudo-pagina">
-                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px;">
+
+            <div class="admin-tabs" style="display: flex; gap: 32px; padding: 0 40px; border-bottom: 1px solid #e2e8f0; margin-bottom: 32px; background: white; flex-wrap: wrap;">
+                <a href="admin-utilizadores.html" class="admin-tab" style="padding: 16px 0; color: var(--texto-secundario); text-decoration: none; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s;">
+                    <span>Utilizadores</span>
+                </a>
+                <a href="admin-configuracoes.html" class="admin-tab active" style="padding: 16px 0; color: var(--aksanti-brand, #d97706); text-decoration: none; font-weight: 500; border-bottom: 2px solid var(--aksanti-brand, #d97706); transition: all 0.2s;">
+                    <span>Configurações SaaS</span>
+                </a>
+                <a href="admin-seguranca.html" class="admin-tab" style="padding: 16px 0; color: var(--texto-secundario); text-decoration: none; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s;">
+                    <span>Segurança</span>
+                </a>
+                <a href="admin-automacao.html" class="admin-tab" style="padding: 16px 0; color: var(--texto-secundario); text-decoration: none; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s;">
+                    <span>Automação</span>
+                </a>
+                <a href="admin-qualidade.html" class="admin-tab" style="padding: 16px 0; color: var(--texto-secundario); text-decoration: none; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s;">
+                    <span>Qualidade de Dados</span>
+                </a>
+                <a href="admin-retencao.html" class="admin-tab" style="padding: 16px 0; color: var(--texto-secundario); text-decoration: none; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s;">
+                    <span>Retenção</span>
+                </a>
+            </div>
+
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px;">
                     <div>
                         <h2 style="font-size: 2.2rem; font-weight: 700; color: #1e293b;">Whitelabel & SaaS</h2>
                         <p style="color: var(--texto-secundario); font-size: 0.95rem; margin-top: 4px;">Personalização da Marca e definições globais do Inquilino atual</p>
@@ -210,31 +227,52 @@
     <script src="js/admin-configuracoes.js"></script>
     <script src="js/tempo-real.js?v=8"></script>
     <script src="js/app.js"></script>
-    <nav class="bottom-nav">
-        <div class="bottom-nav-container">
-            <a href="dashboard.html" class="bottom-nav-item">
-                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                <span data-i18n="nav.dashboard">Painel</span>
-            </a>
-            <a href="pedidos.html" class="bottom-nav-item">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                <span data-i18n="nav.pedidos">Pedidos</span>
-            </a>
-            <div class="bottom-nav-fab-container">
-                <a href="pedidos.html?action=novo" class="bottom-nav-fab">
-                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </a>
-            </div>
-            <a href="calendario.html" class="bottom-nav-item">
-                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span data-i18n="nav.calendario">Calendário</span>
-            </a>
-            <a href="#" class="bottom-nav-item" id="btn-bottom-menu">
-                <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                <span>Menu</span>
-            </a>
-        </div>
-    </nav>
 
+<!-- PATCH_LOGOUT_START -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const handleLogout = (e) => {
+            const btn = e.target.closest('#btn-sair, #btn-sair-mobile, .menu-sair, .btn-sair-icone');
+            if (!btn) return;
+            
+            e.preventDefault();
+            e.stopPropagation(); // Stop it from triggering anything else!
+            
+            let nome = '';
+            try {
+                const ud = JSON.parse(localStorage.getItem('arms_utilizador_dados') || '{}');
+                if (ud.nome) {
+                    nome = '<strong>' + ud.nome.split(' ')[0] + '</strong>, ';
+                }
+            } catch(e) {}
+            
+            const titulo = (typeof window.t === 'function') ? window.t('nav.sair', 'Terminar Sessão') : 'Terminar Sessão';
+            const fallbackMsg = nome + 'tens a certeza que queres terminar a sessão?';
+            const msg = (typeof window.t === 'function') ? window.t('comum.confirmar_sair_nome', fallbackMsg) : fallbackMsg;
+            
+            if (typeof confirmarAcao === 'function') {
+                confirmarAcao(titulo, msg, () => {
+                    if (typeof ArmsSessao !== 'undefined') {
+                        ArmsSessao.terminar();
+                    } else {
+                        localStorage.removeItem('arms_utilizador_logado');
+                        window.location.href = 'index.html';
+                    }
+                });
+            } else {
+                if (typeof ArmsSessao !== 'undefined') {
+                    ArmsSessao.terminar();
+                } else {
+                    localStorage.removeItem('arms_utilizador_logado');
+                    window.location.href = 'index.html';
+                }
+            }
+        };
+
+        // Attach directly to the document to ensure it's caught
+        document.addEventListener('click', handleLogout, true); // Use capture phase to ensure it runs first!
+    });
+</script>
+<!-- PATCH_LOGOUT_END -->
 </body>
 </html>

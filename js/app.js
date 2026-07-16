@@ -13,6 +13,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     carregarIdentidadePlataforma();
+
+    document.body.addEventListener('click', (e) => {
+        const targetBtn = e.target.closest('#btn-sair, #btn-sair-mobile, .menu-sair, .btn-sair-icone');
+        if (!targetBtn) return;
+        
+        e.preventDefault();
+        let nome = '';
+        try {
+            const ud = JSON.parse(localStorage.getItem('arms_utilizador_dados') || '{}');
+            if (ud.nome) {
+                nome = '<strong>' + ud.nome.split(' ')[0] + '</strong>, ';
+            }
+        } catch(e) {}
+        
+        const titulo = (typeof window.t === 'function') ? window.t('nav.sair', 'Terminar Sessão') : 'Terminar Sessão';
+        const fallbackMsg = nome + 'tens a certeza que queres terminar a sessão?';
+        const msg = (typeof window.t === 'function') ? window.t('comum.confirmar_sair_nome', fallbackMsg) : fallbackMsg;
+        
+        if (typeof confirmarAcao === 'function') {
+            confirmarAcao(titulo, msg, () => {
+                if (typeof ArmsSessao !== 'undefined') {
+                    ArmsSessao.terminar();
+                } else {
+                    localStorage.removeItem('arms_utilizador_logado');
+                    window.location.href = 'index.html';
+                }
+            });
+        } else if (confirm(msg)) {
+            if (typeof ArmsSessao !== 'undefined') {
+                ArmsSessao.terminar();
+            } else {
+                localStorage.removeItem('arms_utilizador_logado');
+                window.location.href = 'index.html';
+            }
+        }
+    });
 });
 
 function carregarIdentidadePlataforma() {

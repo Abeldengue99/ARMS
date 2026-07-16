@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         corpoTabela.innerHTML = '';
 
         if (!pedidosFiltrados.length) {
-            corpoTabela.innerHTML = `<tr><td colspan="7" style="padding: 32px; text-align: center; color: var(--texto-secundario);">Nenhum pedido encontrado com os filtros selecionados.</td></tr>`;
+            corpoTabela.innerHTML = `<tr><td colspan="7" style="padding: 32px; text-align: center; color: var(--texto-secundario);">${window.t('pedidos.sem_pedidos', 'Nenhum pedido encontrado com os filtros selecionados.')}</td></tr>`;
             if (contadorEl) contadorEl.textContent = '0 pedidos';
             if (navegacao) navegacao.style.display = 'none';
             return;
@@ -199,14 +199,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const linhaHTML = `
                 <tr style="border-bottom: 1px solid #f4f4f5; transition: background-color 0.2s; cursor: pointer;" onclick="window.location.href='${urlDetalhe}'" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
-                    <td data-label="Referência" style="padding: 16px; font-weight: 600;">${referencia}</td>
-                    <td data-label="Destino" style="padding: 16px;">${escaparHtml(obterNomeParceiroPedido(pedido))}</td>
-                    <td data-label="Área" style="padding: 16px;">${escaparHtml(pedido.area_name || '-')}</td>
-                    <td data-label="Estado" style="padding: 16px;">${estadoBadge}</td>
-                    <td data-label="Data" style="padding: 16px;">${escaparHtml(pedido.date || '-')}</td>
-                    <td data-label="Deadline" style="padding: 16px;">${renderizarDeadline(pedido)}</td>
-                    <td data-label="Ações" style="padding: 16px; text-align: right;">
-                        <a href="${urlDetalhe}" style="color: var(--aksanti-gold); font-weight: 700; font-size: 0.9rem; text-decoration: none;">Ver Detalhes</a>
+                    <td data-label="${window.t('tabela.referencia', 'Referência')}" style="padding: 16px; font-weight: 600;">${referencia}</td>
+                    <td data-label="${window.t('tabela.destino', 'Destino')}" style="padding: 16px;">${escaparHtml(obterNomeParceiroPedido(pedido))}</td>
+                    <td data-label="${window.t('tabela.area', 'Área')}" style="padding: 16px;">${escaparHtml(pedido.area_name || '-')}</td>
+                    <td data-label="${window.t('tabela.status', 'Estado')}" style="padding: 16px;">${estadoBadge}</td>
+                    <td data-label="${window.t('tabela.data', 'Data')}" style="padding: 16px;">${escaparHtml(pedido.date || '-')}</td>
+                    <td data-label="${window.t('tabela.deadline', 'Deadline')}" style="padding: 16px;">${renderizarDeadline(pedido)}</td>
+                    <td data-label="${window.t('tabela.acoes', 'Ações')}" style="padding: 16px; text-align: right;">
+                        <a href="${urlDetalhe}" style="color: var(--aksanti-gold); font-weight: 700; font-size: 0.9rem; text-decoration: none;">${window.t('acoes.ver_detalhes', 'Ver Detalhes')}</a>
                     </td>
                 </tr>
             `;
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (contadorEl) {
-            contadorEl.textContent = `Mostrando ${inicio + 1} a ${fim} de ${pedidosFiltrados.length} pedido${pedidosFiltrados.length !== 1 ? 's' : ''}`;
+            contadorEl.textContent = `${inicio + 1} - ${fim} ${window.t('comum.de', 'de')} ${pedidosFiltrados.length} ${window.t('comum.resultados', 'resultados')}`;
         }
 
         if (navegacao && btnRecuar && btnAvancar && indicador) {
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (inputFiltro) {
-        inputFiltro.placeholder = `Referência, ${obterRotuloEntidadePedido()}, Estado...`;
+        inputFiltro.placeholder = window.t('pedidos.placeholder_pesquisa', 'Referência, destino, estado...');
     }
 
     if (q) {

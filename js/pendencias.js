@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     container.style.display = 'none';
                 } else {
                     container.style.display = 'block';
-                    grelha.innerHTML = `<div style="color: #059669; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 6px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Tudo em ordem! Não há pendências a relatar.</div>`;
+                    grelha.innerHTML = `<div style="color: #059669; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 6px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> ${window.t('pendencias.sem_pendencias', 'Tudo em ordem! Não há pendências a relatar.')}</div>`;
                 }
             } else {
                 container.style.display = 'block';

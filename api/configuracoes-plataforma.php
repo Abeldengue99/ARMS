@@ -10,9 +10,20 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $stmt = $pdo->prepare("SELECT * FROM arms.tenant_settings WHERE tenant_id = 1");
         $stmt->execute();
-        $settings = $stmt->fetch();
+        $settings = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
         
-        echo json_encode(['sucesso' => true, 'dados' => $settings ?: []]);
+        require_once 'email.php';
+        $emailConfig = armsEmailConfig();
+        
+        if (empty($settings['smtp_host'])) $settings['smtp_host'] = $emailConfig['host'] ?? '';
+        if (empty($settings['smtp_port'])) $settings['smtp_port'] = $emailConfig['port'] ?? '';
+        if (empty($settings['smtp_user'])) $settings['smtp_user'] = $emailConfig['user'] ?? '';
+        if (empty($settings['smtp_from_email'])) $settings['smtp_from_email'] = $emailConfig['from_email'] ?? '';
+        if (empty($settings['smtp_from_name'])) $settings['smtp_from_name'] = $emailConfig['from_name'] ?? '';
+        
+        unset($settings['smtp_pass']);
+        
+        echo json_encode(['sucesso' => true, 'dados' => $settings]);
         exit;
     }
 
@@ -70,12 +81,20 @@ try {
             $from = trim($input['smtp_from_email'] ?? '');
             $fromName = trim($input['smtp_from_name'] ?? '');
             
+            $passUpdate = "";
+            $params = [$host, $port ?: null, $user, $from, $fromName];
+            
+            if ($pass !== '') {
+                $passUpdate = ", smtp_pass = ?";
+                $params[] = $pass;
+            }
+            
             $stmt = $pdo->prepare("
                 UPDATE arms.tenant_settings 
-                SET smtp_host = ?, smtp_port = ?, smtp_user = ?, smtp_pass = ?, smtp_from_email = ?, smtp_from_name = ?, updated_at = NOW()
+                SET smtp_host = ?, smtp_port = ?, smtp_user = ?, smtp_from_email = ?, smtp_from_name = ? $passUpdate, updated_at = NOW()
                 WHERE tenant_id = 1
             ");
-            $stmt->execute([$host, $port ?: null, $user, $pass, $from, $fromName]);
+            $stmt->execute($params);
             
             echo json_encode(['sucesso' => true, 'mensagem' => 'Configurações de E-mail atualizadas com sucesso.']);
             exit;

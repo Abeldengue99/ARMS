@@ -134,7 +134,7 @@ document.addEventListener('click', function(e) {
             }
         };
 
-        // Se o JS global do modal já estiver carregado
+        // Se o JS global do modal já estiver carregado (ou seja, novo-pedido-global.js)
         if (typeof window.abrirModalNovoPedido === 'function') {
             abrir();
         } else {
@@ -146,16 +146,23 @@ document.addEventListener('click', function(e) {
                 document.head.appendChild(link);
             }
 
-            // Carregar modal.js e novo-pedido-global.js
-            const s1 = document.createElement('script');
-            s1.src = 'js/modal.js';
-            s1.onload = () => {
+            const carregarNovoPedido = () => {
                 const s2 = document.createElement('script');
                 s2.src = 'js/novo-pedido-global.js';
                 s2.onload = abrir;
                 document.body.appendChild(s2);
             };
-            document.body.appendChild(s1);
+
+            // Verificar se o modal.js básico já está carregado na página
+            if (typeof window.abrirModal === 'function') {
+                carregarNovoPedido();
+            } else {
+                // Carregar modal.js primeiro e depois o novo-pedido-global.js
+                const s1 = document.createElement('script');
+                s1.src = 'js/modal.js';
+                s1.onload = carregarNovoPedido;
+                document.body.appendChild(s1);
+            }
         }
     }
 });
@@ -167,13 +174,13 @@ if (headerEsq) {
     
     // Se não tiver a barra de pesquisa, injectamos
     if (!document.getElementById('barra-pesquisa-topo')) {
-        const barraHtml = <div style="position: relative; margin-left: 0; width: 300px; display: none;" id="barra-pesquisa-topo">
+        const barraHtml = `<div style="position: relative; margin-left: 0; width: 300px; display: none;" id="barra-pesquisa-topo">
             <input type="text" id="input-pesquisa-geral" class="input-controlo" placeholder="Pesquisar pedidos..." style="padding-left: 40px; border-radius: 20px; background-color: #f8fafc; border: 1px solid #e2e8f0; width: 100%;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 11px;">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-        </div>;
+        </div>`;
         headerEsq.insertAdjacentHTML('beforeend', barraHtml);
         
         const h2 = headerEsq.querySelector('h2');

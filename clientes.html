@@ -78,13 +78,6 @@
                 </a>
                 
                 <hr class="menu-admin-only" style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
-                
-                <a href="admin-configuracoes.html" class="menu-item menu-super-admin-only">
-                    <span data-i18n="nav.configuracoes">Configurações SaaS</span>
-                </a>
-                <a href="admin-seguranca.html" class="menu-item menu-super-admin-only">
-                    <span data-i18n="nav.seguranca">Segurança</span>
-                </a>
                 <a href="admin-utilizadores.html" class="menu-item menu-admin-only">
                     <span data-i18n="nav.admin">Administração</span>
                 </a>
@@ -127,11 +120,11 @@
                 
                 <!-- Estou a arrumar um flex no meio para teres ali espaço entre o título Clientes e o Botão d'Ouro "Adicionar" -->
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px;">
-                    <h2 style="font-size: 1.5rem; color: var(--texto-principal);">Gestão de Clientes</h2>
+                    <h2 style="font-size: 1.5rem; color: var(--texto-principal);" data-i18n="clientes.titulo">Gestão de Clientes</h2>
                     <div style="display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px;">
                         <button id="btn-exportar-pdf-clientes" class="btn btn-secundario" style="min-height: 42px; padding: 8px 18px; font-weight: 800;">Baixar PDF</button>
                         <button id="btn-exportar-excel-clientes" class="btn btn-secundario" style="min-height: 42px; padding: 8px 18px; font-weight: 800; color: #166534; background: #dcfce7;">Baixar Excel</button>
-                        <button id="btn-adicionar-cliente" class="btn btn-primario">Adicionar Cliente</button>
+                        <button id="btn-adicionar-cliente" class="btn btn-primario" data-i18n="clientes.adicionar">Adicionar Cliente</button>
                     </div>
                 </div>
 
@@ -139,7 +132,7 @@
                 <div class="card deslizar-cima-isaf">
                     
                     <div style="margin-bottom: 20px; display: flex; gap: 16px;">
-                        <input type="text" id="filtro-clientes" class="input-controlo" placeholder="Pesquisar Nome ou NIF..." style="max-width: 300px;">
+                        <input type="text" id="filtro-clientes" class="input-controlo" placeholder="Pesquisar Nome ou NIF..." data-i18n-placeholder="clientes.placeholder_pesquisa" style="max-width: 300px;">
                     </div>
 
                     <div style="overflow-x: auto;">
@@ -147,10 +140,10 @@
                             <thead>
                                 <tr style="border-bottom: 1px solid #e4e4e7;">
                                     <!-- Estou a puxar nomes diretos na tabela para "Empresa, Identidade, Pessoal para chatear (Contato), e a Ação no fim! -->
-                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;">Empresa</th>
-                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;">NIF</th>
-                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;">Localização</th>
-                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;">Pessoa de Contacto</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="clientes.nome_empresa">Empresa</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="clientes.nif">NIF</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="clientes.morada">Localização</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="clientes.contacto_principal">Pessoa de Contacto</th>
                                     <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="tabela.status">Estado</th>
                                     <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500; text-align: right;" data-i18n="tabela.acoes">Ações</th>
                                 </tr>
@@ -180,20 +173,10 @@
     <script src="js/clientes.js"></script>
 
     <script src="js/notificacoes.js?v=5"></script>
-    <script src="js/app.js"></script>
+    <script src="js/app.js?v=2"></script>
     
     <script>
-        document.getElementById('btn-sair').addEventListener('click', (evento) => {
-            evento.preventDefault();
-            if (typeof ArmsSessao !== 'undefined') {
-                ArmsSessao.terminar();
-            } else {
-                localStorage.removeItem('arms_utilizador_logado');
-                window.location.href = 'index.html';
-            }
-        });
-
-        // Ligar o modal de adicionar cliente com dados reais do PostgreSQL
+// Ligar o modal de adicionar cliente com dados reais do PostgreSQL
         const btnAddCliente = document.getElementById('btn-adicionar-cliente');
         if (btnAddCliente) {
             btnAddCliente.addEventListener('click', () => {

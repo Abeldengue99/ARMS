@@ -94,12 +94,6 @@
                 <a href="clientes.html" class="menu-item menu-admin-only"><span>Clientes</span></a>
                 <a href="areas.html" class="menu-item menu-admin-only"><span>Departamentos</span></a>
                 <hr style="border-color: #333; margin: 16px 0;">
-                <a href="admin-configuracoes.html" class="menu-item menu-super-admin-only">
-                    <span data-i18n="nav.configuracoes">Configurações SaaS</span>
-                </a>
-                <a href="admin-seguranca.html" class="menu-item menu-super-admin-only">
-                    <span data-i18n="nav.seguranca">Segurança</span>
-                </a>
                 <a href="admin-utilizadores.html" class="menu-item menu-admin-only"><span>Administração</span></a>
                 <a href="#" class="menu-item" style="color: #ef4444;" id="btn-sair"><span>Terminar Sessão</span></a>
             </nav>
@@ -233,7 +227,7 @@
     <script src="js/modal.js"></script>
     <script src="js/notificacoes.js?v=5"></script>
     <script src="js/tempo-real.js?v=8"></script>
-    <script src="js/app.js"></script>
+    <script src="js/app.js?v=2"></script>
 
     <script>
         let pedidoAtual = null;
@@ -1133,18 +1127,7 @@
                 return;
             }
             carregarPedido(ref);
-
-            document.getElementById('btn-sair').addEventListener('click', e => {
-                e.preventDefault();
-                limparCachesComentarioDoUsuario();
-                if (typeof ArmsSessao !== 'undefined') {
-                    ArmsSessao.terminar();
-                } else {
-                    localStorage.removeItem('arms_utilizador_logado');
-                    window.location.href = 'index.html';
-                }
-            });
-        });
+});
     </script>
         <!-- Bottom Navigation Bar (Apenas Mobile) -->
             <nav class="bottom-nav">
