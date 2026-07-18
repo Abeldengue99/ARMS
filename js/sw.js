@@ -1,13 +1,13 @@
 const CACHE_NAME = 'arms-cache-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/css/responsivo.css',
-  '/css/admin-utilizadores.css',
-  '/js/app.js',
-  '/img/favicon.png',
-  '/img/logo.svg',
-  '/manifest.json'
+  '../index.html',
+  '../css/responsivo.css',
+  '../css/admin-utilizadores.css',
+  './app.js',
+  '../img/favicon.png',
+  '../img/logo.svg',
+  './manifest.json',
+  './pwa.js'
 ];
 
 self.addEventListener('install', event => {

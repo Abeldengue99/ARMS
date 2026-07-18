@@ -199,7 +199,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 // Registo do Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
+    navigator.serviceWorker.register('js/sw.js', { scope: './' }).then(reg => {
       
       reg.addEventListener('updatefound', () => {
         newWorker = reg.installing;

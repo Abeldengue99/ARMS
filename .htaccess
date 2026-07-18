@@ -60,3 +60,7 @@ AddType image/svg+xml .svg
 
 # Evitar diretivas como php_value ou ForceType global; podem causar erro 500
 # dependendo da configuracao PHP/Apache.
+
+<Files "sw.js">
+    Header set Service-Worker-Allowed "/"
+</Files>
