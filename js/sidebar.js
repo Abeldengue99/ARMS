@@ -71,6 +71,23 @@ function initSidebarMobile() {
         }
     }
 
+    function setupDesktopSidebarToggle() {
+        const toggleBtn = document.getElementById('btn-toggle-sidebar');
+        if (!toggleBtn || !barraLateral) return;
+
+        // Recuperar o estado do localStorage
+        const isMinimized = localStorage.getItem('arms_sidebar_minimized') === 'true';
+        if (isMinimized && window.innerWidth > 1024) {
+            barraLateral.classList.add('minimized');
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            barraLateral.classList.toggle('minimized');
+            const minimizedNow = barraLateral.classList.contains('minimized');
+            localStorage.setItem('arms_sidebar_minimized', minimizedNow);
+        });
+    }
+
     function closeSidebarOnOutsideClick(event) {
         const mobileToggleButton = document.getElementById('btn-bottom-menu');
         if (window.innerWidth <= 1024 && barraLateral.classList.contains('aberta')) {
@@ -108,6 +125,7 @@ function initSidebarMobile() {
     ensureMenuButton();
     ensureMobileMenuHeader();
     bindSidebarEvents();
+    setupDesktopSidebarToggle();
     updateMobileUI();
     document.addEventListener('click', closeSidebarOnOutsideClick);
     window.addEventListener('resize', updateMobileUI);

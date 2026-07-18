@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+    // Pesquisa transferida para dashboard.html para ser 'ao vivo'
 });
 
 function carregarIdentidadePlataforma() {

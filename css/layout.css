@@ -37,8 +37,57 @@ html.role-pending .layout-principal {
     /* Estou a garantir que, se os teus muitos departamentos crescem para sempre e tu tenhas muitos Menus empilhados na janela esquerda (trazem muitos novos botões àquele espaço tão grande lá onde pusemos a grelha de coluna preta), apenas um sub-menu lateral escuro permita a um utilizador com as calmas correr as opções (dar roda para mover o que existe à vista naquela lateral para encontrar o ícone no lado) num menu sem interferir nos outros painéis e na leitura esquerda branca no interior da aplicação */
     overflow-y: auto;
     /* Estou a aplicar a transição e a curva / onda / suavidade de todas as animações na esquerda dos navegadores, a transição para quando passarmos para a vista móvel e tiver que encolher essa coluna principal. Ficará num fechar calmo no seu lugar, à espera */
-    transition: var(--transicao);
+    transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s, box-shadow 0.3s;
+    z-index: 1000;
+    overflow-x: hidden;
 }
+
+.barra-lateral.minimized {
+    width: 80px;
+}
+
+.barra-lateral.minimized .btn-toggle-sidebar svg {
+    transform: rotate(180deg);
+}
+
+.barra-lateral.minimized .menu-item span {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+    display: none;
+}
+
+.barra-lateral.minimized .barra-lateral-logo h2,
+.barra-lateral.minimized .barra-lateral-logo p,
+.barra-lateral.minimized .barra-lateral-logo div::after {
+    opacity: 0;
+    display: none;
+}
+
+.barra-lateral.minimized .barra-lateral-logo img {
+    max-width: 40px !important;
+    padding: 4px;
+}
+
+.barra-lateral.minimized .menu-item {
+    justify-content: center;
+    padding: 12px 0;
+}
+
+.barra-lateral.minimized .menu-item.activo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Esconder o text separador hr admin-only */
+.barra-lateral.minimized hr.menu-admin-only {
+    width: 40px;
+    margin: 16px auto !important;
+}
+
 
 /* Estou a desenhar o logotipo na testa, em formato retângulo e espaçoso para estampar a nossa identidade gráfica.  */
 .barra-lateral-logo {
@@ -63,9 +112,22 @@ html.role-pending .layout-principal {
     /* Estou a aplicar uma versão um pouco diluída e amaciada do brilho de branco de todas a que têm, que lhes chamo cor morta de prateada/branca suja nas letras em modo pacífico, até haver ações por si lá naquele botão  */
     color: #a1a1aa;
     /* Estou a meter toda essa classe com a propriedade relaxada para que quando a mudarem de um ponto de inactividade no menu esquerdo e alguém for por o ponteiro no lado ou clicar ali que pisque suave nos brancos intensos! (ver o estado hover ali a baixo da tua barra!). Uma passagem tão agradável em frente à cor normal de menu  */
-    transition: var(--transicao);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
     /* Estou a deixar a letra num pouco cheia com 500 para fazer presença onde os contrastes fiquem óbvios ao olhar num escuro na parede ali! - Letra normal e legível e com forte e cheia no seu papel -  */
     font-weight: 500;
+}
+
+.menu-item svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s ease;
+}
+
+.menu-item span {
+    transition: all 0.3s ease;
 }
 
 /* Estou a dizer o que ele deve mostrar às vistas - ao apontador (Mouse) a navegar onde pairam os seus menus num determinado minuto no ecrã. Passas a roda e faz Hover e... zás, acende e diz olá onde tás em foco  */
@@ -92,6 +154,11 @@ html.role-pending .layout-principal {
     margin-left: 280px;
     display: flex;
     flex-direction: column;
+    transition: margin-left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.barra-lateral.minimized ~ .area-conteudo {
+    margin-left: 80px;
 }
 
 /* Estou a dar umas pinturas na secção dos altos quadros superiores na grande porta e janelas claras (o cabeçalho) - onde mudam da nossa língua (ao Português, Inglês e ao Francês e os teus trocos Kwanza Dólar - ao lado nos botões na tua plataforma principal sem atrapalhar e nas partes direitas a olhar!) */
