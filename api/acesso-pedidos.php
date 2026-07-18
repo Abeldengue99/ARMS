@@ -195,13 +195,17 @@ function armsPedidosRegistrarDestinatarios(PDO $pdo, $requestId, $destinationTyp
 
         $stmt = $pdo->prepare("
             INSERT INTO arms.request_recipient (request_id, user_id, client_id, area_id, recipient_type)
-            SELECT DISTINCT :request_id::uuid, cc.user_id, cc.client_id, cc.area_id, 'DEPARTMENT'
+            SELECT DISTINCT :request_id::uuid, cc.user_id, cc.client_id, am.area_id, 'DEPARTMENT'
             FROM arms.client_contact cc
             INNER JOIN arms.auth_user au ON au.id = cc.user_id
+            LEFT JOIN arms.area_membership am ON am.user_id = au.id
             WHERE cc.client_id = :client_id::uuid
               AND cc.user_id IS NOT NULL
               AND au.is_active = TRUE
-              AND (cc.area_id IN (" . implode(',', $placeholders) . ") OR cc.area_id IS NULL)
+              AND (
+                  am.area_id IN (" . implode(',', $placeholders) . ") 
+                  OR (SELECT COUNT(*) FROM arms.area_membership WHERE user_id = au.id) = 0
+              )
             ON CONFLICT (request_id, user_id) DO NOTHING
         ");
         $stmt->execute($params);
