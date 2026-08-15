@@ -6,7 +6,7 @@ O **ARMS (Aksanti Request Management System)** é um sistema web desenvolvido pa
 ## 🚀 Tecnologias Utilizadas
 - **Frontend:** HTML5, CSS3 (Vanilla / Custom) e JavaScript Nativo (ES6+).
 - **Backend:** PHP Nativo (API RESTful sem frameworks pesados).
-- **Banco de Dados:** MySQL (Ficheiros estruturais disponíveis em `/Backend/bd`).
+- **Banco de Dados:** PostgreSQL (Ficheiros estruturais disponíveis em `/Backend/bd`).
 - **Utilitários:** NodeJS e Puppeteer (para a geração automatizada de relatórios/manuais em PDF).
 
 ## 📁 Estrutura de Diretórios
@@ -29,21 +29,22 @@ O repositório está organizado de forma a separar claramente a lógica de apres
 ## ⚙️ Como Instalar e Rodar Localmente (Ambiente de Desenvolvimento)
 
 ### 1. Pré-requisitos
-- **XAMPP / Laragon** ou equivalente (para rodar Apache e MySQL).
-- **PHP 8.0+**
+- **Servidor Web** (Apache/Nginx, pode usar XAMPP apenas para o Apache).
+- **PostgreSQL** instalado.
+- **PHP 8.0+** (com a extensão `pdo_pgsql` ativa).
 - **Node.js** (Opcional, apenas necessário se for gerar PDFs dos manuais).
 
 ### 2. Configuração do Banco de Dados
-1. Abra o phpMyAdmin (ou outro gestor MySQL).
+1. Abra o pgAdmin (ou outro gestor PostgreSQL).
 2. Crie uma base de dados com o nome apropriado (ex: `arms_db`).
 3. Importe os ficheiros SQL localizados na pasta `Backend/bd/`:
    - Primeiro: `arms_schema.sql` (Cria a estrutura base)
    - Segundo: `arms_retencao_auditoria.sql` (Cria tabelas de log e auditoria)
-4. Atualize o ficheiro de conexão (normalmente `Backend/api/db.php` ou similar) com as credenciais locais (`localhost`, utilizador `root`, senha em branco, etc.).
+4. Atualize o ficheiro de conexão (normalmente `Backend/api/db.php` ou similar) com as credenciais locais (host, utilizador `postgres`, senha, etc.).
 
 ### 3. Rodar o Projeto
-1. Coloque esta pasta (`ARMS — Aksanti Request Management System`) dentro do diretório `htdocs` do seu XAMPP (ou `www` no WAMP).
-2. Inicie os serviços **Apache** e **MySQL** no painel de controlo do XAMPP.
+1. Coloque esta pasta (`ARMS — Aksanti Request Management System`) dentro do diretório `htdocs` do seu servidor local.
+2. Inicie o serviço **Apache** (via XAMPP) e garanta que o serviço **PostgreSQL** está a correr.
 3. No seu navegador, acesse: `http://localhost/ARMS%20—%20Aksanti%20Request%20Management%20System/Frontend/` (ajuste o link de acordo com o nome exato da pasta).
 
 ### 4. Geração de PDF (Opcional)
