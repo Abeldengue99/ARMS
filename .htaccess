@@ -1,6 +1,21 @@
 # Forcar charset UTF-8 para ficheiros servidos pelo Apache.
 Options -Indexes
 
+# ==============================================================================
+# SEGURANÇA BÁSICA DE PRODUÇÃO (Bloqueio de Ficheiros Sensíveis)
+# ==============================================================================
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+<FilesMatch "(package\.json|package-lock\.json|generate_pdf\.js|.*\.md|.*\.sql)$">
+    Require all denied
+</FilesMatch>
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^Backend/(bd|backups|scripts)/ - [F,L]
+    RewriteRule ^node_modules/ - [F,L]
+</IfModule>
+
 AddDefaultCharset UTF-8
 AddCharset UTF-8 .html .css .js .json .svg
 
