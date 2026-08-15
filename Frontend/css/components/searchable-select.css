@@ -1,0 +1,235 @@
+/* ==========================================================================
+   Componente: Searchable Select (Proxy Component)
+   Design System: ARMS Premium / Glassmorphism / Apple Style
+   ========================================================================== */
+
+   .searchable-select-container {
+    position: relative;
+    width: 100%;
+    min-width: 250px;
+    font-family: inherit;
+    display: none; /* hidden by default, JS proxy will show it when needed */
+    /* Herda margens se necessário, mas em princípio é self-contained */
+}
+
+/* O botão visual que substitui o <select> original */
+.searchable-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 14px;
+    background-color: var(--bg-card); /* Fundo branco ou escuro dependendo do tema */
+    border: 1px solid var(--border-color);
+    border-radius: 8px; /* Cantos arredondados suaves */
+    font-size: 0.95rem;
+    color: var(--texto-principal);
+    cursor: pointer;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.searchable-select-trigger:hover {
+    border-color: var(--aksanti-dark);
+}
+
+.searchable-select-trigger:focus,
+.searchable-select-container.is-open .searchable-select-trigger {
+    outline: none;
+    border-color: var(--aksanti-dark);
+    box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+}
+
+.searchable-select-trigger-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 12px;
+}
+
+/* Ícone de seta */
+.searchable-select-trigger-icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    stroke: var(--texto-secundario);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.searchable-select-container.is-open .searchable-select-trigger-icon {
+    transform: rotate(180deg);
+}
+
+/* O menu Dropdown (Popover) - Efeito Glassmorphism Premium */
+.searchable-select-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.85); /* Efeito base do glassmorphism */
+    backdrop-filter: blur(12px); /* Desfoque traseiro à la macOS/iOS */
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    z-index: 1050; /* Sempre no topo */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+    overflow: hidden; /* Mantém os cantos arredondados limpos */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Dark Mode Fallbacks, caso exista no ARMS - presumi background normal */
+@media (prefers-color-scheme: dark) {
+    /* Ajustes apenas se implementarem preferência de sistema, mas usarei variáveis CSS globais quando aplicável */
+    html.theme-dark .searchable-select-dropdown {
+        background: rgba(30, 41, 59, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+.searchable-select-container.is-open .searchable-select-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Campo de Pesquisa Interna no topo */
+.searchable-select-search-wrapper {
+    padding: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.5); /* Leve contraste */
+    flex-shrink: 0; /* Nunca encolhe */
+}
+
+.searchable-select-search {
+    width: 100%;
+    padding: 8px 12px 8px 32px; /* Espaço para o ícone de lupa */
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-card);
+    color: var(--texto-principal);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>');
+    background-repeat: no-repeat;
+    background-position: 10px center;
+}
+
+.searchable-select-search:focus {
+    outline: none;
+    border-color: var(--aksanti-blue, #3b82f6);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+/* Opção Padrão (Fixa no Topo) */
+.searchable-select-default-option {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: var(--texto-principal);
+    font-weight: 500; /* Ligeiro destaque */
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    background: rgba(0, 0, 0, 0.02);
+    transition: background-color 0.15s ease;
+    flex-shrink: 0; /* Nunca encolhe */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.searchable-select-default-option:hover,
+.searchable-select-default-option.is-focused {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.searchable-select-default-option.is-selected {
+    color: var(--aksanti-dark);
+    font-weight: 600;
+}
+
+/* Área de Lista de Opções com Scroll - Limite de ~5 opções */
+/* Supondo cada opção tem cerca de 40px de altura: 5 * 40 = 200px */
+.searchable-select-options-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px; 
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    /* Custom Scrollbar */
+}
+
+/* Custom Scrollbar Apple-style */
+.searchable-select-options-list::-webkit-scrollbar {
+    width: 6px;
+}
+.searchable-select-options-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.searchable-select-options-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+.searchable-select-options-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.25);
+}
+
+/* Cada Opção Individual */
+.searchable-select-option {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: var(--texto-secundario);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Esconder opções quando filtradas pelo JS */
+.searchable-select-option.is-hidden {
+    display: none !important;
+}
+
+.searchable-select-option:hover,
+.searchable-select-option.is-focused {
+    background-color: var(--hover-color, rgba(0, 0, 0, 0.04));
+    color: var(--texto-principal);
+}
+
+/* Estado ativo/selecionado */
+.searchable-select-option.is-selected {
+    background-color: rgba(30, 41, 59, 0.04); /* Fundo suave aksanti-dark */
+    color: var(--aksanti-dark);
+    font-weight: 600;
+}
+
+/* Ícone de Check para a opção selecionada */
+.searchable-select-option-check {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+    stroke: var(--aksanti-dark);
+}
+
+.searchable-select-option.is-selected .searchable-select-option-check,
+.searchable-select-default-option.is-selected .searchable-select-option-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Estado Vazio (Sem resultados na pesquisa) */
+.searchable-select-empty {
+    padding: 16px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--texto-mutado);
+    display: none;
+}

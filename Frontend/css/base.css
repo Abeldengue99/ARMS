@@ -1,0 +1,46 @@
+/* Estou a importar a fonte Inter dos servidores da Google para usar no texto normal da nossa plataforma */
+/* Estou a importar a fonte Outfit da Google Fonts para usar nos títulos da Aksanti, dando um toque moderno e luxuoso */
+
+/* Estou a definir as regras globais e gerais que se aplicam a todo o corpo do site */
+html {
+    overflow-y: scroll;
+}
+
+body {
+    /* Estou a aplicar a fonte principal (Inter) que definimos no ficheiro de variáveis para todo o texto base */
+    font-family: var(--fonte-corpo);
+    /* Estou a aplicar a cor de fundo cinza clara global (Off-white) que definimos para não magoar a vista de quem trabalha o dia todo */
+    background-color: var(--bg-principal);
+    /* Estou a aplicar a cor de texto padrão (Dark) para facilitar a leitura */
+    color: var(--texto-principal);
+    /* Estou a definir o tamanho base da letra para 16 pixels, que é o padrão de ouro para leitura na web hoje em dia */
+    font-size: 16px;
+    /* Estou a definir a altura entre linhas para dar algum espaço para a leitura não ficar muito pesada ou encavalitada */
+    line-height: 1.5;
+    /* Estou a suavizar as fontes nos ecrãs de computadores Mac e iPhone para ficarem com bordas perfeitas e bonitas */
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Estou a definir estilos padrão para todos os tipos de títulos possíveis (desde os muito grandes h1 aos mais pequenos h6) */
+h1, h2, h3, h4, h5, h6 {
+    /* Estou a aplicar a fonte elegante de títulos (Outfit) que definimos antes nas variáveis globais */
+    font-family: var(--fonte-display);
+    /* Estou a reduzir ligeiramente a altura da linha para títulos, para que os que quebram em duas linhas fiquem compactos */
+    line-height: 1.2;
+    /* Estou a garantir que a cor dos títulos é a cor de texto escura principal da Aksanti */
+    color: var(--texto-principal);
+    /* Estou a colocar sempre um espacinho por baixo dos títulos para não colarem ao texto ou elementos a seguir */
+    margin-bottom: 0.5rem;
+}
+
+/* Estou a definir um comportamento agradável quando a pessoa clica numa ligação para uma zona diferente da página */
+html {
+    /* Estou a fazer com que a página deslize de forma suave quando fazemos scroll interno, e não de forma abrupta */
+    scroll-behavior: smooth;
+}
+
+/* Estou a criar uma classe simples que esconde visualmente um elemento da página (muito útil em JavaScript mais tarde) */
+.escondido {
+    /* Estou a dizer para não apresentar de todo este elemento, forçando esta regra com o !important */
+    display: none !important;
+}

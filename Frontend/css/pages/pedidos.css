@@ -1,0 +1,40 @@
+/* Estilos dedicados da Gestão de Pedidos (pedidos.html) */
+html.is-client-role .menu-admin-only,
+html.is-client-role .menu-super-admin-only { display: none !important; }
+html.role-pending .layout-principal { visibility: hidden; opacity: 0; }
+.bottom-nav { display: none !important; }
+.bottom-nav svg {
+    width: 24px !important;
+    height: 24px !important;
+    max-width: 24px !important;
+    max-height: 24px !important;
+}
+.campo-deadline-destaque {
+    border: 2px solid var(--aksanti-gold) !important;
+    background-color: rgba(229, 138, 19, 0.05) !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+}
+.campo-deadline-destaque label {
+    color: #9a3412 !important;
+    font-weight: 800 !important;
+}
+.deadline-ajuda {
+    display: block;
+    margin-top: 8px;
+    color: #9a3412;
+    font-size: 0.82rem;
+    line-height: 1.4;
+}
+.deadline-tabela {
+    font-weight: 700;
+    color: #9a3412;
+}
+.deadline-tabela.urgente {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+    color: #b91c1c;
+    background: #fee2e2;
+    border-radius: 999px;
+}

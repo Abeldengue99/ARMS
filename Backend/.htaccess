@@ -1,0 +1,6 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(bd|scripts|tmp|uploads)(/|$) - [F,L]
+</IfModule>

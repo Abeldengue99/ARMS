@@ -1,0 +1,19 @@
+
+        .btn-menu-mobile {
+            display: none;
+        }
+
+        @media (max-width: 1024px) {
+            .btn-menu-mobile {
+                display: inline-flex !important;
+            }
+
+            .cabecalho-principal h2 {
+                display: none !important;
+            }
+
+            .desktop-only {
+                display: none !important;
+            }
+        }
+    

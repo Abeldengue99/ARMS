@@ -1,6 +1,23 @@
 /backups/
-/uploads/
+/Backend/backups/
 /tmp/
+/Backend/tmp/
+
+# Ficheiros gerados localmente ou de recuperacao.
+*.bak
+*.old
+*.orig
+*.tmp
+*.log
+
+# Manter a protecao Apache de uploads versionada, ignorando ficheiros enviados.
+/uploads/*
+!/uploads/.htaccess
+/Backend/uploads/*
+!/Backend/uploads/.htaccess
+
 .vscode/
 .idea/
 .DS_Store
+
+node_modules/

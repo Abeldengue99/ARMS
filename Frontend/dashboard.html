@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<!-- Estou a declarar nas pedras de HTML5 que as páginas desta casa se falam base em Português Luso e nada menos que as normas estritas -->
+<html lang="pt">
+<head>
+    <!-- Estou a pedir os carateres puros da Europa sem quebrar os Tildes com o grande padrão global UTF-8 das letras bonitas -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Estou a pendurar no nome desta página lá nas dobras/Abas lá no alto do Chrome um identificador brutal com título: "ARMS - Painel" -->
+    <title>Painel de Controlo - ARMS</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
+    <meta name="theme-color" content="#111111">
+    
+    <!-- Script Anti-Flicker partilhado -->
+    <script src="js/anti-flicker.js?v=15"></script>
+
+    <!-- Tintas CSS do Sistema -->
+    <link rel="stylesheet" href="css/reset.css?v=10">
+    <link rel="stylesheet" href="css/variaveis.css?v=10">
+    <link rel="stylesheet" href="css/base.css?v=10">
+    <link rel="stylesheet" href="css/layout.css?v=15">
+    <link rel="stylesheet" href="css/componentes.css?v=10">
+    <link rel="stylesheet" href="css/formularios.css?v=10">
+    <link rel="stylesheet" href="css/tabelas.css?v=10">
+    <link rel="stylesheet" href="css/animacoes.css?v=10">
+    <link rel="stylesheet" href="css/responsivo.css?v=10">
+    <link rel="stylesheet" href="css/pages/dashboard.css?v=10">
+    <link rel="manifest" href="js/manifest.json">
+    
+    <style>
+        .dashboard-canvas-donut canvas {
+            max-width: 100%;
+        }
+
+        .dashboard-recentes-navegacao {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .dashboard-recentes-navegacao button {
+            min-height: 38px;
+            padding: 8px 14px;
+            color: #1e293b;
+            font-weight: 700;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .dashboard-recentes-navegacao button:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+        }
+
+        .dashboard-recentes-indicador {
+            color: var(--texto-secundario);
+            font-size: 0.9rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 1180px) {
+            .dashboard-grid-inferior {
+                grid-template-columns: 1fr !important;
+                overflow: visible !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .dashboard-canvas-donut {
+                height: 340px !important;
+            }
+        }
+    </style>
+
+    <!-- Estou a puxar para as paredes das fachadas as tintas CSS. Reset.css (Limpador base), Variaveis (Cores Douradas), Base (Texto Base Inter), Layout (Barras Laterais Grelhas) e as Animações!  -->
+    <link rel="stylesheet" href="css/reset.css?v=3">
+    <link rel="stylesheet" href="css/variaveis.css?v=7">
+    <link rel="stylesheet" href="css/base.css?v=7">
+    <link rel="stylesheet" href="css/layout.css?v=15">
+    <link rel="stylesheet" href="css/componentes.css?v=3">
+    <link rel="stylesheet" href="css/animacoes.css?v=3">
+    <link rel="stylesheet" href="css/responsivo.css?v=7">
+    <link rel="stylesheet" href="css/components/searchable-select.css?v=4">
+</head>
+
+<body>
+
+    <!-- Estou a abrir e come?ar do zero com os esqueletos da "classe Layout-Principal", onde o flex e esticar são leis para alinhar isto e a app ser gigante com menus e as telas num bloco é volta. -->
+    <div class="layout-principal">
+
+        <!-- Estou a enfiar as colunas de cimento no painel escuro é nossa esquerda negra! As paredes pretonas e grossas de 280 da Barra-Lateral. Com um lindo id onde a sidebar e o m?vel se acoplam! -->
+        <aside class="barra-lateral" id="barra-lateral">
+            <!-- Botão de Expandir/Recolher Barra Lateral -->
+            <button id="btn-toggle-sidebar" class="btn-toggle-sidebar" aria-label="Minimizar Menu" style="position: absolute; right: 12px; top: 40px; width: 32px; height: 32px; border-radius: 50%; background: var(--aksanti-dark); border: 2px solid var(--bg-card); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; transition: transform 0.3s ease;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <!-- Estou a desenhar na cara na barra de porta para entrada nas listas e opções - com padding enorme para respirar nos logos da empresa Aksanti -->
+            <div class="barra-lateral-logo">
+                <img src="img/logo.svg" alt="ARMS" class="logo-svg">
+            </div>
+
+            <!-- Estou a abrir o nosso cofre em gavetas - os botões em listas onde o gajo pica ao clicar das abas! -->
+            <nav style="display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
+                <!-- Estou a forçar aquele primeiro grande Bot?o "ativo com Ouros Gold", pois nàs estamos nela mesmo da sua página a olhar "O dashboard"! E pego no I18n traduzindo a label. -->
+                <a href="dashboard.html" class="menu-item activo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span data-i18n="nav.dashboard">Painel de Controlo</span>
+                </a>
+                <!-- Estou a amontoar a prateleira em baixo, com a ligação agora a valer a sório para os Pedidos, a dar-lhe apenas as etiquetas "nav.pedidos" sem as ativar de momento com o Dourado -->
+                <a href="pedidos.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg><span data-i18n="nav.pedidos">Pedidos</span>
+                </a>
+                <a href="calendario.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span data-i18n="nav.calendario">Calendário</span>
+                </a>
+                <!-- Estou a somar a terceira opção num clique e é ca?a num nav de "Clientes" ali de cima -->
+                <a href="clientes.html" class="menu-item menu-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span data-i18n="nav.clientes">Clientes</span>
+                </a>
+                <!-- Estou a somar a via com nome onde listamos os teus Departamentos da Base ali para gerirem com nome "Areas" na nossa tradução -->
+                <a href="areas.html" class="menu-item menu-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span data-i18n="nav.areas">Departamentos</span>
+                </a>
+
+                <!-- Estou a construir nas partes finais da navegação o grande divisor visual para apartar no final das ferramentas na app a "conta do teu utilizador" no baixo, uma linha de separação fininha -->
+                <hr class="menu-admin-only"
+                    style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
+
+                <!-- Estou a engatar lá debaixo nos cliques os botões de Admin que podes acessar em teu poder -->
+                <a href="admin-utilizadores.html" class="menu-item menu-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span data-i18n="nav.admin">Administração</span>
+                </a>
+                <!-- Estou a concluir essa porta aos fundos, e um logout perigoso a vermelho se o gajo se atreve a ir "sair" -->
+                <a href="#" class="menu-item" style="color: #ef4444;" id="btn-sair">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span data-i18n="nav.sair">Terminar Sessão</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Estou a deitar e a puxar a toalha de toda e extensa "Área de Conteúdos Branca". Fica colada empurrada 280 das margens de lado é grande barra Escura e é infinita! -->
+        <main class="area-conteudo" style="min-width: 0; overflow-x: hidden;">
+
+            <!-- Estou a desenhar a tampa / a chapela nas brancas em elevação ligeira nas cabeças do teu Ecr?. O "Cabecalho-principal", onde habitam no fim das partes as nossas ferramentas e perfis -->
+            <header class="cabecalho-principal">
+                <!-- Estou a dar num flex ali em display o tão amado Menu Invisível hambúrgueres de telemóveis de lá para as transições se chamarem é tela em que estamos em ecrãs abaixo de "1024 px" ! -->
+                <div style="display: flex; align-items: center;">
+                    <div style="position: relative; margin-left: 0; width: 300px; display: none;"
+                        id="barra-pesquisa-topo">
+                        <input type="text" id="input-pesquisa-geral" class="input-controlo"
+                            placeholder="Pesquisar pedidos..."
+                            style="padding-left: 40px; border-radius: 20px; background-color: #f8fafc; border: 1px solid #e2e8f0; width: 100%;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            style="position: absolute; left: 14px; top: 11px;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                    <script>
+                        // Mostrar barra de pesquisa apenas se não estivermos no telemóvel
+                        if (window.innerWidth > 768) {
+                            document.getElementById('barra-pesquisa-topo').style.display = 'block';
+                        }
+                    </script>
+                </div>
+
+                <!-- Estou a colocar as duas gavetas das configurações na Extrema Ponta é tua Direita das cabeças ("No Cabecalho de acoes do CSS que faz alinhado lá a direito") e do seu Perfil -->
+                <div class="cabecalho-acoes" style="display: flex; align-items: center; gap: 16px;">
+                    <a href="notificacoes.html"
+                        style="color: var(--texto-secundario); position: relative; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: #f4f4f5; transition: var(--transicao);"
+                        onmouseover="this.style.backgroundColor='#e4e4e7'"
+                        onmouseout="this.style.backgroundColor='#f4f4f5'" title="Notificações">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg><span
+                            style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background-color: var(--cor-perigo); border-radius: 50%; border: 2px solid #f4f4f5;"></span>
+                    </a>
+
+                    <a href="perfil.html" style="text-decoration: none;" title="O Meu Perfil">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--aksanti-gold); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; transition: transform 0.2s;"
+                            onmouseover="this.style.transform='scale(1.05)'"
+                            onmouseout="this.style.transform='scale(1)'" data-arms-avatar aria-label="Utilizador"></div>
+                    </a>
+
+                    <div style="width: 1px; height: 24px; background-color: #e4e4e7; margin: 0 8px;"></div>
+
+                    <!-- Estou a construir o outro buraco das línguas em Select, puxando os pauzinhos diretamente aos Motores dos nossos ficheiros das Traduções (Fr, En e Pt) a atuar ali em grande -->
+                    <select id="select-idioma-aksanti" class="input-controlo" style="width: auto; padding: 6px 12px;">
+                        <option value="pt">Português</option>
+                        <option value="en">English</option>
+                        <option value="fr">Français</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- Área Principal do Dashboard -->
+            <div class="conteudo-pagina">
+
+                <!-- Header ao estilo do Design -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h2 style="font-size: 2.2rem; font-weight: 700; color: #1e293b;" data-i18n="nav.dashboard">
+                            Painel de Controlo</h2>
+                        <p style="color: var(--texto-secundario); font-size: 0.95rem; margin-top: 4px;"
+                            id="data-corrente">A carregar período...</p>
+                    </div>
+
+                    <!-- Filtros do Dashboard (Hierárquico) -->
+                    <div class="menu-super-admin-only" style="display: none; align-items: flex-start; gap: 12px; flex-direction: column;" id="dashboard-filtros-container">
+                        <select id="filtro-dashboard-tipo" class="input-controlo" style="width: auto; min-width: 250px; background-color: #fff;">
+                            <option value="geral">Visão Geral</option>
+                            <option value="empresas">Empresas (Clientes)</option>
+                            <option value="interna">Equipa Interna</option>
+                        </select>
+                        <select id="filtro-dashboard-cliente" class="input-controlo" style="width: auto; min-width: 250px; display: none; background-color: #fff;">
+                            <option value="">Todas as Empresas</option>
+                        </select>
+                        <select id="filtro-dashboard-area" class="input-controlo" style="width: auto; min-width: 250px; display: none; background-color: #fff;">
+                            <option value="">Todos os Departamentos</option>
+                        </select>
+                        <select id="filtro-dashboard-funcionario" class="input-controlo" style="width: auto; min-width: 250px; display: none; background-color: #fff;">
+                            <option value="">Todos os Funcionários</option>
+                        </select>
+                        <button id="btn-limpar-filtros-dashboard" style="background: none; border: none; color: var(--cor-perigo); cursor: pointer; font-size: 0.85rem; font-weight: 500; display: none; align-items: center; gap: 4px; padding: 4px 0;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            Limpar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grelha de KPIs -->
+                <div
+                    style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px;">
+
+                    <!-- KPI 1: Total Pedidos -->
+                    <div class="card animacao-entrar"
+                        style="display: flex; align-items: center; padding: 18px 16px; border-radius: 12px; gap: 12px; border: 1px solid #f1f5f9;">
+                        <div
+                            style="width: 48px; height: 48px; border-radius: 12px; background-color: #fef3c7; display: flex; align-items: center; justify-content: center; color: #d97706; flex-shrink: 0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="texto-secundario" data-i18n="dashboard.total_pedidos"
+                                style="font-size: 0.8rem; font-weight: 600; margin-bottom: 2px;">Total de Pedidos</p>
+                            <h3 id="kpi-total" style="font-size: 1.5rem; font-weight: 700; color: #1e293b;">...</h3>
+                        </div>
+                    </div>
+
+                    <!-- KPI 2: Pedidos Abertos -->
+                    <div class="card animacao-entrar atraso-1"
+                        style="display: flex; align-items: center; padding: 18px 16px; border-radius: 12px; gap: 12px; border: 1px solid #f1f5f9;">
+                        <div
+                            style="width: 48px; height: 48px; border-radius: 12px; background-color: #fef3c7; display: flex; align-items: center; justify-content: center; color: #d97706; flex-shrink: 0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="texto-secundario" data-i18n="dashboard.pedidos_abertos"
+                                style="font-size: 0.8rem; font-weight: 600; margin-bottom: 2px;">Pedidos Abertos</p>
+                            <h3 id="kpi-abertos" style="font-size: 1.5rem; font-weight: 700; color: #1e293b;">...</h3>
+                        </div>
+                    </div>
+
+                    <!-- KPI 3: Taxa Resposta -->
+                    <div class="card animacao-entrar atraso-2"
+                        style="display: flex; align-items: center; padding: 18px 16px; border-radius: 12px; gap: 12px; border: 1px solid #f1f5f9;">
+                        <div
+                            style="width: 48px; height: 48px; border-radius: 12px; background-color: #fef3c7; display: flex; align-items: center; justify-content: center; color: #d97706; flex-shrink: 0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="texto-secundario" data-i18n="dashboard.taxa_resposta"
+                                style="font-size: 0.8rem; font-weight: 600; margin-bottom: 2px;">Taxa de Resposta</p>
+                            <h3 id="kpi-taxa" style="font-size: 1.5rem; font-weight: 700; color: #1e293b;">...%</h3>
+                        </div>
+                    </div>
+
+                    <!-- KPI 4: SLA -->
+                    <div class="card animacao-entrar atraso-3"
+                        style="display: flex; align-items: center; padding: 18px 16px; border-radius: 12px; gap: 12px; border: 1px solid #f1f5f9;">
+                        <div
+                            style="width: 48px; height: 48px; border-radius: 12px; background-color: #fef3c7; display: flex; align-items: center; justify-content: center; color: #d97706; flex-shrink: 0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="texto-secundario" data-i18n="dashboard.sla_medio"
+                                style="font-size: 0.8rem; font-weight: 600; margin-bottom: 2px;">SLA Médio</p>
+                            <h3 id="kpi-sla" style="font-size: 1.5rem; font-weight: 700; color: #1e293b;">...</h3>
+                        </div>
+                    </div>
+
+                    <!-- KPI 5: Pedidos Vencidos -->
+                    <div class="card animacao-entrar atraso-4"
+                        style="display: flex; align-items: center; padding: 18px 16px; border-radius: 12px; gap: 12px; border: 1px solid #f1f5f9;">
+                        <div
+                            style="width: 48px; height: 48px; border-radius: 12px; background-color: #fee2e2; display: flex; align-items: center; justify-content: center; color: #ef4444; flex-shrink: 0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="texto-secundario" data-i18n="dashboard.pedidos_vencidos"
+                                style="font-size: 0.8rem; font-weight: 600; margin-bottom: 2px;">Pedidos Vencidos</p>
+                            <h3 id="kpi-vencidos" style="font-size: 1.5rem; font-weight: 700; color: #ef4444;">...</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico: Distribuição por Estado (Aceites, Rejeitados, Com Alteração) -->
+                <div class="card animacao-entrar"
+                    style="margin-bottom: 24px; animation-delay: 0.25s; padding: 24px; border: 1px solid #f1f5f9; border-radius: 12px;">
+                    <h3 style="font-size: 1.1rem; color: #1e293b; margin-bottom: 16px; font-weight: 600;">Distribuição por Estado</h3>
+                    <div style="position: relative; height: 180px; width: 100%;">
+                        <canvas id="grafico-estados"></canvas>
+                    </div>
+                </div>
+
+                <!-- Secção de Gráficos Superior: Pedidos por Mês -->
+                <div class="card animacao-entrar"
+                    style="margin-bottom: 24px; animation-delay: 0.3s; padding: 24px; border: 1px solid #f1f5f9; border-radius: 12px;">
+                    <h3 style="font-size: 1.1rem; color: #1e293b; margin-bottom: 16px; font-weight: 600;">Pedidos por
+                        Mês</h3>
+                    <div style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="grafico-meses"></canvas>
+                    </div>
+                </div>
+
+                <!-- Secção Inferior: Tabela e Gráfico Circular -->
+                <div class="dashboard-grid-inferior" style="display: grid; grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); gap: 24px; margin-bottom: 32px; max-width: 100%; overflow: hidden;">
+
+                    <!-- Tabela: Pedidos Recentes -->
+                    <div class="card animacao-entrar atraso-3"
+                        style="padding: 24px; border: 1px solid #f1f5f9; border-radius: 12px; min-width: 0;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                            <h3 style="font-size: 1.1rem; color: #1e293b; font-weight: 600;"
+                                data-i18n="dashboard.pedidos_recentes">Pedidos Recentes</h3>
+                            <a href="pedidos.html"
+                                style="color: var(--aksanti-gold); font-weight: 500; font-size: 0.9rem; text-decoration: none;"
+                                data-i18n="dashboard.ver_todos">Ver Todos</a>
+                        </div>
+
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; text-align: left; border-collapse: separate; border-spacing: 0;">
+                                <thead>
+                                    <tr style="background-color: #f8fafc;">
+                                        <th style="padding: 12px 16px; color: #475569; font-weight: 600; font-size: 0.85rem; border-radius: 8px 0 0 8px;"
+                                            data-i18n="tabela.referencia">Referência</th>
+                                        <th id="dashboard-entidade-cabecalho" data-i18n="tabela.destino"
+                                            style="padding: 12px 16px; color: #475569; font-weight: 600; font-size: 0.85rem;">Destino</th>
+                                        <th style="padding: 12px 16px; color: #475569; font-weight: 600; font-size: 0.85rem;"
+                                            data-i18n="tabela.area">Área</th>
+                                        <th style="padding: 12px 16px; color: #475569; font-weight: 600; font-size: 0.85rem; border-radius: 0 8px 8px 0;"
+                                            data-i18n="tabela.status">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-corpo-recentes">
+                                    <tr>
+                                        <td colspan="4"
+                                            style="padding: 24px; text-align: center; color: var(--texto-secundario);">A
+                                            carregar dados reais...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="dashboard-recentes-navegacao" id="dashboard-recentes-navegacao" hidden>
+                            <button type="button" id="btn-recentes-recuar">&larr; Recuar</button>
+                            <span class="dashboard-recentes-indicador" id="dashboard-recentes-indicador">1 / 1</span>
+                            <button type="button" id="btn-recentes-avancar">Avan&ccedil;ar &rarr;</button>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico Circular: Distribuição por Área -->
+                    <div class="card animacao-entrar"
+                        style="animation-delay: 0.4s; padding: 24px; border: 1px solid #f1f5f9; border-radius: 12px; min-width: 0; overflow: hidden;">
+                        <h3 style="font-size: 1.1rem; color: #1e293b; margin-bottom: 24px; font-weight: 600;">
+                            Distribuição por Área</h3>
+                        <div
+                            class="dashboard-canvas-donut"
+                            style="position: relative; height: 300px; width: 100%; display: flex; justify-content: center; overflow: hidden;">
+                            <canvas id="grafico-areas-donut"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Estou a mandar ir invocar as caixas de ferramentas JavaScripts da base (No final de HTML das janelas todas que eu abro). Primeiro aos idiomas globais I18n com ligaãoes às línguas! -->
+    <!-- Traduções embutidas (fallback para quando a página é aberta via file:// ou fetch falha) -->
+        <script type="application/json" id="lang-pt">{
+            "nav": {"dashboard": "Painel de Controlo", "pedidos": "Pedidos", "calendario": "Calendário", "clientes": "Clientes", "areas": "Departamentos", "notificacoes": "Notificações", "perfil": "O Meu Perfil", "admin": "Administração", "sair": "Terminar Sessão"},
+            "dashboard": {"titulo": "Painel de Controlo", "total_pedidos": "Total de Pedidos", "pedidos_abertos": "Pedidos Abertos", "taxa_resposta": "Taxa de Resposta", "sla_medio": "SLA Médio", "pedidos_recentes": "Pedidos Recentes", "ver_todos": "Ver Todos"},
+            "status": {"DRAFT": "Rascunho", "SENT": "Enviado", "RECEIVED": "Recebido", "CLIENT_RESPONDED": "Cliente Respondeu", "ACCEPTED": "Aceite", "REJECTED": "Rejeitado", "CLOSED": "Fechado"},
+            "acoes": {"criar_pedido": "Criar Novo Pedido", "guardar": "Guardar Alterações", "cancelar": "Cancelar", "editar": "Editar", "eliminar": "Eliminar", "enviar": "Enviar", "aceitar": "Aceitar", "rejeitar": "Rejeitar", "ver_detalhes": "Ver Detalhes"},
+            "tabela": {"referencia": "Referência", "cliente": "Cliente", "area": "Área", "status": "Estado", "data": "Data", "acoes": "Ações"},
+            "moeda": {"AOA": "Kwanza", "USD": "Dólar", "EUR": "Euro"}
+        }</script>
+    <script type="application/json" id="lang-en">{
+            "nav": {"dashboard": "Dashboard", "pedidos": "Requests", "calendario": "Calendar", "clientes": "Clients", "areas": "Departments", "notificacoes": "Notifications", "perfil": "My Profile", "admin": "Administration", "sair": "Sign Out"},
+            "dashboard": {"titulo": "Dashboard", "total_pedidos": "Total Requests", "pedidos_abertos": "Open Requests", "taxa_resposta": "Response Rate", "sla_medio": "Average SLA", "pedidos_recentes": "Recent Requests", "ver_todos": "View All"},
+            "status": {"DRAFT": "Draft", "SENT": "Sent", "RECEIVED": "Received", "CLIENT_RESPONDED": "Client Responded", "ACCEPTED": "Accepted", "REJECTED": "Rejected", "CLOSED": "Closed"},
+            "acoes": {"criar_pedido": "Create New Request", "guardar": "Save Changes", "cancelar": "Cancel", "editar": "Edit", "eliminar": "Delete", "enviar": "Send", "aceitar": "Accept", "rejeitar": "Reject", "ver_detalhes": "View Details"},
+            "tabela": {"referencia": "Reference", "cliente": "Client", "area": "Area", "status": "Status", "data": "Date", "acoes": "Actions"},
+            "moeda": {"AOA": "Kwanza", "USD": "Dollar", "EUR": "Euro"}
+        }</script>
+    <script type="application/json" id="lang-fr">{
+            "nav": {"dashboard": "Tableau de Bord", "pedidos": "Demandes", "calendario": "Calendrier", "clientes": "Clients", "areas": "Départements", "notificacoes": "Notifications", "perfil": "Mon Profil", "admin": "Administration", "sair": "Se Déconnecter"},
+            "dashboard": {"titulo": "Tableau de Bord", "total_pedidos": "Total des Demandes", "pedidos_abertos": "Demandes Ouvertes", "taxa_resposta": "Taux de Réponse", "sla_medio": "SLA Moyen", "pedidos_recentes": "Demandes Récentes", "ver_todos": "Voir Tout"},
+            "status": {"DRAFT": "Brouillon", "SENT": "Envoyé", "RECEIVED": "Reçu", "CLIENT_RESPONDED": "Client a Répondu", "ACCEPTED": "Accepté", "REJECTED": "Rejeté", "CLOSED": "Fermé"},
+            "acoes": {"criar_pedido": "Créer une Nouvelle Demande", "guardar": "Enregistrer les Modifications", "cancelar": "Annuler", "editar": "Modifier", "eliminar": "Supprimer", "enviar": "Envoyer", "aceitar": "Accepter", "rejeitar": "Rejeter", "ver_detalhes": "Voir les Détails"},
+            "tabela": {"referencia": "Référence", "cliente": "Client", "area": "Département", "status": "Statut", "data": "Date", "acoes": "Actions"},
+            "moeda": {"AOA": "Kwanza", "USD": "Dollar", "EUR": "Euro"}
+        }</script>
+
+    <!-- Inclusóo do Chart.js para gr?ficos vivos -->
+    <script src="js/i18n.js?v=7"></script>
+    <!-- Estou a mandar chamar nas nossas bases a acãoo m?vel para as Barras Escondidas com gavetas que andamos no Telem?vel a atuar no JS a partir das telas ali do botão ali ao Hamburger -->
+    <script src="js/sidebar.js?v=15"></script>
+
+    <!-- Substituindo os scripts mock antigos por chamada real é API (Agora em Tempo Real) -->
+    <script src="js/tempo-real.js?v=8"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            function prepararCanvas(canvas) {
+                const contentor = canvas.parentElement;
+                const larguraBase = Math.floor(contentor.getBoundingClientRect().width || contentor.clientWidth || 320);
+                const larguraMaxima = canvas.id === 'grafico-areas-donut' ? 520 : larguraBase;
+                const largura = Math.max(260, Math.min(larguraBase, larguraMaxima));
+                const altura = Math.max(180, contentor.clientHeight || 240);
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = Math.floor(largura * dpr);
+                canvas.height = Math.floor(altura * dpr);
+                canvas.style.width = largura + 'px';
+                canvas.style.height = altura + 'px';
+                canvas.style.maxWidth = '100%';
+                canvas.style.display = 'block';
+                const ctx = canvas.getContext('2d');
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                return { ctx, largura, altura };
+            }
+
+            function animarCanvas(canvas, chave, desenharFrame) {
+                if (canvas.dataset.graficoChave === chave) {
+                    desenharFrame(1);
+                    return;
+                }
+
+                canvas.dataset.graficoChave = chave;
+                if (canvas._armsAnimacao) {
+                    cancelAnimationFrame(canvas._armsAnimacao);
+                }
+
+                const inicio = performance.now();
+                const duracao = 760;
+
+                const executar = (agora) => {
+                    const bruto = Math.min(1, (agora - inicio) / duracao);
+                    const progresso = 1 - Math.pow(1 - bruto, 3);
+                    desenharFrame(progresso);
+
+                    if (bruto < 1) {
+                        canvas._armsAnimacao = requestAnimationFrame(executar);
+                    }
+                };
+
+                canvas._armsAnimacao = requestAnimationFrame(executar);
+            }
+
+            function desenharGraficoBarrasHorizontais(canvas, itens, progresso = 1) {
+                const { ctx, largura, altura } = prepararCanvas(canvas);
+                ctx.clearRect(0, 0, largura, altura);
+
+                const margem = { esquerda: 110, direita: 40, topo: 16, fundo: 16 };
+                const areaLargura = largura - margem.esquerda - margem.direita;
+                const areaAltura = altura - margem.topo - margem.fundo;
+                const totalItens = itens.length;
+                const espacamento = 14;
+                const alturaBarra = Math.max(12, (areaAltura - (totalItens - 1) * espacamento) / totalItens);
+
+                // Encontrar valor máximo para escala
+                const valorMaximo = Math.max(...itens.map(i => i.valor), 1);
+
+                // Adicionar event listener para clique apenas uma vez
+                if (!canvas.dataset.hasClickListener) {
+                    canvas.dataset.hasClickListener = 'true';
+                    canvas.addEventListener('click', (e) => {
+                        const rect = canvas.getBoundingClientRect();
+                        const xClique = (e.clientX - rect.left) * (largura / rect.width);
+                        const yClique = (e.clientY - rect.top) * (altura / rect.height);
+
+                        itens.forEach((item, indice) => {
+                            const y = margem.topo + indice * (alturaBarra + espacamento);
+                            if (yClique >= y && yClique <= y + alturaBarra && xClique >= margem.esquerda) {
+                                window.location.href = item.href;
+                            }
+                        });
+                    });
+
+                    // Efeito Hover (mudar cursor)
+                    canvas.addEventListener('mousemove', (e) => {
+                        const rect = canvas.getBoundingClientRect();
+                        const xClique = (e.clientX - rect.left) * (largura / rect.width);
+                        const yClique = (e.clientY - rect.top) * (altura / rect.height);
+                        let noBotao = false;
+
+                        itens.forEach((item, indice) => {
+                            const y = margem.topo + indice * (alturaBarra + espacamento);
+                            if (yClique >= y && yClique <= y + alturaBarra && xClique >= margem.esquerda) {
+                                noBotao = true;
+                            }
+                        });
+                        canvas.style.cursor = noBotao ? 'pointer' : 'default';
+                    });
+                }
+
+                itens.forEach((item, indice) => {
+                    const y = margem.topo + indice * (alturaBarra + espacamento);
+                    const larguraMaxBarra = (item.valor / valorMaximo) * areaLargura;
+                    const larguraAtualBarra = larguraMaxBarra * progresso;
+
+                    // 1. Desenhar a label (Alinhamento à direita no espaço esquerdo)
+                    ctx.fillStyle = '#475569';
+                    ctx.font = '600 13px Inter, Arial, sans-serif';
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(item.label, margem.esquerda - 14, y + alturaBarra / 2);
+
+                    // 2. Desenhar a barra de fundo (Track cinzento suave)
+                    ctx.fillStyle = '#f1f5f9';
+                    desenharRetanguloArredondado(ctx, margem.esquerda, y, areaLargura, alturaBarra, alturaBarra / 2);
+                    ctx.fill();
+
+                    // 3. Desenhar a barra de progresso colorida
+                    if (larguraAtualBarra > 0) {
+                        ctx.fillStyle = item.cor;
+                        desenharRetanguloArredondado(ctx, margem.esquerda, y, larguraAtualBarra, alturaBarra, alturaBarra / 2);
+                        ctx.fill();
+                    }
+
+                    // 4. Desenhar o valor à frente da barra
+                    if (progresso > 0.9) {
+                        ctx.fillStyle = '#1e293b';
+                        ctx.font = '700 13px Inter, Arial, sans-serif';
+                        ctx.textAlign = 'left';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(String(item.valor), margem.esquerda + Math.max(larguraAtualBarra + 10, 10), y + alturaBarra / 2);
+                    }
+                });
+            }
+
+            function desenharRetanguloArredondado(ctx, x, y, largura, altura, raio) {
+                const r = Math.min(raio, largura / 2, Math.abs(altura) / 2);
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.lineTo(x + largura - r, y);
+                ctx.quadraticCurveTo(x + largura, y, x + largura, y + r);
+                ctx.lineTo(x + largura, y + altura - r);
+                ctx.quadraticCurveTo(x + largura, y + altura, x + largura - r, y + altura);
+                ctx.lineTo(x + r, y + altura);
+                ctx.quadraticCurveTo(x, y + altura, x, y + altura - r);
+                ctx.lineTo(x, y + r);
+                ctx.quadraticCurveTo(x, y, x + r, y);
+                ctx.closePath();
+            }
+
+            function truncarTextoCanvas(ctx, texto, larguraMaxima) {
+                const valor = String(texto || '');
+                if (ctx.measureText(valor).width <= larguraMaxima) return valor;
+
+                let cortado = valor;
+                while (cortado.length > 4 && ctx.measureText(cortado + '...').width > larguraMaxima) {
+                    cortado = cortado.slice(0, -1);
+                }
+
+                return cortado.length > 4 ? cortado + '...' : valor.slice(0, 4) + '...';
+            }
+
+            function desenharGraficoBarras(canvas, labels, valores, progresso = 1) {
+                const { ctx, largura, altura } = prepararCanvas(canvas);
+                const margem = { topo: 18, direita: 14, baixo: 38, esquerda: 34 };
+                const areaLargura = largura - margem.esquerda - margem.direita;
+                const areaAltura = altura - margem.topo - margem.baixo;
+                const maximo = Math.max(1, ...valores.map(Number));
+                const passo = areaLargura / Math.max(1, valores.length);
+                const barraLargura = Math.min(62, passo * 0.55);
+
+                ctx.clearRect(0, 0, largura, altura);
+                ctx.strokeStyle = '#e5e7eb';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(margem.esquerda, margem.topo);
+                ctx.lineTo(margem.esquerda, margem.topo + areaAltura);
+                ctx.lineTo(largura - margem.direita, margem.topo + areaAltura);
+                ctx.stroke();
+
+                ctx.font = '12px Inter, Arial, sans-serif';
+                ctx.fillStyle = '#64748b';
+                ctx.textAlign = 'right';
+                ctx.fillText(String(maximo), margem.esquerda - 8, margem.topo + 8);
+                ctx.fillText('0', margem.esquerda - 8, margem.topo + areaAltura);
+
+                valores.forEach((valor, indice) => {
+                    const alturaBarra = (Number(valor) / maximo) * (areaAltura - 10) * progresso;
+                    const x = margem.esquerda + indice * passo + (passo - barraLargura) / 2;
+                    const y = margem.topo + areaAltura - alturaBarra;
+
+                    ctx.fillStyle = '#e58a13';
+                    desenharRetanguloArredondado(ctx, x, y, barraLargura, alturaBarra, 7);
+                    ctx.fill();
+
+                    if (progresso > 0.92) {
+                        ctx.fillStyle = '#334155';
+                        ctx.textAlign = 'center';
+                        ctx.font = '700 12px Segoe UI, Arial, sans-serif';
+                        ctx.fillText(String(valor), x + barraLargura / 2, y - 6);
+                    }
+
+                    ctx.fillStyle = '#64748b';
+                    ctx.font = '12px Segoe UI, Arial, sans-serif';
+                    ctx.fillText(labels[indice] || '', x + barraLargura / 2, altura - 12);
+                });
+            }
+
+            function desenharGraficoDonut(canvas, labels, valores, progresso = 1) {
+                const { ctx, largura, altura } = prepararCanvas(canvas);
+                const total = valores.reduce((soma, valor) => soma + Number(valor || 0), 0);
+                const cores = ['#3b82f6', '#d97706', '#ef4444', '#10b981', '#6366f1', '#f97316', '#06b6d4', '#8b5cf6'];
+                const legendaDireita = largura >= 500;
+                const raio = Math.min(
+                    legendaDireita ? largura * 0.22 : largura * 0.28,
+                    legendaDireita ? altura * 0.34 : altura * 0.30,
+                    132
+                );
+                const centroX = legendaDireita ? largura * 0.34 : largura / 2;
+                const centroY = legendaDireita ? altura / 2 : Math.max(96, raio + 22);
+                let angulo = -Math.PI / 2;
+
+                ctx.clearRect(0, 0, largura, altura);
+
+                if (!total) {
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '600 14px Inter, Arial, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Sem dados', largura / 2, altura / 2);
+                    return;
+                }
+
+                valores.forEach((valor, indice) => {
+                    const fatia = (Number(valor) / total) * Math.PI * 2 * progresso;
+                    ctx.beginPath();
+                    ctx.moveTo(centroX, centroY);
+                    ctx.arc(centroX, centroY, raio, angulo, angulo + fatia);
+                    ctx.closePath();
+                    ctx.fillStyle = cores[indice % cores.length];
+                    ctx.fill();
+                    angulo += fatia;
+                });
+
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(centroX, centroY, raio * 0.58, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalCompositeOperation = 'source-over';
+
+                ctx.fillStyle = '#111827';
+                ctx.font = '800 22px Segoe UI, Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(String(total), centroX, centroY + 6);
+
+                ctx.textAlign = 'left';
+                labels.slice(0, 5).forEach((label, indice) => {
+                    const linha = legendaDireita ? indice : Math.floor(indice / 2);
+                    const coluna = legendaDireita ? 0 : indice % 2;
+                    const xBase = legendaDireita ? largura * 0.66 : 12 + coluna * (largura / 2);
+                    const y = legendaDireita ? 28 + indice * 25 : altura - 70 + linha * 24;
+                    const larguraTexto = legendaDireita
+                        ? Math.max(80, largura - xBase - 22)
+                        : Math.max(80, largura / 2 - 42);
+                    ctx.fillStyle = cores[indice % cores.length];
+                    ctx.fillRect(xBase, y - 10, 12, 12);
+                    ctx.fillStyle = '#475569';
+                    ctx.font = '12px Segoe UI, Arial, sans-serif';
+                    const textoLegenda = `${label}: ${valores[indice]}`;
+                    ctx.fillText(truncarTextoCanvas(ctx, textoLegenda, larguraTexto), xBase + 18, y);
+                });
+            }
+
+            // 1. Data dinamica do periodo apresentado no dashboard
+            function obterLocaleDashboard() {
+                const idiomaAtual = localStorage.getItem('arms_idioma') ||
+                    document.getElementById('select-idioma-aksanti')?.value ||
+                    'pt';
+
+                return {
+                    pt: 'pt-PT',
+                    en: 'en-US',
+                    fr: 'fr-FR'
+                }[idiomaAtual] || 'pt-PT';
+            }
+
+            function capitalizarPrimeiraLetra(texto) {
+                if (!texto) return '';
+                return texto.charAt(0).toUpperCase() + texto.slice(1);
+            }
+
+            function atualizarDataCorrenteDashboard() {
+                const dataCorrenteEl = document.getElementById('data-corrente');
+                if (!dataCorrenteEl) return;
+
+                const dataAtual = new Date();
+                const locale = obterLocaleDashboard();
+                const mesAtual = new Intl.DateTimeFormat(locale, { month: 'long' }).format(dataAtual);
+                dataCorrenteEl.textContent = `${capitalizarPrimeiraLetra(mesAtual)}, ${dataAtual.getFullYear()}`;
+            }
+
+            atualizarDataCorrenteDashboard();
+            setInterval(atualizarDataCorrenteDashboard, 60 * 60 * 1000);
+
+            function obterUtilizadorDashboard() {
+                try {
+                    return JSON.parse(localStorage.getItem('arms_utilizador_dados') || '{}');
+                } catch (e) {
+                    return {};
+                }
+            }
+
+            const utilizadorDashboard = obterUtilizadorDashboard();
+            const dashboardClienteExterno = utilizadorDashboard.tipo === 'CLIENT';
+            const dashboardAdmin = utilizadorDashboard.admin === true;
+            const dashboardMembroAksanti = !dashboardClienteExterno && !dashboardAdmin;
+
+            // Configurar filtros se for admin
+            if (dashboardAdmin) {
+                const containerFiltros = document.getElementById('dashboard-filtros-container');
+                const selectTipo = document.getElementById('filtro-dashboard-tipo');
+                const selectCliente = document.getElementById('filtro-dashboard-cliente');
+                const selectArea = document.getElementById('filtro-dashboard-area');
+                const selectFuncionario = document.getElementById('filtro-dashboard-funcionario');
+                const btnLimpar = document.getElementById('btn-limpar-filtros-dashboard');
+
+                if (containerFiltros && selectTipo && selectCliente && selectArea) {
+                    containerFiltros.style.display = 'flex';
+
+                    // Carregar clientes
+                    fetch('api/clientes.php')
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.sucesso && data.dados) {
+                                data.dados.forEach(c => {
+                                    const opt = document.createElement('option');
+                                    opt.value = c.id;
+                                    opt.textContent = c.company_name || c.name;
+                                    selectCliente.appendChild(opt);
+                                });
+                            }
+                        });
+
+                    // Carregar areas
+                    fetch('api/areas.php')
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.sucesso && data.dados) {
+                                data.dados.forEach(a => {
+                                    const opt = document.createElement('option');
+                                    opt.value = a.id;
+                                    opt.textContent = `${a.name} (${a.code})`;
+                                    selectArea.appendChild(opt);
+                                });
+                            }
+                        });
+
+                    // Carregar funcionários (AKSANTI)
+                    fetch('api/utilizadores.php')
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.sucesso && data.dados) {
+                                data.dados.filter(u => u.user_type === 'AKSANTI').forEach(u => {
+                                    const opt = document.createElement('option');
+                                    opt.value = u.id;
+                                    opt.textContent = u.full_name || u.email;
+                                    selectFuncionario.appendChild(opt);
+                                });
+                            }
+                        });
+
+                    function atualizarVisibilidadeFiltros() {
+                        const tipo = selectTipo.value;
+                        const cliente = selectCliente.value;
+                        const area = selectArea.value;
+                        const funcionario = selectFuncionario.value;
+
+                        if (tipo === 'empresas') {
+                            selectCliente.style.display = 'block';
+                            selectFuncionario.style.display = 'none';
+                            selectFuncionario.value = '';
+                            if (cliente) {
+                                selectArea.style.display = 'block';
+                            } else {
+                                selectArea.style.display = 'none';
+                                selectArea.value = '';
+                            }
+                        } else if (tipo === 'interna') {
+                            selectCliente.style.display = 'none';
+                            selectCliente.value = '';
+                            selectArea.style.display = 'none';
+                            selectArea.value = '';
+                            selectFuncionario.style.display = 'block';
+                        } else {
+                            // Visão Geral
+                            selectCliente.style.display = 'none';
+                            selectCliente.value = '';
+                            selectArea.style.display = 'none';
+                            selectArea.value = '';
+                            selectFuncionario.style.display = 'none';
+                            selectFuncionario.value = '';
+                        }
+
+                        if (tipo !== 'geral' || cliente || area || funcionario) {
+                            btnLimpar.style.display = 'flex';
+                        } else {
+                            btnLimpar.style.display = 'none';
+                        }
+                    }
+
+                    function aplicarFiltros() {
+                        const tipoVal = selectTipo.value;
+                        const clienteVal = selectCliente.value;
+                        const areaVal = selectArea.value;
+                        const funcionarioVal = selectFuncionario.value;
+
+                        const filtros = {};
+                        if (tipoVal === 'interna') {
+                            filtros.filter_destination_type = 'AKSANTI';
+                            if (funcionarioVal) {
+                                filtros.filter_recipient_user_id = funcionarioVal;
+                            }
+                        } else if (tipoVal === 'empresas') {
+                            if (clienteVal) {
+                                filtros.filter_client_id = clienteVal;
+                            } else {
+                                filtros.filter_destination_type = 'CLIENT'; // All clients
+                            }
+                        }
+
+                        if (areaVal) {
+                            filtros.filter_area_id = areaVal;
+                        }
+
+                        if (typeof ArmsTempoReal !== 'undefined' && typeof ArmsTempoReal.definirFiltros === 'function') {
+                            ArmsTempoReal.definirFiltros(filtros);
+                            ArmsTempoReal.forcarAtualizacao();
+                        }
+                    }
+
+                    selectTipo.addEventListener('change', () => {
+                        atualizarVisibilidadeFiltros();
+                        aplicarFiltros();
+                    });
+
+                    selectCliente.addEventListener('change', () => {
+                        atualizarVisibilidadeFiltros();
+                        aplicarFiltros();
+                    });
+
+                    selectArea.addEventListener('change', () => {
+                        aplicarFiltros();
+                    });
+
+                    selectFuncionario.addEventListener('change', () => {
+                        aplicarFiltros();
+                    });
+
+                    btnLimpar.addEventListener('click', () => {
+                        selectTipo.value = 'geral';
+                        selectCliente.value = '';
+                        selectArea.value = '';
+                        selectFuncionario.value = '';
+                        atualizarVisibilidadeFiltros();
+                        aplicarFiltros();
+                    });
+                    
+                    // Inicializar a visibilidade correta dos filtros com base no valor inicial do selectTipo
+                    atualizarVisibilidadeFiltros();
+                }
+            }
+
+            function rotuloEntidadePedidoDashboard() {
+                if (dashboardAdmin) return 'Cliente';
+                if (dashboardClienteExterno) return 'Parceiro';
+                return 'Destino';
+            }
+
+            function nomeEntidadePedidoDashboard(pedido) {
+                if (dashboardAdmin) {
+                    return pedido.client_name || '-';
+                }
+
+                return 'Aksanti';
+            }
+
+            function aplicarRotuloEntidadeDashboard() {
+                const cabecalhoCliente = document.getElementById('dashboard-entidade-cabecalho') ||
+                    document.querySelector('[data-i18n="tabela.cliente"]');
+                if (cabecalhoCliente) {
+                    cabecalhoCliente.textContent = rotuloEntidadePedidoDashboard();
+                }
+            }
+
+            aplicarRotuloEntidadeDashboard();
+
+            const TAMANHO_PAGINA_RECENTES = 5;
+            let pedidosRecentesDashboard = [];
+            let paginaRecentesDashboard = 0;
+
+            function escaparTextoDashboard(valor) {
+                return String(valor ?? '').replace(/[&<>"']/g, (caractere) => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[caractere]));
+            }
+
+            function atualizarNavegacaoRecentes() {
+                const navegacao = document.getElementById('dashboard-recentes-navegacao');
+                const indicador = document.getElementById('dashboard-recentes-indicador');
+                const btnRecuar = document.getElementById('btn-recentes-recuar');
+                const btnAvancar = document.getElementById('btn-recentes-avancar');
+                const totalPaginas = Math.max(1, Math.ceil(pedidosRecentesDashboard.length / TAMANHO_PAGINA_RECENTES));
+
+                if (!navegacao || !indicador || !btnRecuar || !btnAvancar) return;
+
+                navegacao.hidden = pedidosRecentesDashboard.length <= TAMANHO_PAGINA_RECENTES;
+                indicador.textContent = `${Math.min(paginaRecentesDashboard + 1, totalPaginas)} / ${totalPaginas}`;
+                btnRecuar.disabled = paginaRecentesDashboard <= 0;
+                btnAvancar.disabled = paginaRecentesDashboard >= totalPaginas - 1;
+            }
+
+            function renderizarPedidosRecentes() {
+                const tbody = document.getElementById('tabela-corpo-recentes');
+                if (!tbody) return;
+
+                tbody.innerHTML = '';
+
+                if (!pedidosRecentesDashboard.length) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="padding: 24px; text-align: center; color: var(--texto-secundario);">Sem pedidos recentes</td></tr>';
+                    atualizarNavegacaoRecentes();
+                    return;
+                }
+
+                const totalPaginas = Math.max(1, Math.ceil(pedidosRecentesDashboard.length / TAMANHO_PAGINA_RECENTES));
+                paginaRecentesDashboard = Math.min(Math.max(0, paginaRecentesDashboard), totalPaginas - 1);
+
+                pedidosRecentesDashboard
+                    .slice(paginaRecentesDashboard * TAMANHO_PAGINA_RECENTES, (paginaRecentesDashboard + 1) * TAMANHO_PAGINA_RECENTES)
+                    .forEach(r => {
+                        const row = document.createElement('tr');
+                        let statusClass = 'badge-info';
+                        if (r.status === 'ACCEPTED' || r.status === 'CLOSED') statusClass = 'badge-sucesso';
+                        if (r.status === 'REJECTED') statusClass = 'badge-perigo';
+                        if (r.status === 'DRAFT') statusClass = 'badge-aviso';
+                        if (r.status === 'CLIENT_RESPONDED') statusClass = 'badge-info';
+
+                        let textoEstado = r.status;
+                        if (window.t) textoEstado = window.t('status.' + r.status, r.status);
+                        
+                        const utilizadorAtual = JSON.parse(localStorage.getItem('arms_utilizador_dados') || '{}');
+                        const souRemetente = String(utilizadorAtual.id) === String(r.created_by_id);
+                        const souCliente = utilizadorAtual.tipo === 'CLIENT';
+                        const destType = (r.destination_type || '').toUpperCase();
+                        const destinatarioSouEu = souCliente ? (destType !== 'AKSANTI' && !souRemetente) : (destType === 'AKSANTI' && !souRemetente);
+
+                        if (r.status === 'SENT') {
+                            textoEstado = destinatarioSouEu ? 'Recebido' : 'Enviado';
+                        }
+                        if (r.status === 'RECEIVED') {
+                            textoEstado = destinatarioSouEu ? 'Em Análise' : 'Lido pelo Destinatário';
+                        }
+
+                        row.style.cursor = 'pointer';
+                        row.onclick = () => window.location.href = `pedido-detalhe.html?ref=${encodeURIComponent(r.reference)}`;
+                        row.innerHTML = `<td style="padding: 16px; font-weight: 600;">${escaparTextoDashboard(r.reference)}</td>
+                            <td style="padding: 16px; color: var(--texto-secundario);">${escaparTextoDashboard(nomeEntidadePedidoDashboard(r))}</td>
+                            <td style="padding: 16px; color: var(--texto-secundario);">${escaparTextoDashboard(r.area_name || '-')}</td>
+                            <td style="padding: 16px;"><span class="badge ${statusClass}">${escaparTextoDashboard(textoEstado)}</span></td>`;
+                        tbody.appendChild(row);
+                    });
+
+                atualizarNavegacaoRecentes();
+
+                if (typeof mudarIdiomaAksanti === 'function') {
+                    const idiomaMemorizado = localStorage.getItem('arms_idioma') || 'pt';
+                    mudarIdiomaAksanti(idiomaMemorizado);
+                    aplicarRotuloEntidadeDashboard();
+                }
+            }
+
+            const selectIdiomaDashboard = document.getElementById('select-idioma-aksanti');
+            if (selectIdiomaDashboard) {
+                selectIdiomaDashboard.addEventListener('change', () => {
+                    atualizarDataCorrenteDashboard();
+                    setTimeout(aplicarRotuloEntidadeDashboard, 0);
+                });
+            }
+
+            // 2. Funcionalidade de Pesquisa 100% Funcional (Ao Vivo)
+            const barraPesquisa = document.getElementById('input-pesquisa-geral');
+            if (barraPesquisa) {
+                barraPesquisa.addEventListener('input', (e) => {
+                    const termo = barraPesquisa.value.trim().toLowerCase();
+                    
+                    if (dashboardAdmin && termo.length > 1) {
+                        let encontrouAlvo = false;
+                        const selTipo = document.getElementById('dashboard-filtro-tipo');
+                        const selCl = document.getElementById('dashboard-filtro-cliente');
+                        const selFn = document.getElementById('dashboard-filtro-funcionario');
+                        
+                        if (selTipo && selCl && selFn) {
+                            const cl = Array.from(selCl.options).find(opt => opt.text.toLowerCase().includes(termo));
+                            if (cl && cl.value) {
+                                selTipo.value = 'empresas';
+                                selCl.style.display = 'block';
+                                selFn.style.display = 'none';
+                                selFn.value = '';
+                                selCl.value = cl.value;
+                                if (typeof aplicarFiltros === 'function') aplicarFiltros();
+                                encontrouAlvo = true;
+                            }
+                            
+                            if (!encontrouAlvo) {
+                                const fn = Array.from(selFn.options).find(opt => opt.text.toLowerCase().includes(termo));
+                                if (fn && fn.value) {
+                                    selTipo.value = 'interna';
+                                    selCl.style.display = 'none';
+                                    selCl.value = '';
+                                    selFn.style.display = 'block';
+                                    selFn.value = fn.value;
+                                    if (typeof aplicarFiltros === 'function') aplicarFiltros();
+                                }
+                            }
+                        }
+                    }
+
+                    const linhasRecentes = document.querySelectorAll('#tabela-corpo-recentes tr');
+                    linhasRecentes.forEach(linha => {
+                        const texto = linha.textContent.toLowerCase();
+                        if (texto.includes(termo)) {
+                            linha.style.display = '';
+                        } else {
+                            linha.style.display = 'none';
+                        }
+                    });
+                });
+
+                barraPesquisa.addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') {
+                        const termo = barraPesquisa.value.trim();
+                        if (termo) {
+                            window.location.href = `pedidos.html?q=${encodeURIComponent(termo)}`;
+                        }
+                    }
+                });
+            }
+
+            document.getElementById('btn-recentes-recuar')?.addEventListener('click', () => {
+                if (paginaRecentesDashboard > 0) {
+                    paginaRecentesDashboard -= 1;
+                    renderizarPedidosRecentes();
+                }
+            });
+
+            document.getElementById('btn-recentes-avancar')?.addEventListener('click', () => {
+                const totalPaginas = Math.ceil(pedidosRecentesDashboard.length / TAMANHO_PAGINA_RECENTES);
+                if (paginaRecentesDashboard < totalPaginas - 1) {
+                    paginaRecentesDashboard += 1;
+                    renderizarPedidosRecentes();
+                }
+            });
+
+            ArmsTempoReal.iniciar('dashboard', (data) => {
+                // 1. Atualizar KPIs
+                if (data.kpis) {
+                    const kpis = data.kpis;
+                    document.getElementById('kpi-total').textContent = kpis.total_pedidos;
+                    document.getElementById('kpi-abertos').textContent = kpis.pedidos_abertos;
+                    const kpiVencidos = document.getElementById('kpi-vencidos');
+                    if (kpiVencidos) kpiVencidos.textContent = Number(kpis.pedidos_vencidos || 0);
+                    document.getElementById('kpi-taxa').textContent = kpis.taxa_resposta + '%';
+                    document.getElementById('kpi-sla').textContent = kpis.sla_medio;
+
+                    // Gráfico de barras horizontais: Distribuição por Estado
+                    const ctxEstados = document.getElementById('grafico-estados');
+                    if (ctxEstados) {
+                        const itensEstados = [
+                            { label: 'Aceites', valor: Number(kpis.pedidos_aceites || 0), cor: '#16a34a', href: 'pedidos.html?filtro=ACCEPTED' },
+                            { label: 'Rejeitados', valor: Number(kpis.pedidos_rejeitados || 0), cor: '#e11d48', href: 'pedidos.html?filtro=REJECTED' },
+                            { label: 'Com Alteração', valor: Number(kpis.pedidos_alteracoes || 0), cor: '#9333ea', href: 'pedidos.html?filtro=CLIENT_RESPONDED' }
+                        ];
+                        const chaveEstados = `estados:${itensEstados.map(i => i.valor).join('|')}:${ctxEstados.parentElement?.clientWidth || 0}`;
+                        animarCanvas(ctxEstados, chaveEstados, (progresso) => {
+                            desenharGraficoBarrasHorizontais(ctxEstados, itensEstados, progresso);
+                        });
+                    }
+                }
+
+                // 2. Preencher tabela de pedidos recentes
+                pedidosRecentesDashboard = Array.isArray(data.recentes) ? data.recentes : [];
+                renderizarPedidosRecentes();
+
+                // 3. Gráfico: Pedidos por Màs
+                const ctxMeses = document.getElementById('grafico-meses');
+                if (ctxMeses && data.por_mes && data.por_mes.length > 0) {
+                    const labels = data.por_mes.map(m => m.mes_nome);
+                    const valores = data.por_mes.map(m => Number(m.total || 0));
+                    const chaveGrafico = `meses:${labels.join('|')}:${valores.join('|')}:${ctxMeses.parentElement?.clientWidth || 0}`;
+                    animarCanvas(ctxMeses, chaveGrafico, (progresso) => {
+                        desenharGraficoBarras(ctxMeses, labels, valores, progresso);
+                    });
+                }
+
+                // 4. Gráfico: Distribuição por Área (Doughnut)
+                const ctxArea = document.getElementById('grafico-areas-donut');
+                if (ctxArea && data.por_area && data.por_area.length > 0) {
+                    const areasComDados = data.por_area.filter(a => Number(a.total || 0) > 0);
+                    if (areasComDados.length > 0) {
+                        const labels = areasComDados.map(a => a.area_name);
+                        const valores = areasComDados.map(a => Number(a.total || 0));
+                        const chaveGrafico = `areas:${labels.join('|')}:${valores.join('|')}:${ctxArea.parentElement?.clientWidth || 0}`;
+                        animarCanvas(ctxArea, chaveGrafico, (progresso) => {
+                            desenharGraficoDonut(ctxArea, labels, valores, progresso);
+                        });
+                    }
+                }
+            });
+
+});
+    </script>
+
+    <script src="js/modal.js"></script>
+    <script src="js/notificacoes.js?v=7"></script>
+    <script src="js/app.js?v=3"></script>
+    
+    <!-- Componente Searchable Select -->
+    <script src="js/components/searchable-select.js?v=4"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar o dropdown pesquisável nos selects de Empresas e Equipa
+            if (typeof SearchableSelect !== 'undefined') {
+                new SearchableSelect('#filtro-dashboard-cliente');
+                new SearchableSelect('#filtro-dashboard-funcionario');
+            }
+        });
+    </script>
+
+        <!-- Bottom Navigation Bar (Apenas Mobile) -->
+            <nav class="bottom-nav">
+        <div class="bottom-nav-container">
+            <a href="dashboard.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span data-i18n="nav.dashboard">Painel</span>
+            </a>
+            <a href="pedidos.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg><span data-i18n="nav.pedidos">Pedidos</span>
+            </a>
+            <div class="bottom-nav-fab-container">
+                <a href="pedidos.html?action=novo" class="bottom-nav-fab">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </a>
+            </div>
+            <a href="calendario.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span data-i18n="nav.calendario">Calendário</span>
+            </a>
+            <a href="#" class="bottom-nav-item" id="btn-bottom-menu">
+                <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg><span>Menu</span>
+            </a>
+        </div>
+    </nav>
+
+
+</body>
+
+</html>
+
+
+
+
+

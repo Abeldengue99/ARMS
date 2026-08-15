@@ -10,6 +10,17 @@ AddType application/javascript .js
 AddType application/json .json
 AddType image/svg+xml .svg
 
+# Compatibilidade apos separar a aplicacao em Frontend/ e Backend/.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^$ Frontend/index.html [L]
+    RewriteRule ^api/(.*)$ Backend/api/$1 [L,QSA]
+    RewriteRule ^Frontend/api/(.*)$ Backend/api/$1 [L,QSA]
+    RewriteRule ^(css|js|img|lang)/(.*)$ Frontend/$1/$2 [L,QSA]
+    RewriteRule ^([^/]+\.html)$ Frontend/$1 [L,QSA]
+</IfModule>
+
 # Compressao de respostas textuais. Reduz o peso inicial de HTML, CSS, JS e JSON.
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json image/svg+xml

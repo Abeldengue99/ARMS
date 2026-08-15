@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<!-- Estou a declarar que esta página segue o HTML5 e o idioma base é o Português -->
+<html lang="pt">
+<head>
+    <!-- Estou a garantir que os caracteres acentuados aparecem correctamente -->
+    <meta charset="UTF-8">
+    <!-- Estou a adaptar a página aos ecrãs de telemóveis e tablets -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Estou a definir o título desta aba no navegador -->
+    <title>Departamentos - ARMS</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
+    <meta name="theme-color" content="#111111">
+    <!-- Script Anti-Flicker: Ocultar imediatamente links admin para clientes usando localStorage antes de renderizar a página -->
+    <!-- Script Anti-Flicker partilhado -->
+    <script src="js/anti-flicker.js?v=15"></script>
+
+    <!-- Tintas CSS do Sistema -->
+    <link rel="stylesheet" href="css/reset.css?v=10">
+    <link rel="stylesheet" href="css/variaveis.css?v=10">
+    <link rel="stylesheet" href="css/base.css?v=10">
+    <link rel="stylesheet" href="css/layout.css?v=15">
+    <link rel="stylesheet" href="css/componentes.css?v=10">
+    <link rel="stylesheet" href="css/formularios.css?v=10">
+    <link rel="stylesheet" href="css/tabelas.css?v=10">
+    <link rel="stylesheet" href="css/animacoes.css?v=10">
+    <link rel="stylesheet" href="css/responsivo.css?v=10">
+    <link rel="stylesheet" href="css/pages/areas.css?v=10">
+<link rel="manifest" href="js/manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+</head>
+<body>
+
+    <!-- Estou a montar o esqueleto principal da plataforma com a sidebar e a Área de conteúdo -->
+    <div class="layout-principal">
+
+        <!-- Estou a criar a barra lateral escura com navegação completa e ID para o JS mobile -->
+        <aside class="barra-lateral" id="barra-lateral">
+            <!-- Botão de Expandir/Recolher Barra Lateral -->
+            <button id="btn-toggle-sidebar" class="btn-toggle-sidebar" aria-label="Minimizar Menu" style="position: absolute; right: 12px; top: 40px; width: 32px; height: 32px; border-radius: 50%; background: var(--aksanti-dark); border: 2px solid var(--bg-card); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; transition: transform 0.3s ease;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="barra-lateral-logo">
+                <img src="img/logo.svg" alt="ARMS" class="logo-svg">
+            </div>
+
+            <!-- Estou a criar a navegação com todos os links do sistema -->
+            <nav style="display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
+                <a href="dashboard.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span data-i18n="nav.dashboard">Painel de Controlo</span>
+                </a>
+                <a href="pedidos.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg><span data-i18n="nav.pedidos">Pedidos</span>
+                </a>
+                <a href="calendario.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span data-i18n="nav.calendario">Calendário</span>
+                </a>
+                <a href="clientes.html" class="menu-item menu-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span data-i18n="nav.clientes">Clientes</span>
+                </a>
+                <!-- Estou a marcar esta página como activa na sidebar com a classe dourada -->
+                <a href="areas.html" class="menu-item menu-admin-only activo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span data-i18n="nav.areas">Departamentos</span>
+                </a>
+
+                <hr class="menu-admin-only" style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
+                <a href="admin-utilizadores.html" class="menu-item menu-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span data-i18n="nav.admin">Administração</span>
+                </a>
+                <a href="#" class="menu-item" style="color: #ef4444;" id="btn-sair">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span data-i18n="nav.sair">Terminar Sessão</span>
+                </a>
+            </nav>
+        </aside>
+
+            <!-- Estou a abrir a zona de conteúdo branca principal à direita da sidebar -->
+        <main class="area-conteudo" style="min-width: 0; overflow-x: hidden;">
+
+                <!-- Estou a criar o cabeçalho com botão mobile, título, moedas e idiomas -->
+            <header class="cabecalho-principal">
+                <div style="display: flex; align-items: center;">
+                    <!-- Estou a colocar o botão hambúrguer para telemóveis -->
+                    <h2 style="font-size: 1.25rem;" data-i18n="nav.areas">Departamentos</h2>
+                </div>
+
+                <div class="cabecalho-acoes">
+                    <a href="notificacoes.html" class="botao-notificacao" title="Notificações">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span class="notificacao-ponto"></span>
+                    </a>
+
+                    <a href="perfil.html" class="avatar-link" title="O Meu Perfil">
+                        <div class="avatar-utilizador" data-arms-avatar aria-label="Utilizador"></div>
+                    </a>
+
+                    <div class="divisor-cabecalho"></div>
+                    <select id="select-idioma-aksanti" class="input-controlo select-idioma-admin"><option value="pt">Português</option><option value="en">English</option><option value="fr">Français</option></select>
+                </div>
+            </header>
+
+            <!-- Estou a criar a zona de conteúdo com os cartões das Áreas/departamentos -->
+            <div class="conteudo-pagina">
+
+                <!-- Estou a colocar o título da secção -->
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px;">
+                    <h2 style="font-size: 1.5rem; color: var(--texto-principal);" data-i18n="areas.titulo">Gestão de Departamentos</h2>
+                    <div style="display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px;">
+                        <button class="btn btn-secundario" id="btn-exportar-pdf-areas" style="min-height: 42px; padding: 8px 18px; font-weight: 800;">Baixar PDF</button>
+                        <button class="btn btn-secundario" id="btn-exportar-excel-areas" style="min-height: 42px; padding: 8px 18px; font-weight: 800; color: #166534; background: #dcfce7;">Baixar Excel</button>
+                        <button class="btn btn-primario" id="btn-adicionar-area" style="padding: 10px 20px; height: fit-content; font-size: 0.9rem;">Adicionar Departamento</button>
+                    </div>
+                </div>
+
+                <!-- Estou a criar uma grelha de cartões para cada departamento em vez de uma tabela simples -->
+                <div id="grelha-areas" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+                    <!-- Estou a deixar este espaço vazio porque o JavaScript vai preenchê-lo com os dados mock -->
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Estou a embutir as traduções completas como fallback para acesso via file:// -->
+        <script type="application/json" id="lang-pt">
+        {
+    "nav": {
+        "dashboard": "Painel de Controlo",
+        "pedidos": "Pedidos",
+        "calendario": "Calendário",
+        "clientes": "Clientes",
+        "areas": "Departamentos",
+        "notificacoes": "Notificações",
+        "perfil": "O Meu Perfil",
+        "admin": "Administração",
+        "sair": "Terminar Sessão"
+    },
+    "dashboard": {
+        "titulo": "Painel de Controlo",
+        "total_pedidos": "Total de Pedidos",
+        "pedidos_abertos": "Pedidos Abertos",
+        "taxa_resposta": "Taxa de Resposta",
+        "sla_medio": "SLA Médio",
+        "pedidos_recentes": "Pedidos Recentes",
+        "ver_todos": "Ver Todos"
+    },
+    "status": {
+        "DRAFT": "Rascunho",
+        "SENT": "Enviado",
+        "RECEIVED": "Recebido",
+        "CLIENT_RESPONDED": "Cliente Respondeu",
+        "ACCEPTED": "Aceite",
+        "REJECTED": "Rejeitado",
+        "CLOSED": "Fechado"
+    },
+    "acoes": {
+        "criar_pedido": "Criar Novo Pedido",
+        "guardar": "Guardar Alterações",
+        "cancelar": "Cancelar",
+        "editar": "Editar",
+        "eliminar": "Eliminar",
+        "enviar": "Enviar",
+        "aceitar": "Aceitar",
+        "rejeitar": "Rejeitar",
+        "ver_detalhes": "Ver Detalhes"
+    },
+    "tabela": {
+        "referencia": "Referência",
+        "cliente": "Cliente",
+        "area": "Área",
+        "status": "Estado",
+        "data": "Data",
+        "acoes": "Ações"
+    },
+    "moeda": {
+        "AOA": "Kwanza",
+        "USD": "Dólar",
+        "EUR": "Euro"
+    },
+    "login": {
+        "titulo": "Bem-vindo ao ARMS",
+        "subtitulo": "Aksanti Request Management System",
+        "email": "Endereço de E-mail",
+        "senha": "Palavra-passe",
+        "entrar": "Entrar no Sistema",
+        "esqueceu_senha": "Esqueceu a sua palavra-passe?"
+    }
+}
+        </script>
+        <script type="application/json" id="lang-en">
+        {
+    "nav": {
+        "dashboard": "Dashboard",
+        "pedidos": "Requests",
+        "calendario": "Calendar",
+        "clientes": "Clients",
+        "areas": "Departments",
+        "notificacoes": "Notifications",
+        "perfil": "My Profile",
+        "admin": "Administration",
+        "sair": "Sign Out"
+    },
+    "dashboard": {
+        "titulo": "Dashboard",
+        "total_pedidos": "Total Requests",
+        "pedidos_abertos": "Open Requests",
+        "taxa_resposta": "Response Rate",
+        "sla_medio": "Average SLA",
+        "pedidos_recentes": "Recent Requests",
+        "ver_todos": "View All"
+    },
+    "status": {
+        "DRAFT": "Draft",
+        "SENT": "Sent",
+        "RECEIVED": "Received",
+        "CLIENT_RESPONDED": "Client Responded",
+        "ACCEPTED": "Accepted",
+        "REJECTED": "Rejected",
+        "CLOSED": "Closed"
+    },
+    "acoes": {
+        "criar_pedido": "Create New Request",
+        "guardar": "Save Changes",
+        "cancelar": "Cancel",
+        "editar": "Edit",
+        "eliminar": "Delete",
+        "enviar": "Send",
+        "aceitar": "Accept",
+        "rejeitar": "Reject",
+        "ver_detalhes": "View Details"
+    },
+    "tabela": {
+        "referencia": "Reference",
+        "cliente": "Client",
+        "area": "Area",
+        "status": "Status",
+        "data": "Date",
+        "acoes": "Actions"
+    },
+    "moeda": {
+        "AOA": "Kwanza",
+        "USD": "Dollar",
+        "EUR": "Euro"
+    },
+    "login": {
+        "titulo": "Welcome to ARMS",
+        "subtitulo": "Aksanti Request Management System",
+        "email": "Email Address",
+        "senha": "Password",
+        "entrar": "Sign In",
+        "esqueceu_senha": "Forgot your password?"
+    }
+}
+        </script>
+        <script type="application/json" id="lang-fr">
+        {
+    "nav": {
+        "dashboard": "Tableau de Bord",
+        "pedidos": "Demandes",
+        "calendario": "Calendrier",
+        "clientes": "Clients",
+        "areas": "Départements",
+        "notificacoes": "Notifications",
+        "perfil": "Mon Profil",
+        "admin": "Administration",
+        "sair": "Se Déconnecter"
+    },
+    "dashboard": {
+        "titulo": "Tableau de Bord",
+        "total_pedidos": "Total des Demandes",
+        "pedidos_abertos": "Demandes Ouvertes",
+        "taxa_resposta": "Taux de Réponse",
+        "sla_medio": "SLA Moyen",
+        "pedidos_recentes": "Demandes Récentes",
+        "ver_todos": "Voir Tout"
+    },
+    "status": {
+        "DRAFT": "Brouillon",
+        "SENT": "Envoyé",
+        "RECEIVED": "Reçu",
+        "CLIENT_RESPONDED": "Client a Répondu",
+        "ACCEPTED": "Accepté",
+        "REJECTED": "Rejeté",
+        "CLOSED": "Fermé"
+    },
+    "acoes": {
+        "criar_pedido": "Créer une Nouvelle Demande",
+        "guardar": "Enregistrer les Modifications",
+        "cancelar": "Annuler",
+        "editar": "Modifier",
+        "eliminar": "Supprimer",
+        "enviar": "Envoyer",
+        "aceitar": "Accepter",
+        "rejeitar": "Rejeter",
+        "ver_detalhes": "Voir les Détails"
+    },
+    "tabela": {
+        "referencia": "Référence",
+        "cliente": "Client",
+        "area": "Département",
+        "status": "Statut",
+        "data": "Date",
+        "acoes": "Actions"
+    },
+    "moeda": {
+        "AOA": "Kwanza",
+        "USD": "Dollar",
+        "EUR": "Euro"
+    },
+    "login": {
+        "titulo": "Bienvenue sur ARMS",
+        "subtitulo": "Aksanti Request Management System",
+        "email": "Adresse E-mail",
+        "senha": "Mot de passe",
+        "entrar": "Se Connecter",
+        "esqueceu_senha": "Mot de passe oublié ?"
+    }
+}
+        </script>
+
+    <!-- Estou a carregar os scripts na ordem correcta: primeiro os motores base, depois os dados, depois a lógica -->
+    <script src="js/i18n.js?v=10" defer></script>
+    <!-- moeda.js removed: currency selector was removed from UI -->
+    <script src="js/sidebar.js?v=15" defer></script>
+    <script src="js/notificacoes.js?v=10" defer></script>
+    <script src="js/tempo-real.js?v=10" defer></script>
+    <script src="js/app.js?v=10" defer></script>
+
+    <script src="js/modal.js" defer></script>
+    <script src="js/exportacoes.js" defer></script>
+    <!-- Estou a criar a lógica que desenha os cartões dos departamentos dinamicamente com a BD real -->
+    <script src="js/pages/areas.js?v=10" defer></script>
+        <!-- Bottom Navigation Bar (Apenas Mobile) -->
+            <nav class="bottom-nav">
+        <div class="bottom-nav-container">
+            <a href="dashboard.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span data-i18n="nav.dashboard">Painel</span>
+            </a>
+            <a href="pedidos.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg><span data-i18n="nav.pedidos">Pedidos</span>
+            </a>
+            <div class="bottom-nav-fab-container">
+                <a href="pedidos.html?action=novo" class="bottom-nav-fab">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </a>
+            </div>
+            <a href="calendario.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span data-i18n="nav.calendario">Calendário</span>
+            </a>
+            <a href="#" class="bottom-nav-item" id="btn-bottom-menu">
+                <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg><span>Menu</span>
+            </a>
+        </div>
+    </nav>
+
+
+<script src="js/pwa.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

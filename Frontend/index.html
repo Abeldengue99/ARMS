@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<!-- Estou a dizer ao navegador web que isto Ã© um documento HTML5 moderno para que as coisas funcionem bem e perfeitamente no site Aksanti -->
+<html lang="pt">
+<!-- Estou a abrir o cabeï¿½alho invisï¿½vel (o Head) da nossa pÃ¡gina onde carregamos todos os motores do sistema e a estï¿½tica (Estilos CSS) do documento -->
+<head>
+    <!-- Estou a mandar o navegador usar as letras perfeitinhas acentuadas de codificaï¿½ï¿½o (O standard da Web UTF-8!) para nï¿½o dar erros com o Ã© e os Tildes -->
+    <meta charset="UTF-8">
+    <!-- Estou a preparar as janelas para os ecrï¿½s mï¿½veis (Viewports dos telemï¿½veis!) dizendo para a largura da pÃ¡gina bater na exata chapa com a largura final dos teus telemï¿½veis -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Estou a pï¿½r o Letreiro do Tï¿½tulo no pequeno canto acima do browser, nos separadores lÃ¡ no PC para identificares muito bem que aba Ã© a da nossa App -->
+    <title>Login - ARMS (Aksanti Request Management System)</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
+    <meta name="theme-color" content="#111111">
+
+    <!-- Estou a chamar por fios na linha com as partes essenciais: Primeiro carrega a Vassoura a limpar bugs de estilo velhos dos computadores! -->
+    <link rel="stylesheet" href="css/reset.css?v=3">
+    <!-- Estou a chamar e acender todo o tesouro escondido de Ouro da tua paleta no CSS, as tais variï¿½veis globais! -->
+    <link rel="stylesheet" href="css/variaveis.css?v=7">
+    <!-- Estou a importar tambï¿½m a formataï¿½ï¿½o de corpo na pÃ¡gina base inteirinha das letras com que digitï¿½mos para estarem nas caixas do estilo base! -->
+    <link rel="stylesheet" href="css/base.css?v=7">
+    <!-- Estou a trazer os pedaï¿½os que constroem as caixas dos inputs brancas no formulÃ¡rio a reluzir como desenhamos nos ficheiros da classe componentes -->
+    <link rel="stylesheet" href="css/componentes.css?v=3">
+    <!-- Estou a ativar a beleza de cinema, carregando os efeitos da Animaï¿½ï¿½o do CSS que d? vida aos painï¿½is em movimentos na tela -->
+    <link rel="stylesheet" href="css/animacoes.css?v=3">
+
+    <!-- Estou a inserir um remendo caseiro pequenininho apenas do CSS para que a tela do ecrï¿½ de logar a janela (Sï¿½ ela e mais nada!) bata no centro Ã© medida da cruz na moldura inteira do teu PC  -->
+    <link rel="stylesheet" href="css/pages/index.css?v=1">
+<link rel="manifest" href="js/manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+</head>
+<body>
+
+    <div class="login-wrapper animacao-entrar">
+        <!-- Coluna Esquerda: Marca e Descriï¿½ï¿½o -->
+        <div class="login-left">
+            <img src="img/logo.svg" alt="ARMS" class="login-logo" style="position: relative; z-index: 1;">
+        </div>
+
+        <!-- Coluna Direita: FormulÃ¡rio de Login (Lï¿½gica Intacta) -->
+        <div class="login-right">
+            <div class="login-right-content">
+                <h2 class="login-right-title">Login</h2>
+                
+                <form id="form-login">
+                    <div class="input-grupo">
+                        <label for="email"><span data-i18n="login.email">Endereço de E-mail</span> <span style="color: #ef4444;">*</span></label>
+                        <div style="position: relative;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--texto-secundario); pointer-events: none;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            <input type="email" id="email" class="input-controlo" style="padding-left: 44px;">
+                        </div>
+                    </div>
+
+                    <div class="input-grupo">
+                        <label for="senha"><span data-i18n="login.senha">Palavra-passe</span> <span style="color: #ef4444;">*</span></label>
+                        <div style="position: relative;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--texto-secundario); pointer-events: none;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            <input type="password" id="senha" class="input-controlo" style="padding-left: 44px; padding-right: 48px;">
+                            <button type="button" id="btn-ver-senha" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--texto-secundario); padding: 4px;" title="Mostrar palavra-passe">
+                                <svg id="icone-olho-aberto" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                <svg id="icone-olho-fechado" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="links-container">
+                        <a href="#" data-i18n="login.esqueceu_senha">Esqueceu a sua palavra-passe?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primario" data-i18n="login.entrar">Entrar no Sistema</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Recuperação de Senha -->
+    <div id="modal-recuperar" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+        <div class="card" style="max-width:420px; width:90%; margin:auto; position:relative; top:50%; transform:translateY(-50%);">
+            <button id="btn-fechar-recuperar" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--texto-secundario);">&times;</button>
+            <div style="text-align:center; margin-bottom:24px;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--aksanti-gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <h3 style="font-size:1.25rem; margin-top:12px;" data-i18n="login.recuperar_titulo">Recuperar Palavra-passe</h3>
+                <p style="color:var(--texto-secundario); font-size:0.9rem; margin-top:8px;" data-i18n="login.recuperar_instrucao">Introduza o seu e-mail e enviaremos instruções para redefinir a sua palavra-passe.</p>
+            </div>
+            <div class="input-grupo">
+                <label for="email-recuperar" data-i18n="login.email">Endereço de E-mail</label>
+                <input type="email" id="email-recuperar" class="input-controlo" placeholder="exemplo@empresa.ao" data-i18n-placeholder="login.placeholder_email">
+            </div>
+            <div id="feedback-recuperar" style="display:none; padding:12px 16px; border-radius:8px; margin-bottom:16px; font-size:0.9rem;"></div>
+            <button id="btn-enviar-recuperar" class="btn btn-primario" style="width:100%;" data-i18n="login.recuperar_enviar">Enviar Instruções</button>
+        </div>
+    </div>
+
+        <!-- Traduções embutidas (fallback para quando a página é aberta via file:// ou fetch falha) -->
+        <script type="application/json" id="lang-pt">
+        {
+            "nav": {
+                "dashboard": "Painel de Controlo",
+                "pedidos": "Pedidos",
+                "clientes": "Clientes",
+                "areas": "Departamentos",
+                "notificacoes": "NotificaÃ§Ãµes",
+                "perfil": "O Meu Perfil",
+                "admin": "AdministraÃ§Ã£o",
+                "sair": "Terminar SessÃ£o"
+            },
+            "dashboard": {
+                "titulo": "Painel de Controlo",
+                "total_pedidos": "Total de Pedidos",
+                "pedidos_abertos": "Pedidos Abertos",
+                "taxa_resposta": "Taxa de Resposta",
+                "sla_medio": "SLA Mï¿½dio",
+                "pedidos_recentes": "Pedidos Recentes",
+                "ver_todos": "Ver Todos"
+            },
+            "status": {
+                "DRAFT": "Rascunho",
+                "SENT": "Enviado",
+                "RECEIVED": "Recebido",
+                "CLIENT_RESPONDED": "Cliente Respondeu",
+                "ACCEPTED": "Aceite",
+                "REJECTED": "Rejeitado",
+                "CLOSED": "Fechado"
+            },
+            "acoes": {
+                "criar_pedido": "Criar Novo Pedido",
+                "guardar": "Guardar Alteraï¿½ï¿½es",
+                "cancelar": "Cancelar",
+                "editar": "Editar",
+                "eliminar": "Eliminar",
+                "enviar": "Enviar",
+                "aceitar": "Aceitar",
+                "rejeitar": "Rejeitar",
+                "ver_detalhes": "Ver Detalhes"
+            },
+            "tabela": {
+                "referencia": "Referï¿½ncia",
+                "cliente": "Cliente",
+                "area": "ï¿½rea",
+                "status": "Estado",
+                "data": "Data",
+                "acoes": "Aï¿½ï¿½es"
+            },
+                "moeda": {
+                "AOA": "Kwanza",
+                "USD": "DÃ³lar",
+                "EUR": "Euro"
+            },
+            "login": {
+                "titulo": "Bem-vindo ao ARMS",
+                "subtitulo": "Aksanti Request Management System",
+                "email": "Endereço de E-mail",
+                "senha": "Palavra-passe",
+                "entrar": "Entrar no Sistema",
+                "esqueceu_senha": "Esqueceu a sua palavra-passe?",
+                "recuperar_titulo": "Recuperar Palavra-passe",
+                "recuperar_instrucao": "Introduza o seu e-mail e enviaremos instruções para redefinir a sua palavra-passe.",
+                "placeholder_email": "exemplo@empresa.ao",
+                "recuperar_enviar": "Enviar Instruções"
+            }
+        }
+        </script>
+
+        <script type="application/json" id="lang-en">
+        {
+            "nav": {
+                "dashboard": "Dashboard",
+                "pedidos": "Requests",
+                "clientes": "Clients",
+                "areas": "Departments",
+                "notificacoes": "Notifications",
+                "perfil": "My Profile",
+                "admin": "Administration",
+                "sair": "Sign Out"
+            },
+            "dashboard": {
+                "titulo": "Dashboard",
+                "total_pedidos": "Total Requests",
+                "pedidos_abertos": "Open Requests",
+                "taxa_resposta": "Response Rate",
+                "sla_medio": "Average SLA",
+                "pedidos_recentes": "Recent Requests",
+                "ver_todos": "View All"
+            },
+            "status": {
+                "DRAFT": "Draft",
+                "SENT": "Sent",
+                "RECEIVED": "Received",
+                "CLIENT_RESPONDED": "Client Responded",
+                "ACCEPTED": "Accepted",
+                "REJECTED": "Rejected",
+                "CLOSED": "Closed"
+            },
+            "acoes": {
+                "criar_pedido": "Create New Request",
+                "guardar": "Save Changes",
+                "cancelar": "Cancel",
+                "editar": "Edit",
+                "eliminar": "Delete",
+                "enviar": "Send",
+                "aceitar": "Accept",
+                "rejeitar": "Reject",
+                "ver_detalhes": "View Details"
+            },
+            "tabela": {
+                "referencia": "Reference",
+                "cliente": "Client",
+                "area": "Area",
+                "status": "Status",
+                "data": "Date",
+                "acoes": "Actions"
+            },
+            "moeda": {
+                "AOA": "Kwanza",
+                "USD": "Dollar",
+                "EUR": "Euro"
+            },
+            "login": {
+                "titulo": "Welcome to ARMS",
+                "subtitulo": "Aksanti Request Management System",
+                "email": "Email Address",
+                "senha": "Password",
+                "entrar": "Sign In",
+                "esqueceu_senha": "Forgot your password?"
+            }
+        }
+        </script>
+
+        <script type="application/json" id="lang-fr">
+        {
+            "nav": {
+                "dashboard": "Tableau de Bord",
+                "pedidos": "Demandes",
+                "clientes": "Clients",
+                "areas": "DÃ©partements",
+                "notificacoes": "Notifications",
+                "perfil": "Mon Profil",
+                "admin": "Administration",
+                "sair": "Se Dï¿½connecter"
+            },
+            "dashboard": {
+                "titulo": "Tableau de Bord",
+                "total_pedidos": "Total des Demandes",
+                "pedidos_abertos": "Demandes Ouvertes",
+                "taxa_resposta": "Taux de Rï¿½ponse",
+                "sla_medio": "SLA Moyen",
+                "pedidos_recentes": "Demandes R?centes",
+                "ver_todos": "Voir Tout"
+            },
+            "status": {
+                "DRAFT": "Brouillon",
+                "SENT": "Envoyï¿½",
+                "RECEIVED": "Reï¿½u",
+                "CLIENT_RESPONDED": "Client a Rï¿½pondu",
+                "ACCEPTED": "Acceptï¿½",
+                "REJECTED": "Rejetï¿½",
+                "CLOSED": "Fermï¿½"
+            },
+            "acoes": {
+                "criar_pedido": "Crï¿½er une Nouvelle Demande",
+                "guardar": "Enregistrer les Modifications",
+                "cancelar": "Annuler",
+                "editar": "Modifier",
+                "eliminar": "Supprimer",
+                "enviar": "Envoyer",
+                "aceitar": "Accepter",
+                "rejeitar": "Rejeter",
+                "ver_detalhes": "Voir les Dï¿½tails"
+            },
+            "tabela": {
+                "referencia": "Rï¿½fï¿½rence",
+                "cliente": "Client",
+                "area": "D?partement",
+                "status": "Statut",
+                "data": "Date",
+                "acoes": "Actions"
+            },
+            "moeda": {
+                "AOA": "Kwanza",
+                "USD": "Dollar",
+                "EUR": "Euro"
+            },
+            "login": {
+                "titulo": "Bienvenue sur ARMS",
+                "subtitulo": "Aksanti Request Management System",
+                "email": "Adresse E-mail",
+                "senha": "Mot de passe",
+                "entrar": "Se Connecter",
+                "esqueceu_senha": "Mot de passe oubliï¿½ ?"
+            }
+        }
+        </script>
+
+        <!-- Estou a convocar ao final de todas as caixas visï¿½veis aos olhos do utilizador o ficheiro com o Cï¿½rebro I18n JavaScript, e pï¿½r Ã© prova nos nossos textos as tuas palavras de traduï¿½ï¿½es ao carregar disto. -->
+    <script src="js/i18n.js?v=7"></script>
+        <script src="js/modal.js"></script>
+    
+    <script src="js/pages/index.js?v=1" defer></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<!-- Estou a manter as regras lusas de sempre do HTML para abrir a página das Listagens dos teus Pedidos -->
+<html lang="pt">
+<head>
+    <!-- Estou a chamar os códigos corretos para as tuas letras não ficarem deformadas na tela -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Estou a focar a aba do navegador no nome certo para te orientares: Lista de Pedidos -->
+    <title>Pedidos - ARMS</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
+    <meta name="theme-color" content="#111111">
+    <!-- Script Anti-Flicker: Ocultar imediatamente links admin e restaurar estado minimizado da sidebar antes de renderizar -->
+    <!-- Script Anti-Flicker partilhado -->
+    <script src="js/anti-flicker.js?v=15"></script>
+
+    <!-- Tintas CSS do Sistema -->
+    <link rel="stylesheet" href="css/reset.css?v=10">
+    <link rel="stylesheet" href="css/variaveis.css?v=10">
+    <link rel="stylesheet" href="css/base.css?v=10">
+    <link rel="stylesheet" href="css/layout.css?v=15">
+    <link rel="stylesheet" href="css/componentes.css?v=10">
+    <link rel="stylesheet" href="css/formularios.css?v=10">
+    <link rel="stylesheet" href="css/tabelas.css?v=10">
+    <link rel="stylesheet" href="css/animacoes.css?v=10">
+    <link rel="stylesheet" href="css/responsivo.css?v=10">
+    <link rel="stylesheet" href="css/pages/pedidos.css?v=10">
+<link rel="manifest" href="js/manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+</head>
+<body>
+    
+    <!-- Estou a armar o esqueleto grande da plataforma com o painel e os menus do lado esquerdo -->
+    <div class="layout-principal">
+        
+                <!-- Estou a puxar a tua conhecida Barra Lateral e deixá-la exatamente igual à que já testaste -->
+        <aside class="barra-lateral" id="barra-lateral">
+            <!-- Botão de Expandir/Recolher Barra Lateral -->
+            <button id="btn-toggle-sidebar" class="btn-toggle-sidebar" aria-label="Minimizar Menu" style="position: absolute; right: 12px; top: 40px; width: 32px; height: 32px; border-radius: 50%; background: var(--aksanti-dark); border: 2px solid var(--bg-card); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; transition: transform 0.3s ease;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="barra-lateral-logo">
+                <img src="img/logo.svg" alt="ARMS" class="logo-svg">
+            </div>
+            
+            <nav style="display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
+                <!-- Estou a ligar o caminho de volta ao painel (tirando-lhe a cor amarela de foco, pois agora já não estamos lá) -->
+                <a href="dashboard.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span data-i18n="nav.dashboard">Painel de Controlo</span>
+                </a>
+                <!-- Estou a injetar agora a cor Dourada Aksanti ("activo") neste botão, porque esta é a página oficial dos Pedidos! -->
+                <a href="pedidos.html" class="menu-item activo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg><span data-i18n="nav.pedidos">Pedidos</span>
+                </a>
+                <a href="calendario.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span data-i18n="nav.calendario">Calendário</span>
+                </a>
+                <!-- Estou a ligar a futura porta dos clientes abaixo -->
+                <a href="clientes.html" class="menu-item menu-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span data-i18n="nav.clientes">Clientes</span>
+                </a>
+                <a href="areas.html" class="menu-item menu-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span data-i18n="nav.areas">Departamentos</span>
+                </a>
+                
+                <hr class="menu-admin-only" style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
+                    <a href="admin-utilizadores.html" class="menu-item menu-admin-only">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span data-i18n="nav.admin">Administração</span>
+                    </a>
+                    <a href="#" class="menu-item" style="color: #ef4444;" id="btn-sair">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span data-i18n="nav.sair">Terminar Sessão</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Estou a puxar a zona branca infinita é tua direita onde vamos desenhar a gigantesca tabela de listagem -->
+        <main class="area-conteudo" style="min-width: 0; overflow-x: hidden;">
+            
+            <!-- Estou a desenhar a tampa da plataforma onde pões a tua lángua e moeda -->
+            <header class="cabecalho-principal">
+                <div style="display: flex; align-items: center;">
+                    <h2 style="font-size: 1.25rem;" data-i18n="nav.pedidos">Pedidos</h2>
+                </div>
+
+                <div class="cabecalho-acoes">
+                    <a href="notificacoes.html" class="botao-notificacao" title="Notificações">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span class="notificacao-ponto"></span>
+                    </a>
+
+                    <a href="perfil.html" class="avatar-link" title="O Meu Perfil">
+                        <div class="avatar-utilizador" data-arms-avatar aria-label="Utilizador"></div>
+                    </a>
+
+                    <div class="divisor-cabecalho"></div>
+                    <select id="select-idioma-aksanti" class="input-controlo select-idioma-admin"><option value="pt">Português</option><option value="en">English</option><option value="fr">Français</option></select>
+                </div>
+            </header>
+
+            <div class="conteudo-pagina">
+                
+                <!-- Estou a colocar no topo o grande letreiro e a caixa de pesquisa antes das tabelas -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="font-size: 1.5rem; color: var(--texto-principal);">Gestão de Pedidos</h2>
+                    <!-- Estou a pôr ali o botão Dourado a brilhar para poderes criar o teu pedido quando clicares! -->
+                    <button id="btn-criar-pedido" class="btn btn-primario" data-i18n="acoes.criar_pedido">Criar Novo Pedido</button>
+                </div>
+
+                <!-- Centro de Pendências (Visível apenas para Admin) -->
+                <div id="centro-pendencias-container" style="display: none; margin-bottom: 24px;">
+                    <div style="background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 4px solid var(--aksanti-gold); border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <h3 style="margin: 0; color: #92400e; font-size: 1.2rem; font-weight: 700;">Centro de Pendências</h3>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;" id="grelha-pendencias">
+                            <div style="color: #92400e; font-size: 0.9rem;">A carregar anomalias do sistema...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Pedidos com Filtros -->
+                <div class="card deslizar-cima-isaf">
+                    
+                    <!-- Filtros da lista de pedidos -->
+                    <div style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="display: block; font-size: 0.75rem; color: var(--texto-secundario); margin-bottom: 4px; font-weight: 500;">Pesquisa</label>
+                            <input type="text" id="filtro-pedidos" class="input-controlo" placeholder="Referência, destino, estado..." style="width: 100%;">
+                        </div>
+                        <div style="min-width: 160px;">
+                            <label style="display: block; font-size: 0.75rem; color: var(--texto-secundario); margin-bottom: 4px; font-weight: 500;">Estado</label>
+                            <select id="filtro-status" class="input-controlo" style="width: 100%;">
+                                <option value="">Todos os Estados</option>
+                                <option value="ABERTOS">Pedidos Abertos</option>
+                                <option value="VENCIDOS">Pedidos Vencidos</option>
+                                <option value="DRAFT">Rascunho</option>
+                                <option value="SENT">Enviado</option>
+                                <option value="RECEIVED">Recebido</option>
+                                <option value="CLIENT_RESPONDED">Alteração / resposta</option>
+                                <option value="ACCEPTED">Aceite</option>
+                                <option value="REJECTED">Rejeitado</option>
+                                <option value="CLOSED">Fechado</option>
+                            </select>
+                        </div>
+                        <div style="min-width: 140px;">
+                            <label style="display: block; font-size: 0.75rem; color: var(--texto-secundario); margin-bottom: 4px; font-weight: 500;">Data de</label>
+                            <input type="date" id="filtro-data-de" class="input-controlo" style="width: 100%;">
+                        </div>
+                        <div style="min-width: 140px;">
+                            <label style="display: block; font-size: 0.75rem; color: var(--texto-secundario); margin-bottom: 4px; font-weight: 500;">Data Até</label>
+                            <input type="date" id="filtro-data-ate" class="input-controlo" style="width: 100%;">
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: flex-end;">
+                            <button id="btn-limpar-filtros" class="btn btn-secundario" style="padding: 8px 16px; white-space: nowrap; font-size: 0.85rem;" title="Limpar Filtros">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Limpar
+                            </button>
+                            <button id="btn-exportar-pdf" class="btn btn-primario" style="padding: 8px 16px; white-space: nowrap; font-size: 0.85rem; background: #1e293b;" title="Exportar Relatório PDF">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg> PDF
+                            </button>
+                            <button id="btn-exportar-excel" class="btn btn-primario" style="padding: 8px 16px; white-space: nowrap; font-size: 0.85rem; background: #15803d;" title="Exportar Relatório Excel">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M8 13l4 4"></path><path d="M12 13l-4 4"></path><path d="M15 13h1"></path><path d="M15 17h1"></path></svg> Excel
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 8px 0; border-bottom: 1px solid #f1f5f9;">
+                        <span id="pedidos-contador" style="font-size: 0.85rem; color: var(--texto-secundario); font-weight: 500;">Carregando lista de pedidos...</span>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; text-align: left; border-collapse: collapse;" class="tabela-pedidos-responsiva">
+                            <thead>
+                                <tr style="border-bottom: 1px solid #e4e4e7;">
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="tabela.referencia">Referência</th>
+                                    <th id="pedidos-entidade-cabecalho" style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;">Destino</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="tabela.area">Área</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="tabela.status">Estado</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;" data-i18n="tabela.data">Data</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500;">Deadline</th>
+                                    <th style="padding: 12px 16px; color: var(--texto-secundario); font-weight: 500; text-align: right;" data-i18n="tabela.acoes">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-corpo-pedidos">
+                                <tr>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 80px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 120px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 100px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 90px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 80px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 80px;"></div></td>
+                                    <td style="padding:16px; text-align: right;"><div class="skeleton skeleton-text" style="width: 60px; margin-left: auto;"></div></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 85px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 110px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 95px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 85px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 75px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 85px;"></div></td>
+                                    <td style="padding:16px; text-align: right;"><div class="skeleton skeleton-text" style="width: 60px; margin-left: auto;"></div></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 75px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 130px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 105px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 90px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 80px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 80px;"></div></td>
+                                    <td style="padding:16px; text-align: right;"><div class="skeleton skeleton-text" style="width: 60px; margin-left: auto;"></div></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                            <tbody id="tabela-corpo-pedidos">
+                                <tr>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 80px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 120px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 100px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 90px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 80px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 80px;"></div></td>
+                                    <td style="padding:16px; text-align: right;"><div class="skeleton skeleton-text" style="width: 60px; margin-left: auto;"></div></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 85px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 110px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 95px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 85px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 75px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 85px;"></div></td>
+                                    <td style="padding:16px; text-align: right;"><div class="skeleton skeleton-text" style="width: 60px; margin-left: auto;"></div></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 75px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 130px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 105px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 90px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 80px;"></div></td>
+                                    <td style="padding:16px;"><div class="skeleton skeleton-text" style="width: 80px;"></div></td>
+                                    <td style="padding:16px; text-align: right;"><div class="skeleton skeleton-text" style="width: 60px; margin-left: auto;"></div></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="dashboard-recentes-navegacao" id="pedidos-navegacao" style="margin-top: 16px; padding: 16px; border-top: 1px solid #f1f5f9; display: flex; justify-content: center; gap: 16px; align-items: center; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; background-color: #fafafa;">
+                        <button type="button" id="btn-pedidos-recuar" class="btn btn-secundario" style="padding: 6px 12px; border-radius: 6px;">&larr; Recuar</button>
+                        <span class="dashboard-recentes-indicador" id="pedidos-indicador" style="font-weight: 500; color: var(--texto-secundario); font-size: 0.9rem;">1 / 1</span>
+                        <button type="button" id="btn-pedidos-avancar" class="btn btn-secundario" style="padding: 6px 12px; border-radius: 6px;">Avan&ccedil;ar &rarr;</button>
+                    </div>
+              </main>
+    </div>
+
+    <!-- Navegação Mobile (Bottom Nav) -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-container">
+            <a href="pedidos.html" class="bottom-nav-item activo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg><span>Pedidos</span>
+            </a>
+            <a href="calendario.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span>Calendário</span>
+            </a>
+            <a href="perfil.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Perfil</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Scripts da tela -->
+    <script src="js/i18n.js?v=10" defer></script>
+    <script src="js/sidebar.js?v=15" defer></script>
+    <script src="js/modal.js" defer></script>
+    <script src="js/exportacoes.js" defer></script>
+    <script src="js/tempo-real.js?v=10" defer></script>
+    <script src="js/notificacoes.js?v=10" defer></script>
+    <script src="js/app.js?v=10" defer></script>
+    <script src="js/pedidos.js?v=11" defer></script>
+    <script src="js/pages/pedidos.js?v=11" defer></script>
+
+
+
+
+
+<script src="js/pwa.js"></script>
+</body>
+</html>

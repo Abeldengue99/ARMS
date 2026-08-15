@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automação da Plataforma - ARMS</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
+    <meta name="theme-color" content="#111111">
+    <script src="js/anti-flicker.js?v=15"></script>
+
+    <link rel="stylesheet" href="css/reset.css?v=10">
+    <link rel="stylesheet" href="css/variaveis.css?v=10">
+    <link rel="stylesheet" href="css/base.css?v=10">
+    <link rel="stylesheet" href="css/layout.css?v=15">
+    <link rel="stylesheet" href="css/componentes.css?v=10">
+    <link rel="stylesheet" href="css/formularios.css?v=10">
+    <link rel="stylesheet" href="css/tabelas.css?v=10">
+    <link rel="stylesheet" href="css/animacoes.css?v=10">
+    <link rel="stylesheet" href="css/responsivo.css?v=10">
+    <link rel="stylesheet" href="css/pages/admin-utilizadores.css?v=10">
+<link rel="manifest" href="js/manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+</head>
+<body class="pagina-admin-utilizadores">
+
+    <div class="layout-principal">
+        <aside class="barra-lateral" id="barra-lateral">
+            <!-- Botão de Expandir/Recolher Barra Lateral -->
+            <button id="btn-toggle-sidebar" class="btn-toggle-sidebar" aria-label="Minimizar Menu" style="position: absolute; right: 12px; top: 40px; width: 32px; height: 32px; border-radius: 50%; background: var(--aksanti-dark); border: 2px solid var(--bg-card); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; transition: transform 0.3s ease;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <!-- Estou a desenhar na cara na barra de porta para entrada nas listas e opções - com padding enorme para respirar nos logos da empresa Aksanti -->
+            <div class="barra-lateral-logo">
+                <img src="img/logo.svg" alt="ARMS" class="logo-svg">
+            </div>
+
+            <!-- Estou a abrir o nosso cofre em gavetas - os botões em listas onde o gajo pica ao clicar das abas! -->
+            <nav style="display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
+                <!-- Estou a forçar aquele primeiro grande Bot?o "ativo com Ouros Gold", pois nàs estamos nela mesmo da sua página a olhar "O dashboard"! E pego no I18n traduzindo a label. -->
+                <a href="dashboard.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span data-i18n="nav.dashboard">Painel de Controlo</span>
+                </a>
+                <!-- Estou a amontoar a prateleira em baixo, com a ligação agora a valer a sório para os Pedidos, a dar-lhe apenas as etiquetas "nav.pedidos" sem as ativar de momento com o Dourado -->
+                <a href="pedidos.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg><span data-i18n="nav.pedidos">Pedidos</span>
+                </a>
+                <a href="calendario.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span data-i18n="nav.calendario">Calendário</span>
+                </a>
+                <!-- Estou a somar a terceira opção num clique e é ca?a num nav de "Clientes" ali de cima -->
+                <a href="clientes.html" class="menu-item menu-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span data-i18n="nav.clientes">Clientes</span>
+                </a>
+                <!-- Estou a somar a via com nome onde listamos os teus Departamentos da Base ali para gerirem com nome "Areas" na nossa tradução -->
+                <a href="areas.html" class="menu-item menu-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span data-i18n="nav.areas">Departamentos</span>
+                </a>
+
+                <!-- Estou a construir nas partes finais da navegação o grande divisor visual para apartar no final das ferramentas na app a "conta do teu utilizador" no baixo, uma linha de separação fininha -->
+                <hr class="menu-admin-only"
+                    style="border-color: #333; margin: 16px 0; border-style: solid; border-width: 1px 0 0 0;">
+
+                <!-- Estou a engatar lá debaixo nos cliques os botões de Admin que podes acessar em teu poder -->
+                <a href="admin-utilizadores.html" class="menu-item menu-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span data-i18n="nav.admin">Administração</span>
+                </a>
+                <!-- Estou a concluir essa porta aos fundos, e um logout perigoso a vermelho se o gajo se atreve a ir "sair" -->
+                <a href="#" class="menu-item" style="color: #ef4444;" id="btn-sair">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span data-i18n="nav.sair">Terminar Sessão</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="area-conteudo admin-utilizadores-main">
+            <header class="cabecalho-principal cabecalho-admin-utilizadores">
+                <div>
+                    <h2 class="cabecalho-titulo">Automação da Plataforma</h2>
+                </div>
+
+                <div class="cabecalho-acoes">
+                    <a href="notificacoes.html" class="botao-notificacao" title="Notificações">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span class="notificacao-ponto"></span>
+                    </a>
+
+                    <a href="perfil.html" class="avatar-link" title="O Meu Perfil">
+                        <div class="avatar-utilizador" data-arms-avatar aria-label="Utilizador"></div>
+                    </a>
+
+                    <div class="divisor-cabecalho"></div>
+                    <select id="select-idioma-aksanti" class="input-controlo select-idioma-admin"><option value="pt">Português</option><option value="en">English</option><option value="fr">Français</option></select>
+                </div>
+            </header>
+
+                        <div class="conteudo-pagina">
+
+            <div class="admin-tabs" style="display: flex; gap: 32px; padding: 0 40px; border-bottom: 1px solid #e2e8f0; margin-bottom: 32px; background: white; flex-wrap: wrap;">
+                <a href="admin-utilizadores.html" class="admin-tab" style="padding: 16px 0; color: var(--texto-secundario); text-decoration: none; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span>Utilizadores</span>
+                </a>
+                <a href="admin-configuracoes.html" class="admin-tab" style="padding: 16px 0; color: var(--texto-secundario); text-decoration: none; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s;">
+                    <span>Configurações SaaS</span>
+                </a>
+                <a href="admin-seguranca.html" class="admin-tab" style="padding: 16px 0; color: var(--texto-secundario); text-decoration: none; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s;">
+                    <span>Segurança</span>
+                </a>
+                <a href="admin-automacao.html" class="admin-tab active" style="padding: 16px 0; color: var(--aksanti-brand, #d97706); text-decoration: none; font-weight: 500; border-bottom: 2px solid var(--aksanti-brand, #d97706); transition: all 0.2s;">
+                    <span>Automação</span>
+                </a>
+                <a href="admin-qualidade.html" class="admin-tab" style="padding: 16px 0; color: var(--texto-secundario); text-decoration: none; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s;">
+                    <span>Qualidade de Dados</span>
+                </a>
+                <a href="admin-retencao.html" class="admin-tab" style="padding: 16px 0; color: var(--texto-secundario); text-decoration: none; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s;">
+                    <span>Retenção</span>
+                </a>
+            </div>
+                <div style="margin-top: 32px;">
+<div class="card admin-modulo-card automacao-admin-card deslizar-cima-isaf menu-admin-only" id="secao-automacao" data-requer-permissao="automacao.gerir">
+                    <div class="admin-modulo-resumo" aria-labelledby="automacao-admin-titulo">
+                        <div>
+                            <span class="admin-secao-etiqueta">Secção operacional</span>
+                            <h2 id="automacao-admin-titulo" class="automacao-titulo">Automação da Plataforma</h2>
+                        </div>
+                        <div class="admin-modulo-resumo-status">
+                            <span><strong id="automacao-resumo-pendencias">0</strong> pendências</span>
+                            <span><strong id="automacao-resumo-acoes">0</strong> ações prontas</span>
+                            <em>Ver detalhes</em>
+                        </div>
+                    </div>
+
+                    <div class="automacao-conteudo">
+                        <div class="automacao-topo">
+                            <div id="automacao-feedback" class="retencao-feedback" hidden></div>
+                            <div class="automacao-acoes">
+                                <button type="button" id="btn-automacao-salvar" class="btn btn-primario">Guardar regras</button>
+                                <button type="button" id="btn-automacao-executar" class="btn btn-secundario">Executar agora</button>
+                            </div>
+                        </div>
+
+                        <div class="automacao-resumo-grid">
+                            <div class="retencao-kpi">
+                                <span>Convites pendentes</span>
+                                <strong id="automacao-convites-pendentes">0</strong>
+                                <small id="automacao-convites-detalhe">0 elegíveis</small>
+                            </div>
+                            <div class="retencao-kpi">
+                                <span>Deadlines vencidos</span>
+                                <strong id="automacao-deadlines-vencidos">0</strong>
+                                <small>Notificações urgentes</small>
+                            </div>
+                            <div class="retencao-kpi">
+                                <span>Próximos do prazo</span>
+                                <strong id="automacao-deadlines-proximos">0</strong>
+                                <small id="automacao-deadlines-detalhe">Alerta preventivo</small>
+                            </div>
+                            <div class="retencao-kpi">
+                                <span>Dados incompletos</span>
+                                <strong id="automacao-clientes-incompletos">0</strong>
+                                <small>Clientes ativos</small>
+                            </div>
+                        </div>
+
+                        <div class="admin-expansivel automacao-bloco" open>
+                            <div class="admin-expansivel-resumo">
+                                <h3>Regras automáticas</h3>
+                            </div>
+                            <div class="automacao-config-grid">
+                                <label class="automacao-opcao">
+                                    <input type="checkbox" id="automacao-convite-ativo">
+                                    <span>Reenviar convites pendentes</span>
+                                </label>
+                                <label class="automacao-config-campo" for="automacao-convite-dias">
+                                    <span>Dias sem primeiro acesso</span>
+                                    <input type="number" id="automacao-convite-dias" class="input-controlo" min="1" max="90" step="1" value="2">
+                                </label>
+                                <label class="automacao-opcao">
+                                    <input type="checkbox" id="automacao-deadline-alerta-ativo">
+                                    <span>Alertar antes do deadline</span>
+                                </label>
+                                <label class="automacao-config-campo" for="automacao-deadline-horas">
+                                    <span>Horas antes do prazo</span>
+                                    <input type="number" id="automacao-deadline-horas" class="input-controlo" min="1" max="168" step="1" value="24">
+                                </label>
+                                <label class="automacao-opcao">
+                                    <input type="checkbox" id="automacao-deadline-vencido-ativo">
+                                    <span>Notificar deadline vencido</span>
+                                </label>
+                                <label class="automacao-opcao">
+                                    <input type="checkbox" id="automacao-retencao-limpeza-ativo">
+                                    <span>Permitir limpeza agendada</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="admin-expansivel automacao-bloco">
+                            <div class="admin-expansivel-resumo">
+                                <h3>Ações encontradas</h3>
+                            </div>
+                            <div class="retencao-tabela-contentor">
+                                <table class="tabela-arms tabela-retencao">
+                                    <thead>
+                                        <tr>
+                                            <th>Automação</th>
+                                            <th>Quantidade</th>
+                                            <th>Estado</th>
+                                            <th>Ação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="automacao-candidatos-corpo">
+                                        <tr class="linha-estado"><td colspan="4">A carregar automações...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="automacao-uÚltima">
+                            <strong>ÚÚltima execução</strong>
+                            <span id="automacao-uÚltima-execucao">Ainda não existe</span>
+                        </div>
+                    </div>
+                </div>
+
+                
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/pages/admin-utilizadores.js?v=10" defer></script>
+
+    <script src="js/i18n.js?v=10"></script>
+    <script src="js/sidebar.js?v=15"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/notificacoes.js?v=10"></script>
+    <script src="js/tempo-real.js?v=10"></script>
+    <script src="js/app.js"></script>
+    <script>
+        const escaparHtml = (valor) => String(valor ?? '').replace(/[&<>"']/g, (char) => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[char]));
+
+        let clientesParaUtilizadores = [];
+        let areasParaUtilizadores = [];
+        let utilizadoresCarregados = [];
+        let filtroTextoUtilizador = '';
+        let filtroTipoUtilizador = '';
+        let filtroEstadoUtilizador = '';
+        let filtroAdminUtilizador = '';
+        let paginaAtualUtilizadores = 1;
+        const TAMANHO_PAGINA_UTILIZADORES = 15;
+
+        const normalizarTipoAcesso = (valor) => {
+            const texto = String(valor ?? '').toUpperCase();
+            return texto === 'CLIENT' || texto === 'CLIENTE' ? 'CLIENT' : 'AKSANTI';
+        };
+        const emailValido = (valor) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(String(valor ?? '').trim());
+
+        const estaAtivo = (valor) => valor === true || valor === 1 || valor === '1' || valor === 't' || valor === 'true' || valor === 'TRUE';
+        const ehSuperAdmin = (valor) => estaAtivo(valor);
+        const textoBusca = (valor) => String(valor ?? '').toLowerCase();
+        const tipoLegivelUtilizador = (tipo) => tipo === 'CLIENT' ? 'Cliente' : 'Equipa Interna';
+        const convitePendente = (utilizador) => estaAtivo(utilizador.is_active) && !String(utilizador.last_login_at || '').trim();
+        const estadoOperacionalUtilizador = (utilizador) => {
+            if (!estaAtivo(utilizador.is_active)) return 'desativado';
+            if (convitePendente(utilizador)) return 'pendente';
+            return 'ativo';
+        };
+        const estadoLegivelUtilizador = (utilizador) => {
+            const estado = estadoOperacionalUtilizador(utilizador);
+            if (estado === 'ativo') return 'Ativo';
+            if (estado === 'pendente') return 'Convite pendente';
+            return 'Desativado';
+        };
+        const perfilLegivelUtilizador = (isAdmin) => ehSuperAdmin(isAdmin) ? 'Super Admin' : 'Colaborador';
+        const permissoesDisponiveis = [
+            ['clientes.ver', 'Ver clientes'],
+            ['clientes.gerir', 'Criar e editar clientes'],
+            ['areas.ver', 'Ver departamentos'],
+            ['areas.gerir', 'Criar e editar departamentos'],
+            ['pedidos.ver_todos', 'Ver todos os pedidos'],
+            ['relatorios.exportar', 'Exportar relatórios'],
+            ['qualidade.ver', 'Ver qualidade de dados'],
+            ['seguranca.gerir', 'Gerir segurança automatizada'],
+            ['automacao.gerir', 'Gerir automação'],
+            ['retencao.gerir', 'Gerir retenção e auditoria']
+        ];
+
+        const obterPermissoesUtilizador = (utilizador) => {
+            const valor = utilizador?.permissoes;
+            if (Array.isArray(valor)) return valor;
+            if (typeof valor === 'string' && valor.trim()) {
+                try {
+                    const parsed = JSON.parse(valor);
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (e) {
+                    return [];
+                }
+            }
+            return [];
+        };
+
+        const valorCliente = (valor) => {
+            const texto = String(valor ?? '').trim();
+            return texto && texto !== '—' && texto !== 'â€”' ? texto : '';
+        };
+
+        const obterClientePorId = (id) => clientesParaUtilizadores.find((cliente) => String(cliente.id) === String(id));
+
+        function carregarClientesParaUtilizadores() {
+            if (clientesParaUtilizadores.length) {
+                return Promise.resolve(clientesParaUtilizadores);
+            }
+
+            return fetch('api/clientes.php')
+                .then((res) => res.json())
+                .then((data) => {
+                    if (!data.sucesso) {
+                        throw new Error(data.erro || 'Erro ao carregar empresas.');
+                    }
+
+                    clientesParaUtilizadores = (data.dados || []).map((cliente) => ({
+                        id: cliente.id,
+                        company_name: cliente.company_name || cliente.name || 'Empresa sem nome',
+                        tax_id: valorCliente(cliente.tax_id),
+                        location: valorCliente(cliente.location),
+                        contact_email: cliente.contact_email || cliente.primary_email || '',
+                        status: cliente.status || 'ACTIVE'
+                    }));
+
+                    return clientesParaUtilizadores;
+                });
+        }
+
+        function carregarAreasParaUtilizadores() {
+            if (areasParaUtilizadores.length) {
+                return Promise.resolve(areasParaUtilizadores);
+            }
+
+            return fetch('api/areas.php')
+                .then((res) => res.json())
+                .then((data) => {
+                    if (!data.sucesso) {
+                        throw new Error(data.erro || 'Erro ao carregar departamentos.');
+                    }
+                    areasParaUtilizadores = data.dados || [];
+                    return areasParaUtilizadores;
+                });
+        }
+
+        function montarCamposCliente(prefixo) {
+            return `
+                <div id="${prefixo}-cliente-bloco" class="campo-formulario largura-total campo-cliente-associado" hidden>
+                    <div class="cliente-associado-topo">
+                        <label for="${prefixo}-user-cliente-id">Empresa do cliente</label>
+                        <span id="${prefixo}-user-clientes-estado" class="cliente-associado-estado"></span>
+                    </div>
+                    <select id="${prefixo}-user-cliente-id" class="input-controlo">
+                        <option value="">A carregar empresas...</option>
+                    </select>
+                    <div class="cliente-resumo-grid">
+                        <div class="campo-formulario">
+                            <label for="${prefixo}-user-cliente-nif">NIF</label>
+                            <input type="text" id="${prefixo}-user-cliente-nif" class="input-controlo" readonly placeholder="Selecione uma empresa">
+                        </div>
+                        <div class="campo-formulario">
+                            <label for="${prefixo}-user-cliente-localizacao">Localização</label>
+                            <input type="text" id="${prefixo}-user-cliente-localizacao" class="input-controlo" readonly placeholder="Selecione uma empresa">
+                        </div>
+                        <div class="campo-formulario">
+                            <label for="${prefixo}-user-cliente-email">E-mail da empresa</label>
+                            <input type="text" id="${prefixo}-user-cliente-email" class="input-controlo" readonly placeholder="Selecione uma empresa">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function montarCampoSuperAdmin(prefixo, selecionado = false) {
+            return `
+                <div id="${prefixo}-perfil-admin-bloco" class="campo-formulario">
+                    <label for="${prefixo}-user-admin">Perfil Interno</label>
+                    <select id="${prefixo}-user-admin" class="input-controlo">
+                        <option value="0" ${selecionado ? '' : 'selected'}>Colaborador</option>
+                        <option value="1" ${selecionado ? 'selected' : ''}>Super Admin</option>
+                    </select>
+                    <small style="display:block; margin-top:6px; color:var(--texto-secundario); line-height:1.4;">Máximo de 3 Super Admins ativos.</small>
+                </div>
+            `;
+        }
+
+        function montarCamposPermissoes(prefixo, selecionadas = []) {
+            const ativas = new Set(selecionadas);
+            const opcoes = permissoesDisponiveis.map(([valor, label]) => `
+                <label class="permissao-extra-opcao">
+                    <input type="checkbox" class="${prefixo}-permissao-extra" value="${valor}" ${ativas.has(valor) ? 'checked' : ''}>
+                    <span>${label}</span>
+                </label>
+            `).join('');
+
+            return `
+                <div id="${prefixo}-permissoes-bloco" class="campo-formulario largura-total permissoes-extra-bloco">
+                    <label>Permissões adicionais</label>
+                    <div class="permissoes-extra-grid">${opcoes}</div>
+                    <small>Estas permissões não transformam o utilizador em Super Admin.</small>
+                </div>
+            `;
+        }
+
+        function montarCamposAreas(prefixo, selecionadas = []) {
+            const ativas = new Set(selecionadas);
+            let opcoes = '';
+            if (areasParaUtilizadores.length === 0) {
+                opcoes = '<small style="color:var(--cor-perigo);">Nenhum departamento cadastrado no sistema.</small>';
+            } else {
+                opcoes = areasParaUtilizadores.map((area) => `
+                    <label class="permissao-extra-opcao" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 6px; cursor: pointer;">
+                        <input type="checkbox" class="${prefixo}-area-extra" value="${area.id}" ${ativas.has(area.id) ? 'checked' : ''}>
+                        <span style="font-weight:500;">${escaparHtml(area.name)}</span>
+                    </label>
+                `).join('');
+            }
+
+            return `
+                <div id="${prefixo}-areas-bloco" class="campo-formulario largura-total">
+                    <label>Departamentos Associados</label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 8px;">
+                        ${opcoes}
+                    </div>
+                    <small style="display:block; margin-top:8px; color:var(--texto-secundario);">Pode associar o utilizador a múltiplos departamentos.</small>
+                </div>
+            `;
+        }
+
+        function obterAreasSelecionadas(prefixo) {
+            return Array.from(document.querySelectorAll(`.${prefixo}-area-extra:checked`)).map((input) => input.value);
+        }
+
+        function configurarCamposPermissoes(prefixo) {
+            const bloco = document.getElementById(`${prefixo}-permissoes-bloco`);
+            const tipo = document.getElementById(`${prefixo}-user-tipo`);
+            const admin = document.getElementById(`${prefixo}-user-admin`);
+            if (!bloco || !tipo || !admin) return;
+
+            const atualizar = () => {
+                const superAdmin = normalizarTipoAcesso(tipo.value) === 'AKSANTI' && admin.value === '1';
+                bloco.hidden = superAdmin;
+                bloco.querySelectorAll('input').forEach((input) => {
+                    input.disabled = superAdmin;
+                    if (superAdmin) input.checked = false;
+                });
+            };
+
+            tipo?.addEventListener('change', atualizar);
+            admin?.addEventListener('change', atualizar);
+            atualizar();
+        }
+
+        function obterPermissoesSelecionadas(prefixo) {
+            return Array.from(document.querySelectorAll(`.${prefixo}-permissao-extra:checked`)).map((input) => input.value);
+        }
+
+        function renderizarOpcoesClientes(prefixo, clienteSelecionado = '') {
+            const select = document.getElementById(`${prefixo}-user-cliente-id`);
+            const estado = document.getElementById(`${prefixo}-user-clientes-estado`);
+            if (!select) return;
+
+            select.innerHTML = '<option value="">Selecione a empresa</option>';
+
+            clientesParaUtilizadores.forEach((cliente) => {
+                const option = document.createElement('option');
+                option.value = cliente.id;
+                option.textContent = cliente.company_name + (cliente.status === 'INACTIVE' ? ' (inativa)' : '');
+                option.disabled = cliente.status === 'INACTIVE';
+                select.appendChild(option);
+            });
+
+            if (clienteSelecionado && obterClientePorId(clienteSelecionado)) {
+                select.value = clienteSelecionado;
+            }
+
+            const temEmpresaAtiva = clientesParaUtilizadores.some((cliente) => cliente.status !== 'INACTIVE');
+            if (estado) {
+                estado.textContent = temEmpresaAtiva ? '' : 'Nenhuma empresa ativa disponível.';
+            }
+        }
+
+        function atualizarResumoCliente(prefixo) {
+            const select = document.getElementById(`${prefixo}-user-cliente-id`);
+            const nif = document.getElementById(`${prefixo}-user-cliente-nif`);
+            const localizacao = document.getElementById(`${prefixo}-user-cliente-localizacao`);
+            const email = document.getElementById(`${prefixo}-user-cliente-email`);
+            const cliente = select ? obterClientePorId(select.value) : null;
+
+            if (!nif || !localizacao || !email) return;
+
+            nif.value = cliente ? (cliente.tax_id || 'Não informado') : '';
+            localizacao.value = cliente ? (cliente.location || 'Não informada') : '';
+            email.value = cliente ? (cliente.contact_email || 'Não informado') : '';
+        }
+
+        function configurarCamposCliente(prefixo, clienteSelecionado = '') {
+            const tipo = document.getElementById(`${prefixo}-user-tipo`);
+            const bloco = document.getElementById(`${prefixo}-cliente-bloco`);
+            const select = document.getElementById(`${prefixo}-user-cliente-id`);
+            if (!tipo || !bloco || !select) return;
+
+            renderizarOpcoesClientes(prefixo, clienteSelecionado);
+
+            const alternarCamposCliente = () => {
+                const isCliente = normalizarTipoAcesso(tipo.value) === 'CLIENT';
+                bloco.hidden = !isCliente;
+                select.required = isCliente;
+
+                if (isCliente && !select.value) {
+                    const primeiroClienteAtivo = clientesParaUtilizadores.find((cliente) => cliente.status !== 'INACTIVE');
+                    select.value = primeiroClienteAtivo ? primeiroClienteAtivo.id : '';
+                }
+
+                atualizarResumoCliente(prefixo);
+            };
+
+            tipo?.addEventListener('change', alternarCamposCliente);
+            select?.addEventListener('change', () => atualizarResumoCliente(prefixo));
+            alternarCamposCliente();
+        }
+
+        function configurarCampoSuperAdmin(prefixo) {
+            const tipo = document.getElementById(`${prefixo}-user-tipo`);
+            const bloco = document.getElementById(`${prefixo}-perfil-admin-bloco`);
+            const selectAdmin = document.getElementById(`${prefixo}-user-admin`);
+            if (!tipo || !bloco || !selectAdmin) return;
+
+            const alternarCampoSuperAdmin = () => {
+                const isAksanti = normalizarTipoAcesso(tipo.value) === 'AKSANTI';
+                bloco.hidden = !isAksanti;
+                selectAdmin.disabled = !isAksanti;
+
+                if (!isAksanti) {
+                    selectAdmin.value = '0';
+                }
+            };
+
+            tipo?.addEventListener('change', alternarCampoSuperAdmin);
+            alternarCampoSuperAdmin();
+        }
+
+        function prepararCamposCliente(prefixo, clienteSelecionado = '') {
+            carregarClientesParaUtilizadores()
+                .then(() => configurarCamposCliente(prefixo, clienteSelecionado))
+                .catch((err) => {
+                    console.error('Erro ao carregar empresas:', err);
+                    clientesParaUtilizadores = [];
+                    configurarCamposCliente(prefixo, clienteSelecionado);
+
+                    const estado = document.getElementById(`${prefixo}-user-clientes-estado`);
+                    if (estado) {
+                        estado.textContent = 'Não foi possível carregar as empresas.';
+                    }
+                });
+        }
+
+        function obterUtilizadoresFiltrados() {
+            let resultado = [...utilizadoresCarregados];
+
+            if (filtroTextoUtilizador) {
+                resultado = resultado.filter((utilizador) =>
+                    textoBusca(utilizador.full_name || utilizador.first_name).includes(filtroTextoUtilizador) ||
+                    textoBusca(utilizador.email).includes(filtroTextoUtilizador) ||
+                    textoBusca(utilizador.cargo || utilizador.phone).includes(filtroTextoUtilizador) ||
+                    textoBusca(utilizador.client_company_name).includes(filtroTextoUtilizador)
+                );
+            }
+
+            if (filtroTipoUtilizador) {
+                resultado = resultado.filter((utilizador) => utilizador.user_type === filtroTipoUtilizador);
+            }
+
+            if (filtroEstadoUtilizador) {
+                resultado = resultado.filter((utilizador) => {
+                    return estadoOperacionalUtilizador(utilizador) === filtroEstadoUtilizador;
+                });
+            }
+
+            if (filtroAdminUtilizador !== '') {
+                resultado = resultado.filter((utilizador) => String(Number(ehSuperAdmin(utilizador.is_admin))) === filtroAdminUtilizador);
+            }
+
+            return resultado;
+        }
+
+        function renderizarTabelaUtilizadores(corpo, utilizadores) {
+            corpo.innerHTML = '';
+
+            if (!utilizadores.length) {
+                corpo.innerHTML = '<tr class="linha-estado"><td colspan="5">Nenhum utilizador encontrado.</td></tr>';
+                return;
+            }
+
+            utilizadores.forEach((utilizador) => {
+                const ativo = estaAtivo(utilizador.is_active);
+                const superAdmin = ehSuperAdmin(utilizador.is_admin);
+                const id = escaparHtml(utilizador.id);
+                const nomeCompletoValor = utilizador.full_name || utilizador.first_name || utilizador.email;
+                const nomeCompleto = escaparHtml(nomeCompletoValor);
+                const cargoValor = utilizador.cargo || utilizador.phone || '';
+                const cargo = escaparHtml(cargoValor || '-');
+                const email = escaparHtml(utilizador.email);
+                const tipo = escaparHtml(utilizador.user_type);
+                const clienteId = escaparHtml(utilizador.client_id || '');
+                const permissoes = encodeURIComponent(JSON.stringify(obterPermissoesUtilizador(utilizador)));
+                const areasEncoded = encodeURIComponent(JSON.stringify(utilizador.area_ids || []));
+                const empresaCliente = utilizador.user_type === 'CLIENT' && utilizador.client_company_name
+                    ? `<span class="subtexto-cliente">${escaparHtml(utilizador.client_company_name)}</span>`
+                    : '';
+                const badgeTipo = utilizador.user_type === 'AKSANTI'
+                    ? '<span class="badge badge-aksanti">Equipa Interna</span>'
+                    : '<span class="badge badge-info">Cliente</span>';
+                const badgeAdmin = superAdmin ? '<span class="badge badge-perigo badge-admin">Super Admin</span>' : '';
+                const estadoOperacional = estadoOperacionalUtilizador(utilizador);
+                const badgeEstado = estadoOperacional === 'ativo'
+                    ? '<span class="badge badge-sucesso">Ativo</span>'
+                    : estadoOperacional === 'pendente'
+                        ? '<span class="badge badge-aviso">Convite pendente</span>'
+                        : '<span class="badge badge-neutro">Desativado</span>';
+                const textoAcaoEstado = ativo ? 'Desativar' : 'Ativar';
+                const classeAcaoEstado = ativo ? 'link-acao-perigo' : 'link-acao-sucesso';
+                const botaoReenviarConvite = estadoOperacional === 'pendente'
+                    ? `<button type="button" class="link-acao link-acao-aviso js-reenviar-convite-utilizador" title="Reenviar convite" data-id="${id}" data-nome-completo="${nomeCompleto}" data-email="${email}">Reenviar</button>`
+                    : '';
+
+                let textoDepartamentos = '';
+                if (utilizador.area_ids && utilizador.area_ids.length > 0) {
+                    const nomes = utilizador.area_ids.map(id => {
+                        const d = areasParaUtilizadores.find(a => a.id === id);
+                        return d ? d.name : '';
+                    }).filter(n => n);
+                    if (nomes.length > 0) {
+                        textoDepartamentos = `<div style="font-size:0.75rem; color:var(--texto-secundario); margin-top:4px; display:flex; flex-wrap:wrap; gap:4px;">` + 
+                            nomes.map(n => `<span style="background:var(--fundo-secundario); padding:2px 6px; border-radius:4px; border:1px solid var(--borda-suave);">${escaparHtml(n)}</span>`).join('') + 
+                            `</div>`;
+                    }
+                }
+
+                const trHTML = `
+                    <tr class="${ativo ? '' : 'linha-desativada'}">
+                        <td class="celula-nome"><span>${nomeCompleto}</span>${empresaCliente}${textoDepartamentos}</td>
+                        <td class="celula-email"><span class="texto-celula-limitado" title="${email}">${email}</span></td>
+                        <td class="celula-cargo"><span class="texto-celula-limitado" title="${cargo}">${cargo}</span></td>
+                        <td><div class="badges-acesso">${badgeTipo}${badgeAdmin}${badgeEstado}</div></td>
+                        <td class="celula-acoes">
+                            <button type="button" class="link-acao js-editar-utilizador" data-id="${id}" data-nome="${nomeCompleto}" data-cargo="${escaparHtml(cargoValor)}" data-email="${email}" data-tipo="${tipo}" data-cliente-id="${clienteId}" data-is-admin="${superAdmin ? '1' : '0'}" data-permissoes="${permissoes}" data-areas="${areasEncoded}">Editar</button>
+                            ${botaoReenviarConvite}
+                            <button type="button" class="link-acao ${classeAcaoEstado} js-alternar-estado-utilizador" data-id="${id}" data-nome-completo="${nomeCompleto}" data-ativo="${ativo ? '1' : '0'}">${textoAcaoEstado}</button>
+                        </td>
+                    </tr>
+                `;
+                corpo.insertAdjacentHTML('beforeend', trHTML);
+            });
+        }
+
+        function aplicarFiltrosUtilizadores() {
+            const corpo = document.getElementById('tabela-corpo-utilizadores');
+            if (!corpo) return;
+
+            renderizarTabelaUtilizadores(corpo, obterUtilizadoresFiltrados());
+        }
+
+        function carregarTabelaUtilizadores(corpo) {
+            corpo.innerHTML = '';
+
+            carregarAreasParaUtilizadores().then(() => {
+                fetch('api/utilizadores.php')
+                    .then((res) => res.json())
+                .then((data) => {
+                    if (!data.sucesso) {
+                        corpo.innerHTML = `<tr class="linha-estado erro"><td colspan="5">${escaparHtml(data.erro || 'Não foi possível carregar os utilizadores.')}</td></tr>`;
+                        return;
+                    }
+
+                    if (!data.dados.length) {
+                        corpo.innerHTML = '<tr class="linha-estado"><td colspan="5">Nenhum utilizador registado.</td></tr>';
+                        return;
+                    }
+
+                    utilizadoresCarregados = data.dados || [];
+                    aplicarFiltrosUtilizadores();
+                })
+                .catch((err) => {
+                    console.error('Erro ao carregar utilizadores:', err);
+                    corpo.innerHTML = '<tr class="linha-estado erro"><td colspan="5">Erro de ligação ao servidor.</td></tr>';
+                });
+            });
+        }
+
+        function mostrarErroFormulario(id, mensagem) {
+            const msgErro = document.getElementById(id);
+            if (!msgErro) return;
+
+            msgErro.textContent = mensagem;
+            msgErro.style.display = 'block';
+        }
+
+        function exportarUtilizadores(tipoExportacao) {
+            const dados = obterUtilizadoresFiltrados();
+            const filtros = {
+                Pesquisa: filtroTextoUtilizador,
+                Tipo: filtroTipoUtilizador ? tipoLegivelUtilizador(filtroTipoUtilizador) : '',
+                Estado: filtroEstadoUtilizador ? {
+                    ativo: 'Ativos',
+                    pendente: 'Convite pendente',
+                    desativado: 'Desativados'
+                }[filtroEstadoUtilizador] : '',
+                Perfil: filtroAdminUtilizador === '' ? '' : (filtroAdminUtilizador === '1' ? 'Super Admin' : 'Colaborador')
+            };
+
+            const opcoes = {
+                titulo: 'Relatório de Utilizadores',
+                subtitulo: 'Aksanti Request Management System',
+                nomeArquivo: 'relatorio-utilizadores-arms',
+                filtros,
+                colunas: [
+                    { titulo: 'Nome', valor: (u) => u.full_name || u.first_name || '-' },
+                    { titulo: 'E-mail', valor: (u) => u.email || '-' },
+                    { titulo: 'Cargo', valor: (u) => u.cargo || u.phone || '-' },
+                    { titulo: 'Tipo de Acesso', valor: (u) => tipoLegivelUtilizador(u.user_type) },
+                    { titulo: 'Estado', valor: (u) => estadoLegivelUtilizador(u) },
+                    { titulo: 'Primeira sessão', valor: (u) => u.last_login_at || 'Ainda não iniciou sessão' },
+                    { titulo: 'Perfil', valor: (u) => perfilLegivelUtilizador(u.is_admin) },
+                    { titulo: 'Empresa', valor: (u) => u.client_company_name || '-' },
+                    { titulo: 'NIF', valor: (u) => u.client_tax_id || '-' },
+                    { titulo: 'Localização', valor: (u) => u.client_location || '-' }
+                ],
+                linhas: dados
+            };
+
+            if (tipoExportacao === 'excel') {
+                ArmsExportacoes.baixarExcel(opcoes);
+                return;
+            }
+
+            ArmsExportacoes.baixarPDF(opcoes);
+        }
+
+        function formatarNumeroRetencao(valor) {
+            try {
+                return new Intl.NumberFormat('pt-PT').format(Number(valor) || 0);
+            } catch (e) {
+                return String(Number(valor) || 0);
+            }
+        }
+
+        function definirTexto(id, valor) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = valor;
+        }
+
+        function definirChecked(id, valor) {
+            const el = document.getElementById(id);
+            if (el) el.checked = Boolean(valor);
+        }
+
+        function definirValor(id, valor) {
+            const el = document.getElementById(id);
+            if (el) el.value = valor;
+        }
+
+        function mostrarFeedbackAutomacao(tipo, mensagem) {
+            const feedback = document.getElementById('automacao-feedback');
+            if (!feedback) return;
+
+            feedback.hidden = false;
+            feedback.className = `retencao-feedback ${tipo === 'erro' ? 'erro' : 'sucesso'}`;
+            feedback.textContent = mensagem;
+        }
+
+        function renderizarAutomacao(dados) {
+            const resumo = dados?.resumo || {};
+            const cfg = dados?.configuracoes || {};
+            const candidatos = dados?.candidatos || [];
+            const uÚltima = dados?.uÚltima_execucao || {};
+            const pendencias = formatarNumeroRetencao(resumo.pendencias_total || 0);
+            const acoes = formatarNumeroRetencao(resumo.acoes_prontas || 0);
+
+            definirTexto('automacao-resumo-pendencias', pendencias);
+            definirTexto('automacao-resumo-acoes', acoes);
+            definirTexto('automacao-convites-pendentes', formatarNumeroRetencao(resumo.convites_pendentes || 0));
+            definirTexto('automacao-convites-detalhe', `${formatarNumeroRetencao(resumo.convites_elegiveis || 0)} elegíveis`);
+            definirTexto('automacao-deadlines-vencidos', formatarNumeroRetencao(resumo.deadlines_vencidos || 0));
+            definirTexto('automacao-deadlines-proximos', formatarNumeroRetencao(resumo.deadlines_proximos || 0));
+            definirTexto('automacao-clientes-incompletos', formatarNumeroRetencao(resumo.clientes_incompletos || 0));
+            definirTexto('automacao-deadlines-detalhe', `Alerta ${cfg.deadline_warning_hours || 24}h antes`);
+            definirTexto('automacao-uÚltima-execucao', uÚltima?.data ? `${uÚltima.data} - ${uÚltima.resumo || 'Executada'}` : 'Ainda não existe');
+
+            definirChecked('automacao-convite-ativo', cfg.invite_resend_enabled);
+            definirValor('automacao-convite-dias', cfg.invite_resend_days || 2);
+            definirChecked('automacao-deadline-alerta-ativo', cfg.deadline_warning_enabled);
+            definirValor('automacao-deadline-horas', cfg.deadline_warning_hours || 24);
+            definirChecked('automacao-deadline-vencido-ativo', cfg.deadline_overdue_enabled);
+            definirChecked('automacao-retencao-limpeza-ativo', cfg.retention_cleanup_enabled);
+
+            const corpo = document.getElementById('automacao-candidatos-corpo');
+            if (corpo) {
+                corpo.innerHTML = candidatos.length
+                    ? candidatos.map((item) => {
+                        const estado = String(item.estado || '');
+                        const classe = estado.toLowerCase().includes('ativa') ? 'retencao-badge-ok' : 'retencao-badge-aviso';
+                        return `
+                            <tr>
+                                <td>
+                                    <strong>${escaparHtml(item.nome)}</strong>
+                                    <span>${escaparHtml(item.chave)}</span>
+                                </td>
+                                <td>${formatarNumeroRetencao(item.quantidade)}</td>
+                                <td><span class="retencao-badge ${classe}">${escaparHtml(estado)}</span></td>
+                                <td><small>${escaparHtml(item.acao)}</small></td>
+                            </tr>
+                        `;
+                    }).join('')
+                    : '<tr class="linha-estado"><td colspan="4">Nenhuma ação encontrada.</td></tr>';
+            }
+        }
+
+        function recolherConfiguracoesAutomacao() {
+            return {
+                invite_resend_enabled: document.getElementById('automacao-convite-ativo')?.checked || false,
+                invite_resend_days: Number(document.getElementById('automacao-convite-dias')?.value || 2),
+                deadline_warning_enabled: document.getElementById('automacao-deadline-alerta-ativo')?.checked || false,
+                deadline_warning_hours: Number(document.getElementById('automacao-deadline-horas')?.value || 24),
+                deadline_overdue_enabled: document.getElementById('automacao-deadline-vencido-ativo')?.checked || false,
+                retention_cleanup_enabled: document.getElementById('automacao-retencao-limpeza-ativo')?.checked || false
+            };
+        }
+
+        function validarConfiguracoesAutomacao(cfg) {
+            if (!Number.isInteger(cfg.invite_resend_days) || cfg.invite_resend_days < 1 || cfg.invite_resend_days > 90) {
+                return 'Informe entre 1 e 90 dias para reenvio de convites.';
+            }
+
+            if (!Number.isInteger(cfg.deadline_warning_hours) || cfg.deadline_warning_hours < 1 || cfg.deadline_warning_hours > 168) {
+                return 'Informe entre 1 e 168 horas para alerta de deadline.';
+            }
+
+            return '';
+        }
+
+        function carregarAutomacaoAdmin() {
+            const bloco = document.querySelector('.automacao-admin-card');
+            if (!bloco) return;
+
+            fetch('api/admin-automacao.php?acao=resumo')
+                .then((res) => res.json())
+                .then((data) => {
+                    if (!data.sucesso) {
+                        mostrarFeedbackAutomacao('erro', data.erro || 'Não foi possível carregar as automações.');
+                        return;
+                    }
+
+                    renderizarAutomacao(data.dados);
+                })
+                .catch((err) => {
+                    console.error('Erro ao carregar automações:', err);
+                    mostrarFeedbackAutomacao('erro', 'Erro de comunicação ao carregar as automações.');
+                });
+        }
+
+        function salvarConfiguracoesAutomacao() {
+            const botao = document.getElementById('btn-automacao-salvar');
+            const cfg = recolherConfiguracoesAutomacao();
+            const erro = validarConfiguracoesAutomacao(cfg);
+
+            if (erro) {
+                mostrarFeedbackAutomacao('erro', erro);
+                return;
+            }
+
+            if (botao) {
+                botao.disabled = true;
+                botao.textContent = 'A guardar...';
+            }
+
+            fetch('api/admin-automacao.php?acao=salvar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cfg)
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if (!data.sucesso) {
+                    mostrarFeedbackAutomacao('erro', data.erro || 'Não foi possível guardar as regras.');
+                    return;
+                }
+
+                mostrarFeedbackAutomacao('sucesso', data.mensagem || 'Regras guardadas com sucesso.');
+                renderizarAutomacao(data.dados);
+            })
+            .catch((err) => {
+                console.error('Erro ao guardar automações:', err);
+                mostrarFeedbackAutomacao('erro', 'Erro de comunicação ao guardar as regras.');
+            })
+            .finally(() => {
+                if (botao) {
+                    botao.disabled = false;
+                    botao.textContent = 'Guardar regras';
+                }
+            });
+        }
+
+        function executarAutomaçãoesAdmin() {
+            const botao = document.getElementById('btn-automacao-executar');
+            if (botao) {
+                botao.disabled = true;
+                botao.textContent = 'A executar...';
+            }
+
+            fetch('api/admin-automacao.php?acao=executar', { method: 'POST' })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (!data.sucesso) {
+                        mostrarFeedbackAutomacao('erro', data.erro || 'Não foi possível executar as automações.');
+                        return;
+                    }
+
+                    const r = data.resultado || {};
+                    const convites = r.convites || {};
+                    const mensagem = `Automação executada. Convites enviados: ${convites.enviados || 0}. Alertas de prazo: ${r.deadline_alerta_notificacoes || 0}. Urgentes: ${r.deadline_vencido_notificacoes || 0}.`;
+                    mostrarFeedbackAutomacao('sucesso', mensagem);
+                    renderizarAutomacao(data.dados);
+                    carregarTabelaUtilizadores(document.getElementById('tabela-corpo-utilizadores'));
+                })
+                .catch((err) => {
+                    console.error('Erro ao executar automações:', err);
+                    mostrarFeedbackAutomacao('erro', 'Erro de comunicação ao executar as automações.');
+                })
+                .finally(() => {
+                    if (botao) {
+                        botao.disabled = false;
+                        botao.textContent = 'Executar agora';
+                    }
+                });
+        }
+
+        function confirmarExecucaoAutomaçãoes() {
+            confirmarAcao(
+                'Executar automações',
+                'As regras ativas serão executadas agora. Se o reenvio de convites estiver ativo, novas senhas serão geradas e enviadas por e-mail para utilizadores elegíveis. Deseja continuar?',
+                executarAutomaçãoesAdmin
+            );
+        }
+
+        function mostrarFeedbackQualidade(tipo, mensagem) {
+            const feedback = document.getElementById('qualidade-feedback');
+            if (!feedback) return;
+
+            feedback.hidden = false;
+            feedback.className = `retencao-feedback ${tipo === 'erro' ? 'erro' : 'sucesso'}`;
+            feedback.textContent = mensagem;
+        }
+
+        function classeEstadoQualidade(estado) {
+            const texto = String(estado || '').toLowerCase();
+            return texto.includes('completar') ? 'retencao-badge-aviso' : 'retencao-badge-ok';
+        }
+
+        function renderizarQualidadeDados(dados) {
+            const resumo = dados?.resumo || {};
+            const alertas = dados?.alertas || [];
+            const corpo = document.getElementById('qualidade-alertas-corpo');
+
+            definirTexto('qualidade-resumo-duplicados', formatarNumeroRetencao(resumo.duplicados_total || 0));
+            definirTexto('qualidade-resumo-incompletos', formatarNumeroRetencao(resumo.incompletos_total || 0));
+            definirTexto('qualidade-duplicados-nif', formatarNumeroRetencao(resumo.duplicados_nif || 0));
+            definirTexto('qualidade-duplicados-email', formatarNumeroRetencao(resumo.duplicados_email || 0));
+            definirTexto('qualidade-sem-nif', formatarNumeroRetencao(resumo.sem_nif || 0));
+            definirTexto('qualidade-sem-localizacao', formatarNumeroRetencao(resumo.sem_localizacao || 0));
+            definirTexto('qualidade-sem-contacto', formatarNumeroRetencao(resumo.sem_contacto || 0));
+
+            if (!corpo) return;
+
+            corpo.innerHTML = alertas.length
+                ? alertas.map((item) => {
+                    const valor = item.valor ? `<span>${escaparHtml(item.valor)}</span>` : '';
+                    const exemplos = item.exemplos || 'Sem exemplos disponíveis';
+                    const estado = item.estado || 'Rever';
+
+                    return `
+                        <tr>
+                            <td>
+                                <strong>${escaparHtml(item.tipo)} - ${escaparHtml(item.campo)}</strong>
+                                ${valor}
+                                <small>${escaparHtml(item.detalhe)}</small>
+                            </td>
+                            <td>${formatarNumeroRetencao(item.quantidade || 0)}</td>
+                            <td><span class="retencao-badge ${classeEstadoQualidade(estado)}">${escaparHtml(estado)}</span></td>
+                            <td><small>${escaparHtml(exemplos)}</small></td>
+                        </tr>
+                    `;
+                }).join('')
+                : '<tr class="linha-estado"><td colspan="4">Nenhum problema de qualidade encontrado.</td></tr>';
+        }
+
+        function carregarQualidadeDados() {
+            const bloco = document.querySelector('.qualidade-admin-card');
+            if (!bloco) return;
+
+            fetch('api/qualidade-dados.php?acao=resumo')
+                .then((res) => res.json())
+                .then((data) => {
+                    if (!data.sucesso) {
+                        mostrarFeedbackQualidade('erro', data.erro || 'Não foi possível carregar a qualidade de dados.');
+                        return;
+                    }
+
+                    renderizarQualidadeDados(data.dados);
+                })
+                .catch((err) => {
+                    console.error('Erro ao carregar qualidade de dados:', err);
+                    mostrarFeedbackQualidade('erro', 'Erro de comunicação ao carregar a qualidade de dados.');
+                });
+        }
+
+
+        function formatarDiasRetencao(dias) {
+            const total = Number(dias) || 0;
+
+            if (total === 2) return '48 horas';
+            if (total === 35) return '35 dias';
+            if (total === 180) return '180 dias';
+            if (total === 365) return '12 meses';
+            if (total === 2555) return '7 anos';
+            if (total === 3650) return '10 anos';
+
+            return `${total} dias`;
+        }
+
+        function mostrarFeedbackRetencao(tipo, mensagem) {
+            const feedback = document.getElementById('retencao-feedback');
+            if (!feedback) return;
+
+            feedback.hidden = false;
+            feedback.className = `retencao-feedback ${tipo === 'erro' ? 'erro' : 'sucesso'}`;
+            feedback.textContent = mensagem;
+        }
+
+        function renderizarRetencao(dados) {
+            const resumo = dados?.resumo || {};
+            const candidatos = dados?.candidatos || [];
+            const politicas = dados?.politicas || [];
+            const uÚltima = dados?.uÚltima_execucao || null;
+            const configuracoes = dados?.configuracoes || {};
+
+            const totalAutomatico = document.getElementById('retencao-total-automatico');
+            const totalManual = document.getElementById('retencao-total-manual');
+            const resumoAutomatico = document.getElementById('retencao-resumo-automatico');
+            const resumoManual = document.getElementById('retencao-resumo-manual');
+            const uÚltimaExecucao = document.getElementById('retencao-uÚltima-execucao');
+            const ultimoArquivo = document.getElementById('retencao-ultimo-arquivo');
+            const corpoCandidatos = document.getElementById('retencao-candidatos-corpo');
+            const corpoPoliticas = document.getElementById('retencao-politicas-corpo');
+            const inputMaxDocumento = document.getElementById('retencao-max-documento-mb');
+            const totalAutomaticoTexto = formatarNumeroRetencao(resumo.total_limpeza_automatica || 0);
+            const totalManualTexto = formatarNumeroRetencao(resumo.total_revisao_manual || 0);
+
+            if (totalAutomatico) {
+                totalAutomatico.textContent = totalAutomaticoTexto;
+            }
+
+            if (totalManual) {
+                totalManual.textContent = totalManualTexto;
+            }
+
+            if (resumoAutomatico) {
+                resumoAutomatico.textContent = totalAutomaticoTexto;
+            }
+
+            if (resumoManual) {
+                resumoManual.textContent = totalManualTexto;
+            }
+
+            if (uÚltimaExecucao) {
+                uÚltimaExecucao.textContent = uÚltima
+                    ? `${uÚltima.action}${uÚltima.dry_run ? ' (relatório)' : ' (limpeza)'}`
+                    : 'Ainda não existe';
+            }
+
+            if (ultimoArquivo) {
+                ultimoArquivo.textContent = uÚltima?.report_path || 'Sem relatório gerado';
+                ultimoArquivo.title = uÚltima?.report_path || '';
+            }
+
+            if (inputMaxDocumento) {
+                inputMaxDocumento.value = configuracoes.attachment_max_size_mb || 50;
+            }
+
+            if (corpoCandidatos) {
+                corpoCandidatos.innerHTML = candidatos.length
+                    ? candidatos.map((item) => `
+                        <tr>
+                            <td>
+                                <strong>${escaparHtml(item.nome)}</strong>
+                                <span>${escaparHtml(item.chave)}</span>
+                            </td>
+                            <td>${formatarNumeroRetencao(item.quantidade)}</td>
+                            <td>${formatarDiasRetencao(item.retencao_dias)}</td>
+                            <td>
+                                <span class="retencao-badge ${item.limpeza_automatica ? 'retencao-badge-ok' : 'retencao-badge-aviso'}">
+                                    ${item.limpeza_automatica ? 'Autorizável' : 'Revisão manual'}
+                                </span>
+                                <small>${escaparHtml(item.acao)}</small>
+                            </td>
+                        </tr>
+                    `).join('')
+                    : '<tr class="linha-estado"><td colspan="4">Nenhum candidato encontrado.</td></tr>';
+            }
+
+            if (corpoPoliticas) {
+                corpoPoliticas.innerHTML = politicas.length
+                    ? politicas.map((item) => `
+                        <tr>
+                            <td>
+                                <strong>${escaparHtml(item.description)}</strong>
+                                <span>${escaparHtml(item.policy_key)}</span>
+                            </td>
+                            <td>
+                                <input type="number" class="input-controlo retencao-input-dias" min="1" max="36500" step="1" value="${escaparHtml(item.retention_days)}" data-policy-key="${escaparHtml(item.policy_key)}">
+                            </td>
+                            <td>${escaparHtml(item.storage_place)}</td>
+                        </tr>
+                    `).join('')
+                    : '<tr class="linha-estado"><td colspan="3">Nenhuma política configurada.</td></tr>';
+            }
+        }
+
+        function recolherPoliticasRetencao() {
+            return Array.from(document.querySelectorAll('.retencao-input-dias'))
+                .map((input) => ({
+                    policy_key: input.dataset.policyKey,
+                    retention_days: Number(input.value)
+                }))
+                .filter((item) => item.policy_key);
+        }
+
+        function salvarConfiguracoesRetencao() {
+            const botao = document.getElementById('btn-retencao-salvar');
+            const inputMaxDocumento = document.getElementById('retencao-max-documento-mb');
+            const maxDocumento = Number(inputMaxDocumento?.value || 0);
+
+            if (!Number.isInteger(maxDocumento) || maxDocumento < 1 || maxDocumento > 10240) {
+                mostrarFeedbackRetencao('erro', 'Informe um tamanho entre 1MB e 10240MB.');
+                return;
+            }
+
+            const politicas = recolherPoliticasRetencao();
+            if (politicas.some((item) => !Number.isInteger(item.retention_days) || item.retention_days < 1 || item.retention_days > 36500)) {
+                mostrarFeedbackRetencao('erro', 'Informe tempos de retenção entre 1 e 36500 dias.');
+                return;
+            }
+
+            if (botao) {
+                botao.disabled = true;
+                botao.textContent = 'A guardar...';
+            }
+
+            fetch('api/retencao.php?acao=salvar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    attachment_max_size_mb: maxDocumento,
+                    politicas
+                })
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if (!data.sucesso) {
+                    mostrarFeedbackRetencao('erro', data.erro || 'Não foi possível guardar as definições.');
+                    return;
+                }
+
+                mostrarFeedbackRetencao('sucesso', data.mensagem || 'Definições atualizadas com sucesso.');
+                renderizarRetencao(data.dados);
+            })
+            .catch((err) => {
+                console.error('Erro ao guardar definições:', err);
+                mostrarFeedbackRetencao('erro', 'Erro de comunicação ao guardar as definições.');
+            })
+            .finally(() => {
+                if (botao) {
+                    botao.disabled = false;
+                    botao.textContent = 'Guardar definições';
+                }
+            });
+        }
+
+        function carregarRetencaoAdmin() {
+            const bloco = document.querySelector('.retencao-admin-card');
+            if (!bloco) return;
+
+            fetch('api/retencao.php?acao=resumo')
+                .then((res) => res.json())
+                .then((data) => {
+                    if (!data.sucesso) {
+                        mostrarFeedbackRetencao('erro', data.erro || 'Não foi possível carregar a política de retenção.');
+                        return;
+                    }
+
+                    renderizarRetencao(data.dados);
+                })
+                .catch((err) => {
+                    console.error('Erro ao carregar retenção:', err);
+                    mostrarFeedbackRetencao('erro', 'Erro de comunicação ao carregar a política de retenção.');
+                });
+        }
+
+        function gerarRelatorioRetencao() {
+            const botao = document.getElementById('btn-retencao-relatorio');
+            if (botao) {
+                botao.disabled = true;
+                botao.textContent = 'A gerar...';
+            }
+
+            fetch('api/retencao.php?acao=relatorio', { method: 'POST' })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (!data.sucesso) {
+                        mostrarFeedbackRetencao('erro', data.erro || 'Não foi possível gerar o relatório.');
+                        return;
+                    }
+
+                    mostrarFeedbackRetencao('sucesso', `${data.mensagem} Arquivo: ${data.arquivo}`);
+                    carregarRetencaoAdmin();
+                })
+                .catch((err) => {
+                    console.error('Erro ao gerar relatório de retenção:', err);
+                    mostrarFeedbackRetencao('erro', 'Erro de comunicação ao gerar o relatório de retenção.');
+                })
+                .finally(() => {
+                    if (botao) {
+                        botao.disabled = false;
+                        botao.textContent = 'Gerar relatório';
+                    }
+                });
+        }
+
+        function executarLimpezaRetencao() {
+            const botao = document.getElementById('btn-retencao-limpar');
+            if (botao) {
+                botao.disabled = true;
+                botao.textContent = 'A limpar...';
+            }
+
+            fetch('api/retencao.php?acao=limpar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ confirmacao: 'LIMPAR_DADOS_EXPIRADOS' })
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if (!data.sucesso) {
+                    mostrarFeedbackRetencao('erro', data.erro || 'Não foi possível executar a limpeza.');
+                    return;
+                }
+
+                const lidas = data.apagados?.notifications_read || 0;
+                const naoLidas = data.apagados?.notifications_unread || 0;
+                mostrarFeedbackRetencao(
+                    'sucesso',
+                    `${data.mensagem} Lidas removidas: ${lidas}. Não lidas removidas: ${naoLidas}. Relatório: ${data.arquivo}`
+                );
+                renderizarRetencao(data.dados);
+            })
+            .catch((err) => {
+                console.error('Erro ao limpar dados expirados:', err);
+                mostrarFeedbackRetencao('erro', 'Erro de comunicação ao executar a limpeza.');
+            })
+            .finally(() => {
+                if (botao) {
+                    botao.disabled = false;
+                    botao.textContent = 'Limpar expirados';
+                }
+            });
+        }
+
+        function confirmarLimpezaRetencao() {
+            confirmarAcao(
+                'Limpar dados expirados',
+                'Será gerado um relatório antes da limpeza. Apenas notificações expiradas serão apagadas automaticamente; pedidos, comentários, anexos, respostas e timeline ficam preservados para auditoria. Deseja continuar?',
+                executarLimpezaRetencao
+            );
+        }
+
+        document?.addEventListener('DOMContentLoaded', () => {
+            const corpo = document.getElementById('tabela-corpo-utilizadores');
+            if (corpo) {
+                carregarTabelaUtilizadores(corpo);
+                corpo?.addEventListener('click', (evento) => {
+                    const botaoEditar = evento.target.closest('.js-editar-utilizador');
+                    if (botaoEditar) {
+                        abrirModalEdicaoUtilizador(
+                            botaoEditar.dataset.id,
+                            botaoEditar.dataset.nome,
+                            botaoEditar.dataset.cargo,
+                            botaoEditar.dataset.email,
+                            botaoEditar.dataset.tipo,
+                            botaoEditar.dataset.clienteId,
+                            botaoEditar.dataset.isAdmin === '1',
+                            JSON.parse(decodeURIComponent(botaoEditar.dataset.permissoes || '%5B%5D')),
+                            JSON.parse(decodeURIComponent(botaoEditar.dataset.areas || '%5B%5D'))
+                        );
+                        return;
+                    }
+
+                    const botaoReenviarConvite = evento.target.closest('.js-reenviar-convite-utilizador');
+                    if (botaoReenviarConvite) {
+                        confirmarReenviarConviteUtilizador(
+                            botaoReenviarConvite.dataset.id,
+                            botaoReenviarConvite.dataset.nomeCompleto,
+                            botaoReenviarConvite.dataset.email
+                        );
+                        return;
+                    }
+
+                    const botaoEstado = evento.target.closest('.js-alternar-estado-utilizador');
+                    if (botaoEstado) {
+                        confirmarAlternarEstadoUtilizador(
+                            botaoEstado.dataset.id,
+                            botaoEstado.dataset.nomeCompleto,
+                            botaoEstado.dataset.ativo === '1'
+                        );
+                    }
+                });
+            }
+
+            const inputFiltro = document.getElementById('filtro-utilizadores');
+            const selectTipo = document.getElementById('filtro-tipo-utilizador');
+            const selectEstado = document.getElementById('filtro-estado-utilizador');
+            const selectAdmin = document.getElementById('filtro-admin-utilizador');
+            const btnLimparFiltros = document.getElementById('btn-limpar-filtros-utilizadores');
+            const btnPdf = document.getElementById('btn-baixar-pdf-utilizadores');
+            const btnExcel = document.getElementById('btn-baixar-excel-utilizadores');
+
+            if (inputFiltro) {
+                inputFiltro?.addEventListener('input', (evento) => {
+                    filtroTextoUtilizador = evento.target.value.trim().toLowerCase();
+                    aplicarFiltrosUtilizadores();
+                });
+            }
+
+            if (selectTipo) {
+                selectTipo?.addEventListener('change', (evento) => {
+                    filtroTipoUtilizador = evento.target.value;
+                    aplicarFiltrosUtilizadores();
+                });
+            }
+
+            if (selectEstado) {
+                selectEstado?.addEventListener('change', (evento) => {
+                    filtroEstadoUtilizador = evento.target.value;
+                    aplicarFiltrosUtilizadores();
+                });
+            }
+
+            if (selectAdmin) {
+                selectAdmin?.addEventListener('change', (evento) => {
+                    filtroAdminUtilizador = evento.target.value;
+                    aplicarFiltrosUtilizadores();
+                });
+            }
+
+            if (btnLimparFiltros) {
+                btnLimparFiltros?.addEventListener('click', () => {
+                    filtroTextoUtilizador = '';
+                    filtroTipoUtilizador = '';
+                    filtroEstadoUtilizador = '';
+                    filtroAdminUtilizador = '';
+                    if (inputFiltro) inputFiltro.value = '';
+                    if (selectTipo) selectTipo.value = '';
+                    if (selectEstado) selectEstado.value = '';
+                    if (selectAdmin) selectAdmin.value = '';
+                    aplicarFiltrosUtilizadores();
+                });
+            }
+
+            if (btnPdf) {
+                btnPdf?.addEventListener('click', () => exportarUtilizadores('pdf'));
+            }
+
+            if (btnExcel) {
+                btnExcel?.addEventListener('click', () => exportarUtilizadores('excel'));
+            }
+
+            const btnRetencaoRelatorio = document.getElementById('btn-retencao-relatorio');
+            const btnRetencaoLimpar = document.getElementById('btn-retencao-limpar');
+            const btnRetencaoSalvar = document.getElementById('btn-retencao-salvar');
+            const btnAutomacaoSalvar = document.getElementById('btn-automacao-salvar');
+            const btnAutomacaoExecutar = document.getElementById('btn-automacao-executar');
+
+            if (btnAutomacaoSalvar) {
+                btnAutomacaoSalvar?.addEventListener('click', salvarConfiguracoesAutomacao);
+            }
+
+            if (btnAutomacaoExecutar) {
+                btnAutomacaoExecutar?.addEventListener('click', confirmarExecucaoAutomaçãoes);
+            }
+
+            if (btnRetencaoSalvar) {
+                btnRetencaoSalvar?.addEventListener('click', salvarConfiguracoesRetencao);
+            }
+
+            if (btnRetencaoRelatorio) {
+                btnRetencaoRelatorio?.addEventListener('click', gerarRelatorioRetencao);
+            }
+
+            if (btnRetencaoLimpar) {
+                btnRetencaoLimpar?.addEventListener('click', confirmarLimpezaRetencao);
+            }
+
+            carregarAutomacaoAdmin();
+            carregarQualidadeDados();
+            carregarRetencaoAdmin();
+
+            const btnAddUtilizador = document.getElementById('btn-adicionar-utilizador');
+            if (btnAddUtilizador) {
+                btnAddUtilizador?.addEventListener('click', () => {
+                    const formHTML = `
+                        <div class="formulario-grid admin-formulario">
+                            <div class="campo-formulario largura-total">
+                                <label for="novo-user-nome">Nome Completo</label>
+                                <input type="text" id="novo-user-nome" class="input-controlo" placeholder="Ex.: Maria Fernandes">
+                            </div>
+                            <div class="campo-formulario">
+                                <label for="novo-user-cargo">Cargo</label>
+                                <input type="text" id="novo-user-cargo" class="input-controlo" placeholder="Ex.: Gestor Financeiro" maxlength="160">
+                            </div>
+                            <div class="campo-formulario">
+                                <label for="novo-user-email">E-mail</label>
+                                <input type="email" id="novo-user-email" class="input-controlo" placeholder="email@dominio.com">
+                            </div>
+                            <div class="campo-formulario">
+                                <label for="novo-user-tipo">Tipo de Acesso</label>
+                                <select id="novo-user-tipo" class="input-controlo">
+                                    <option value="AKSANTI">Equipa Interna</option>
+                                    <option value="CLIENT">Cliente</option>
+                                </select>
+                            </div>
+                            ${montarCampoSuperAdmin('novo')}
+                            ${montarCamposPermissoes('novo')}
+                            ${montarCamposCliente('novo')}
+                            ${montarCamposAreas('novo')}
+                        </div>
+                        <div id="novo-user-erro" class="mensagem-erro-form"></div>
+                        <div class="formulario-acoes">
+                            <button type="button" class="btn btn-secundario" onclick="fecharModal()">Cancelar</button>
+                            <button type="button" class="btn btn-primario" id="btn-salvar-user" onclick="salvarUtilizador()">Criar Utilizador</button>
+                        </div>
+                    `;
+                    abrirModal('Adicionar Novo Utilizador', formHTML, { largura: '720px' });
+                    prepararCamposCliente('novo');
+                    configurarCampoSuperAdmin('novo');
+                    configurarCamposPermissoes('novo');
+                });
+            }
+        });
+
+        window.salvarUtilizador = function() {
+            const nome = document.getElementById('novo-user-nome').value.trim();
+            const cargo = document.getElementById('novo-user-cargo').value.trim();
+            const email = document.getElementById('novo-user-email').value.trim().toLowerCase();
+            const tipo = normalizarTipoAcesso(document.getElementById('novo-user-tipo').value);
+            const isAdmin = tipo === 'AKSANTI' && document.getElementById('novo-user-admin').value === '1';
+            const clienteId = document.getElementById('novo-user-cliente-id').value;
+            const msgErro = document.getElementById('novo-user-erro');
+            const btn = document.getElementById('btn-salvar-user');
+
+            if (!nome || !email) {
+                mostrarErroFormulario('novo-user-erro', 'Nome completo e e-mail são obrigatórios.');
+                return;
+            }
+
+            if (!emailValido(email)) {
+                mostrarErroFormulario('novo-user-erro', 'Informe um e-mail válido antes de criar o utilizador.');
+                return;
+            }
+
+            if (cargo.length > 160) {
+                mostrarErroFormulario('novo-user-erro', 'O cargo deve ter no máximo 160 caracteres.');
+                return;
+            }
+
+            if (tipo === 'CLIENT' && !clienteId) {
+                mostrarErroFormulario('novo-user-erro', 'Selecione a empresa cliente que este utilizador irá gerir.');
+                return;
+            }
+
+            msgErro.style.display = 'none';
+            btn.textContent = 'A salvar...';
+            btn.disabled = true;
+
+            fetch('api/criar-utilizador.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    full_name: nome,
+                    cargo: cargo,
+                    email: email,
+                    tipo_acesso: tipo,
+                    is_admin: isAdmin,
+                    permissoes: obterPermissoesSelecionadas('novo'),
+                    area_ids: obterAreasSelecionadas('novo'),
+                    client_id: tipo === 'CLIENT' ? clienteId : null
+                })
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.sucesso) {
+                    fecharModal();
+                    let mensagem = data.mensagem || 'Utilizador criado com sucesso!';
+                    if (data.convite && data.convite.empresa) {
+                        mensagem += `\n\nConvite preparado para gerir:\n${data.convite.empresa}\nNIF: ${data.convite.nif || 'Não informado'}\nLocalização: ${data.convite.localizacao || 'Não informada'}`;
+                    }
+                    if (data.aviso_email) {
+                        mensagem += `\n\n${data.aviso_email}`;
+                    }
+                    mostrarMensagem('Utilizador criado', mensagem, {
+                        largura: '520px',
+                        aoFechar: () => window.location.reload()
+                    });
+                } else {
+                    mostrarErroFormulario('novo-user-erro', data.erro || 'Erro ao criar utilizador.');
+                    btn.textContent = 'Criar Utilizador';
+                    btn.disabled = false;
+                }
+            })
+            .catch((err) => {
+                console.error('Erro:', err);
+                mostrarErroFormulario('novo-user-erro', 'Erro de comunicação com o servidor.');
+                btn.textContent = 'Criar Utilizador';
+                btn.disabled = false;
+            });
+        };
+
+        window.abrirModalEdicaoUtilizador = function(id, nome, cargo, email, tipoOriginal, clienteId = '', isAdmin = false, permissoes = [], area_ids = []) {
+            const tipoNormalizado = normalizarTipoAcesso(tipoOriginal);
+            const formHTML = `
+                <div class="formulario-grid admin-formulario">
+                    <div class="campo-formulario largura-total">
+                        <label for="edit-user-nome">Nome Completo</label>
+                        <input type="text" id="edit-user-nome" class="input-controlo" value="${escaparHtml(nome)}">
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="edit-user-cargo">Cargo</label>
+                        <input type="text" id="edit-user-cargo" class="input-controlo" value="${escaparHtml(cargo)}" maxlength="160">
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="edit-user-email">E-mail</label>
+                        <input type="email" id="edit-user-email" class="input-controlo" value="${escaparHtml(email)}">
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="edit-user-tipo">Tipo de Acesso</label>
+                        <select id="edit-user-tipo" class="input-controlo">
+                            <option value="AKSANTI" ${tipoNormalizado === 'AKSANTI' ? 'selected' : ''}>Equipa Interna</option>
+                            <option value="CLIENT" ${tipoNormalizado === 'CLIENT' ? 'selected' : ''}>Cliente</option>
+                        </select>
+                    </div>
+                    ${montarCampoSuperAdmin('edit', isAdmin)}
+                    ${montarCamposPermissoes('edit', permissoes)}
+                    ${montarCamposCliente('edit')}
+                    ${montarCamposAreas('edit', area_ids)}
+                </div>
+                <div id="edit-user-erro" class="mensagem-erro-form"></div>
+                <div class="formulario-acoes">
+                    <button type="button" class="btn btn-secundario" onclick="fecharModal()">Cancelar</button>
+                    <button type="button" class="btn btn-primario" id="btn-atualizar-user">Atualizar</button>
+                </div>
+            `;
+            abrirModal('Editar Utilizador', formHTML, { largura: '720px' });
+            prepararCamposCliente('edit', clienteId);
+            configurarCampoSuperAdmin('edit');
+            configurarCamposPermissoes('edit');
+            document.getElementById('btn-atualizar-user')?.addEventListener('click', () => atualizarUtilizador(id));
+        };
+
+        window.atualizarUtilizador = function(id) {
+            const nome = document.getElementById('edit-user-nome').value.trim();
+            const cargo = document.getElementById('edit-user-cargo').value.trim();
+            const email = document.getElementById('edit-user-email').value.trim().toLowerCase();
+            const tipo = normalizarTipoAcesso(document.getElementById('edit-user-tipo').value);
+            const isAdmin = tipo === 'AKSANTI' && document.getElementById('edit-user-admin').value === '1';
+            const clienteId = document.getElementById('edit-user-cliente-id').value;
+            const msgErro = document.getElementById('edit-user-erro');
+            const btn = document.getElementById('btn-atualizar-user');
+
+            if (!nome || !email) {
+                mostrarErroFormulario('edit-user-erro', 'Nome completo e e-mail são obrigatórios.');
+                return;
+            }
+
+            if (!emailValido(email)) {
+                mostrarErroFormulario('edit-user-erro', 'Informe um e-mail válido antes de atualizar o utilizador.');
+                return;
+            }
+
+            if (cargo.length > 160) {
+                mostrarErroFormulario('edit-user-erro', 'O cargo deve ter no máximo 160 caracteres.');
+                return;
+            }
+
+            if (tipo === 'CLIENT' && !clienteId) {
+                mostrarErroFormulario('edit-user-erro', 'Selecione a empresa cliente que este utilizador irá gerir.');
+                return;
+            }
+
+            msgErro.style.display = 'none';
+            btn.textContent = 'A atualizar...';
+            btn.disabled = true;
+
+            fetch('api/editar-utilizador.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: id,
+                    full_name: nome,
+                    cargo: cargo,
+                    email: email,
+                    tipo_acesso: tipo,
+                    is_admin: isAdmin,
+                    permissoes: obterPermissoesSelecionadas('edit'),
+                    area_ids: obterAreasSelecionadas('edit'),
+                    client_id: tipo === 'CLIENT' ? clienteId : null
+                })
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.sucesso) {
+                    fecharModal();
+                    mostrarMensagem('Utilizador atualizado', data.mensagem || 'Utilizador atualizado com sucesso.', {
+                        aoFechar: () => window.location.reload()
+                    });
+                } else {
+                    mostrarErroFormulario('edit-user-erro', data.erro || 'Erro ao atualizar utilizador.');
+                    btn.textContent = 'Atualizar';
+                    btn.disabled = false;
+                }
+            })
+            .catch((err) => {
+                console.error('Erro:', err);
+                mostrarErroFormulario('edit-user-erro', 'Erro de comunicação com o servidor.');
+                btn.textContent = 'Atualizar';
+                btn.disabled = false;
+            });
+        };
+
+        window.confirmarAlternarEstadoUtilizador = function(id, nomeCompleto, ativoAtual) {
+            const proximoAtivo = !ativoAtual;
+            const acao = proximoAtivo ? 'Ativar' : 'Desativar';
+            const detalhe = proximoAtivo
+                ? 'A conta voltará a poder iniciar sessão e aparecerá como ativa.'
+                : 'A conta não poderá iniciar sessão enquanto estiver desativada.';
+
+            confirmarAcao(
+                `${acao} Utilizador`,
+                `Tem a certeza de que deseja ${acao.toLowerCase()} <strong>${escaparHtml(nomeCompleto || 'este utilizador')}</strong>? ${detalhe}`,
+                () => alternarEstadoUtilizador(id, proximoAtivo)
+            );
+        };
+
+        window.alternarEstadoUtilizador = function(id, ativo) {
+            fetch('api/alternar-estado-utilizador.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, ativo })
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.sucesso) {
+                    mostrarMensagem('Estado atualizado', data.mensagem || 'Estado do utilizador atualizado com sucesso.', {
+                        aoFechar: () => window.location.reload()
+                    });
+                    return;
+                }
+
+                mostrarMensagem('Atenção', data.erro || 'Erro ao atualizar o estado do utilizador.');
+            })
+            .catch((err) => {
+                console.error('Erro:', err);
+                mostrarMensagem('Atenção', 'Erro de comunicação com o servidor.');
+            });
+        };
+
+        window.confirmarReenviarConviteUtilizador = function(id, nomeCompleto, email) {
+            confirmarAcao(
+                'Reenviar convite',
+                `Será gerada uma nova senha inicial e enviada para <strong>${escaparHtml(nomeCompleto || email || 'este utilizador')}</strong>. A senha anterior deixará de funcionar. Deseja continuar?`,
+                () => reenviarConviteUtilizador(id)
+            );
+        };
+
+        window.reenviarConviteUtilizador = function(id) {
+            fetch('api/reenviar-convite-utilizador.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.sucesso) {
+                    let mensagem = data.mensagem || 'Convite reenviado com sucesso.';
+                    if (data.convite && data.convite.empresa) {
+                        mensagem += `\n\nConta associada:\n${data.convite.empresa}\nNIF: ${data.convite.nif || 'Não informado'}\nLocalização: ${data.convite.localizacao || 'Não informada'}`;
+                    }
+                    mostrarMensagem('Convite reenviado', mensagem, {
+                        largura: '520px',
+                        aoFechar: () => window.location.reload()
+                    });
+                    return;
+                }
+
+                mostrarMensagem('Atenção', data.erro || 'Não foi possível reenviar o convite.');
+            })
+            .catch((err) => {
+                console.error('Erro:', err);
+                mostrarMensagem('Atenção', 'Erro de comunicação com o servidor.');
+            });
+        };
+    </script>
+
+
+<script src="js/pwa.js"></script>
+</body>
+</html>

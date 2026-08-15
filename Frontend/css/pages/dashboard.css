@@ -1,0 +1,84 @@
+/* Estilos dedicados do Painel de Controlo (Dashboard) */
+html.is-client-role .menu-admin-only,
+html.is-client-role .menu-super-admin-only { display: none !important; }
+html.role-pending .layout-principal { visibility: hidden; opacity: 0; }
+
+.bottom-nav svg {
+    width: 24px !important;
+    height: 24px !important;
+    max-width: 24px !important;
+    max-height: 24px !important;
+}
+
+.dashboard-grid-inferior {
+    max-width: 100%;
+}
+
+.dashboard-canvas-donut canvas {
+    max-width: 100%;
+}
+
+.dashboard-recentes-navegacao {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.dashboard-recentes-navegacao button {
+    min-height: 38px;
+    padding: 8px 14px;
+    color: #1e293b;
+    font-weight: 700;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.dashboard-recentes-navegacao button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.dashboard-recentes-indicador {
+    color: var(--texto-secundario);
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+    .dashboard-grid-inferior {
+        grid-template-columns: 1fr !important;
+        overflow: visible !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .dashboard-canvas-donut {
+        height: 340px !important;
+    }
+}
+
+/* Grelha de KPIs responsiva */
+@media (max-width: 1180px) {
+    .dashboard-kpi-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-kpi-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-kpi-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+}
