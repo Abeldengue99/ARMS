@@ -1,5 +1,9 @@
 providers = ["php"]
 
+[variables]
+PUPPETEER_SKIP_DOWNLOAD = "true"
+PUPPETEER_EXECUTABLE_PATH = "/usr/bin/chromium-browser"
+
 [phases.setup]
 nixPkgs = ["...", "nodejs_20"]
 aptPkgs = ["...", "unzip", "wget", "gnupg", "chromium-browser"]
