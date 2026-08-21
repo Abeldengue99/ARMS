@@ -42,7 +42,7 @@ document.getElementById('btn-enviar-recuperar').addEventListener('click', () => 
     btn.disabled = true;
     
     // Apontar corretamente para a pasta api no Backend do Coolify
-    fetch('https://backend.arms.support/api/login.php', {
+    fetch('api/recuperar-senha.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailRecuperar })
@@ -95,7 +95,7 @@ document.getElementById('form-login').addEventListener('submit', (evento) => {
     localStorage.removeItem('arms_utilizador_dados');
 
     // Apontar corretamente para a pasta api no Backend do Coolify
-    fetch('https://backend.arms.support/api/login.php', {
+    fetch('api/login.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha })
