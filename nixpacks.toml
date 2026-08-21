@@ -1,0 +1,7 @@
+providers = ["php", "node"]
+
+[phases.setup]
+aptPkgs = ["unzip", "wget", "gnupg"]
+
+[phases.build]
+cmds = ["npm ci"]
