@@ -41,12 +41,11 @@ document.getElementById('btn-enviar-recuperar').addEventListener('click', () => 
     btn.textContent = 'A enviar...';
     btn.disabled = true;
     
-    // Apontar para o Backend no Coolify
-    fetch('http://st4dfl4jpwjncgwgsnoqa7a0.191.215.36.58.sslip.io/api/recuperar-senha.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailRecuperar })
-    })
+   fetch('https://backend.arms.support/api/login.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, senha })
+})
     .then(r => r.json())
     .then(data => {
         feedback.style.display = 'block';
