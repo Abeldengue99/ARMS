@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function carregarIdentidadePlataforma() {
     // Apontar diretamente para a URL do Backend no Coolify
-    fetch('http://st4dfl4jpwjncgwgsnoqa7a0.191.215.36.58.sslip.io/api/identidade-plataforma.php')
+    fetch('api/identidade-plataforma.php')
         .then(r => r.json())
         .then(data => {
             if (data.sucesso && data.dados) {
@@ -79,5 +79,4 @@ function carregarIdentidadePlataforma() {
             }
         })
         .catch(e => console.error('Falha ao carregar identidade visual da plataforma:', e));
-}
 }
