@@ -73,8 +73,6 @@ try {
             up.avatar_url,
             cliente.client_id,
             cliente.client_name,
-            cliente.client_tax_id,
-            cliente.client_location,
             cliente.client_primary_email,
             cliente.client_is_active
         FROM arms.auth_user au
@@ -83,8 +81,6 @@ try {
             SELECT
                 cc.client_id,
                 c.name AS client_name,
-                c.tax_id AS client_tax_id,
-                c.location AS client_location,
                 c.primary_email AS client_primary_email,
                 c.is_active AS client_is_active
             FROM arms.client_contact cc
@@ -142,8 +138,8 @@ try {
         $cliente = [
             'id' => $user['client_id'],
             'nome' => $user['client_name'],
-            'nif' => $user['client_tax_id'],
-            'localizacao' => $user['client_location'],
+            'nif' => null,
+            'localizacao' => null,
             'email' => $user['client_primary_email'],
             'ativo' => armsApiBool($user['client_is_active'])
         ];
