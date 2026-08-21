@@ -1,7 +1,8 @@
-providers = ["php", "node"]
+providers = ["php"]
 
 [phases.setup]
-aptPkgs = ["unzip", "wget", "gnupg"]
+nixPkgs = ["...", "nodejs_20"]
+aptPkgs = ["...", "unzip", "wget", "gnupg", "chromium-browser"]
 
 [phases.build]
-cmds = ["npm ci"]
+cmds = ["...", "npm ci"]
