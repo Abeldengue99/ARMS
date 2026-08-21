@@ -40,7 +40,7 @@ document.getElementById('btn-enviar-recuperar').addEventListener('click', () => 
     }
     btn.textContent = 'A enviar...';
     btn.disabled = true;
-    
+     // Apontar diretamente para o Backend no Coolify
    fetch('https://backend.arms.support/api/login.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -94,11 +94,11 @@ document.getElementById('form-login').addEventListener('submit', (evento) => {
     localStorage.removeItem('arms_utilizador_dados');
 
     // Apontar diretamente para o Backend no Coolify
-    fetch('http://st4dfl4jpwjncgwgsnoqa7a0.191.215.36.58.sslip.io/api/login.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, senha })
-    })
+   fetch('https://backend.arms.support/api/login.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, senha })
+})
     .then(res => res.json())
     .then(data => {
         if (data.sucesso) {
