@@ -1,5 +1,5 @@
 
-      // Toggle mostrar/esconder senha
+    // Toggle mostrar/esconder senha
 document.getElementById('btn-ver-senha').addEventListener('click', () => {
     const campoSenha = document.getElementById('senha');
     const olhoAberto = document.getElementById('icone-olho-aberto');
@@ -40,12 +40,13 @@ document.getElementById('btn-enviar-recuperar').addEventListener('click', () => 
     }
     btn.textContent = 'A enviar...';
     btn.disabled = true;
-     // Apontar diretamente para o Backend no Coolify
-   fetch('https://backend.arms.support/api/login.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, senha })
-})
+    
+    // Apontar corretamente para a pasta api no Backend do Coolify
+    fetch('https://backend.arms.support/api/login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailRecuperar })
+    })
     .then(r => r.json())
     .then(data => {
         feedback.style.display = 'block';
@@ -93,12 +94,12 @@ document.getElementById('form-login').addEventListener('submit', (evento) => {
     localStorage.removeItem('arms_utilizador_logado');
     localStorage.removeItem('arms_utilizador_dados');
 
-    // Apontar diretamente para o Backend no Coolify
-   fetch('https://backend.arms.support/api/login.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, senha })
-})
+    // Apontar corretamente para a pasta api no Backend do Coolify
+    fetch('https://backend.arms.support/api/login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha })
+    })
     .then(res => res.json())
     .then(data => {
         if (data.sucesso) {
