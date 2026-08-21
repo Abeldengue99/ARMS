@@ -1,4 +1,15 @@
 <?php
+// --- CABEÇALHOS CORS OBRIGATÓRIOS ---
+header("Access-Control-Allow-Origin: https://arms.support");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+// ------------------------------------
+
 /**
  * ARMS - API de Autenticação (Login)
  * Valida credenciais contra a tabela auth_user do PostgreSQL.
