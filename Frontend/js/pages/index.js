@@ -15,7 +15,7 @@
             }
         });
 
-        // Modal de recuperação de senha
+       // Modal de recuperação de senha
         const modalRecuperar = document.getElementById('modal-recuperar');
         document.querySelector('a[data-i18n="login.esqueceu_senha"]').addEventListener('click', (e) => {
             e.preventDefault();
@@ -40,7 +40,9 @@
             }
             btn.textContent = 'A enviar...';
             btn.disabled = true;
-            fetch('api/recuperar-senha.php', {
+            
+            // ALTERAÇÃO AQUI: Apontar para o Backend
+            fetch('https://URL_DO_TEU_BACKEND_NO_COOLIFY/api/recuperar-senha.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: emailRecuperar })
@@ -88,11 +90,12 @@
             btn.textContent = 'A entrar...';
             btn.disabled = true;
             
-            // IMPORTANTE: Limpar dados da sesséo anterior para evitar conflitos entre contas
+            // IMPORTANTE: Limpar dados da sessão anterior para evitar conflitos entre contas
             localStorage.removeItem('arms_utilizador_logado');
             localStorage.removeItem('arms_utilizador_dados');
 
-            fetch('api/login.php', {
+            // ALTERAÇÃO AQUI: Apontar para o Backend
+            fetch('https://URL_DO_TEU_BACKEND_NO_COOLIFY/api/login.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, senha })
@@ -109,7 +112,7 @@
                         window.location.href = 'dashboard.html';
                     }
                 } else {
-                    mostrarMensagem('Atenção', data.erro || 'Não foi possível iniciar sesséo.');
+                    mostrarMensagem('Atenção', data.erro || 'Não foi possível iniciar sessão.');
                     btn.textContent = textoOriginal;
                     btn.disabled = false;
                 }
