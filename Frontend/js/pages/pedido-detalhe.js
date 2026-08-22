@@ -272,27 +272,7 @@
 
         function rotuloStatusTimeline(evt, isClientRole = false) {
             const status = evt && evt.to_status ? evt.to_status : 'Atualização';
-            const rotulos = {
-                DRAFT: 'Rascunho',
-                SENT: 'Enviado',
-                RECEIVED: 'Visualizado',
-                ACCEPTED: 'Aceite',
-                REJECTED: 'Rejeitado',
-                CLOSED: 'Fechado'
-            };
-
-            if (status === 'CLIENT_RESPONDED') {
-                const decisao = decisaoResposta(evt.response_decision);
-                if (decisao === 'PENDING') {
-                    return 'Alteração Solicitada';
-                }
-                if (evt.actor_type === 'AKSANTI') {
-                    return 'Resposta Aksanti';
-                }
-                return 'Resposta do Destinatário';
-            }
-
-            return rotulos[status] || status;
+            return String(status).toUpperCase();
         }
 
         function descricaoTimeline(evt, isClientRole, isReceiver) {
