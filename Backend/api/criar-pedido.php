@@ -6,19 +6,7 @@ require_once 'acesso-pedidos.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-if (session_status() === PHP_SESSION_NONE) {
-    $sessionDir = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'arms-sessions';
-
-    if (!is_dir($sessionDir)) {
-        @mkdir($sessionDir, 0777, true);
-    }
-
-    if (is_dir($sessionDir) && is_writable($sessionDir)) {
-        session_save_path($sessionDir);
-    }
-
-    @session_start();
-}
+armsAuthIniciarSessao();
 
 // Apenas aceitar pedidos POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

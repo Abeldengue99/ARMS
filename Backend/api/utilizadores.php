@@ -3,19 +3,7 @@
 require_once 'db.php';
 require_once 'permissoes.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    $sessionDir = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'arms-sessions';
-
-    if (!is_dir($sessionDir)) {
-        @mkdir($sessionDir, 0777, true);
-    }
-
-    if (is_dir($sessionDir) && is_writable($sessionDir)) {
-        session_save_path($sessionDir);
-    }
-
-    @session_start();
-}
+armsAuthIniciarSessao();
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-cache, no-store, must-revalidate');

@@ -127,6 +127,12 @@ CREATE TABLE security_active_session (
     ended_at     TIMESTAMPTZ
 );
 
+CREATE TABLE php_session (
+    id            VARCHAR(128) PRIMARY KEY,
+    data          TEXT         NOT NULL DEFAULT '',
+    last_activity TIMESTAMPTZ  NOT NULL DEFAULT now()
+);
+
 CREATE INDEX idx_security_login_event_email_ip_created
     ON security_login_event (email, ip_address, created_at DESC);
 
@@ -136,10 +142,14 @@ CREATE INDEX idx_security_alert_status_created
 CREATE INDEX idx_security_active_session_live
     ON security_active_session (ended_at, last_seen_at DESC);
 
+CREATE INDEX idx_php_session_last_activity
+    ON php_session (last_activity);
+
 COMMENT ON TABLE security_login_event IS 'Login success, failure and block history for automated security.';
 COMMENT ON TABLE security_login_lock IS 'Temporary login locks after repeated failures.';
 COMMENT ON TABLE security_alert IS 'Security alerts visible in the admin area.';
 COMMENT ON TABLE security_active_session IS 'Active browser sessions tracked by session hash.';
+COMMENT ON TABLE php_session IS 'PHP session storage shared by all web containers.';
 
 
 -- ============================================================

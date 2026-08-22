@@ -1,4 +1,5 @@
 <?php
+require_once 'db.php';
 require_once 'auth.php';
 require_once 'senha-util.php';
 require_once 'senha-politica.php';
@@ -6,8 +7,6 @@ require_once 'senha-politica.php';
 header('Content-Type: application/json; charset=utf-8');
 
 armsAuthExigirLogin();
-
-require_once 'db.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 if (!is_array($data)) {

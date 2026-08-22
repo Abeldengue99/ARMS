@@ -2,9 +2,7 @@
 require_once 'db.php';
 require_once 'permissoes.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    @session_start();
-}
+armsAuthIniciarSessao();
 
 header('Content-Type: application/json; charset=utf-8');
 

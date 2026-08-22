@@ -5,19 +5,7 @@ require_once 'acesso-pedidos.php';
 require_once 'notificacao-servico.php';
 header('Content-Type: application/json; charset=utf-8');
 
-if (session_status() === PHP_SESSION_NONE) {
-    $sessionDir = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'arms-sessions';
-
-    if (!is_dir($sessionDir)) {
-        @mkdir($sessionDir, 0777, true);
-    }
-
-    if (is_dir($sessionDir) && is_writable($sessionDir)) {
-        session_save_path($sessionDir);
-    }
-
-    @session_start();
-}
+armsAuthIniciarSessao();
 
 if (empty($_SESSION['arms_logado']) || empty($_SESSION['arms_user_id'])) {
     echo json_encode(['sucesso' => false, 'erro' => 'Não autenticado.']);
