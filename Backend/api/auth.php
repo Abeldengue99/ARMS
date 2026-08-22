@@ -198,6 +198,24 @@ function armsAuthLogado() {
     return !empty($_SESSION['arms_logado']) && !empty($_SESSION['arms_user_id']);
 }
 
+function armsAuthLogFalhaAutenticacao(string $origem = ''): void {
+    $sessionName = session_name() ?: (getenv('ARMS_SESSION_NAME') ?: 'PHPSESSID');
+    $sessionId = session_id();
+    $sessionHash = $sessionId ? substr(hash('sha256', $sessionId), 0, 12) : '';
+
+    error_log('[ARMS] Falha de autenticacao' . ($origem ? " em {$origem}" : '') . ': ' . json_encode([
+        'method' => $_SERVER['REQUEST_METHOD'] ?? '',
+        'uri' => $_SERVER['REQUEST_URI'] ?? '',
+        'session_driver' => getenv('ARMS_SESSION_DRIVER') ?: 'files',
+        'session_name' => $sessionName,
+        'cookie_present' => array_key_exists($sessionName, $_COOKIE),
+        'session_status' => session_status(),
+        'session_hash' => $sessionHash,
+        'has_arms_logado' => array_key_exists('arms_logado', $_SESSION),
+        'has_arms_user_id' => array_key_exists('arms_user_id', $_SESSION),
+    ], JSON_UNESCAPED_SLASHES));
+}
+
 function armsAuthIsAdmin() {
     armsAuthIniciarSessao();
     return armsAuthBool($_SESSION['arms_is_admin'] ?? false);
@@ -205,8 +223,9 @@ function armsAuthIsAdmin() {
 
 function armsAuthExigirLogin() {
     if (!armsAuthLogado()) {
+        armsAuthLogFalhaAutenticacao('armsAuthExigirLogin');
         http_response_code(401);
-        echo json_encode(['sucesso' => false, 'erro' => 'Nao autenticado.']);
+        echo json_encode(['sucesso' => false, 'erro' => 'Nao autenticado.', 'codigo' => 'AUTH_REQUIRED']);
         exit;
     }
 }
