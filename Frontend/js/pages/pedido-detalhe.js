@@ -595,11 +595,23 @@
 
             confirmarAcao(textoDecisao.titulo, textoDecisao.confirmacao, () => {
                 const msg = document.getElementById('texto-decisao').value.trim();
-                
-                fetch('api/pedido-responder.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reference: pedidoAtual.reference, decisao: decisaoStr, mensagem: msg })
+
+                fetch('api/sessao.php?acao=verificar', {
+                    cache: 'no-store',
+                    credentials: 'include'
+                })
+                .then(r => r.json())
+                .then(sessao => {
+                    if (!sessao.sucesso || !sessao.autenticado) {
+                        throw new Error('Sessão expirada. Inicie sessão novamente antes de responder ao pedido.');
+                    }
+
+                    return fetch('api/pedido-responder.php', {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ reference: pedidoAtual.reference, decisao: decisaoStr, mensagem: msg })
+                    });
                 })
                 .then(r => r.text())
                 .then(textoResposta => {
@@ -1041,4 +1053,4 @@
                 return;
             }
             carregarPedido(ref);
-});
+});
