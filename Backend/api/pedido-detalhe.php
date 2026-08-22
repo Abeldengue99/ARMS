@@ -139,45 +139,22 @@ try {
     $stmt->execute($timelineParams);
     $timeline = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $isReceiver = !$pedidoCriadoPeloUtilizador;
-
-    if ($isReceiver) {
-        $temReceived = false;
-        foreach ($timeline as $evento) {
-            if ($evento['to_status'] === 'RECEIVED') {
-                $temReceived = true;
-                break;
-            }
+    $temRespostaFinal = false;
+    foreach ($timeline as $evento) {
+        if (in_array($evento['to_status'], ['ACCEPTED', 'REJECTED'], true)) {
+            $temRespostaFinal = true;
+            break;
         }
+    }
 
-        // Se houver SENT e RECEIVED, para quem recebe, mantemos apenas o RECEIVED ou o SENT convertido.
-        $timelineLimpa = [];
-        foreach ($timeline as $evento) {
-            if ($evento['to_status'] === 'SENT') {
-                if ($temReceived) continue; // Ignora SENT se já tiver RECEIVED
-                $evento['to_status'] = 'RECEIVED'; // Converte visualmente o SENT para RECEIVED
-                $evento['actor_name'] = $pedido['sent_by_name'] ?: $pedido['created_by_name'];
+    if ($temRespostaFinal) {
+        $timeline = array_values(array_filter($timeline, function ($evento) {
+            if ($evento['to_status'] !== 'CLIENT_RESPONDED') {
+                return true;
             }
-            if ($evento['to_status'] === 'RECEIVED') {
-                $evento['actor_name'] = $pedido['sent_by_name'] ?: $pedido['created_by_name'];
-            }
-            $timelineLimpa[] = $evento;
-        }
-        $timeline = $timelineLimpa;
 
-        $temRespostaFinal = false;
-        foreach ($timeline as $evento) {
-            if (in_array($evento['to_status'], ['ACCEPTED', 'REJECTED'], true)) {
-                $temRespostaFinal = true;
-                break;
-            }
-        }
-
-        if ($temRespostaFinal) {
-            $timeline = array_values(array_filter($timeline, function ($evento) {
-                return $evento['to_status'] !== 'CLIENT_RESPONDED';
-            }));
-        }
+            return strtoupper((string)($evento['response_decision'] ?? '')) === 'PENDING';
+        }));
     }
 
     // Comentários

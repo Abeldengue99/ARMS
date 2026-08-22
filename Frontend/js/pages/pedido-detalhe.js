@@ -252,8 +252,9 @@
             const temRespostaFinal = eventos.some((evt) => ['ACCEPTED', 'REJECTED'].includes(evt.to_status));
 
             return eventos.filter((evt) => {
+                if (evt.to_status === 'DRAFT') return false;
                 if (evt.to_status === 'SENT') return true; // O destinatário deve ver quem e quando enviou
-                if (evt.to_status === 'RECEIVED') return true;
+                if (evt.to_status === 'RECEIVED') return false;
                 if (evt.to_status === 'ACCEPTED' || evt.to_status === 'REJECTED') return true;
                 return evt.to_status === 'CLIENT_RESPONDED' && !temRespostaFinal;
             });
@@ -271,6 +272,14 @@
 
         function rotuloStatusTimeline(evt, isClientRole = false) {
             const status = evt && evt.to_status ? evt.to_status : 'Atualização';
+            const rotulos = {
+                DRAFT: 'Rascunho',
+                SENT: 'Enviado',
+                RECEIVED: 'Visualizado',
+                ACCEPTED: 'Aceite',
+                REJECTED: 'Rejeitado',
+                CLOSED: 'Fechado'
+            };
 
             if (status === 'CLIENT_RESPONDED') {
                 const decisao = decisaoResposta(evt.response_decision);
@@ -283,7 +292,7 @@
                 return 'Resposta do Destinatário';
             }
 
-            return status;
+            return rotulos[status] || status;
         }
 
         function descricaoTimeline(evt, isClientRole, isReceiver) {
@@ -295,11 +304,7 @@
             }
 
             if (evt.to_status === 'RECEIVED') {
-                if (isReceiver) {
-                    return 'Enviado por ' + nome + ' em ' + dataHora;
-                } else {
-                    return 'Visualizado por ' + nome + ' em ' + dataHora;
-                }
+                return 'Visualizado por ' + nome + ' em ' + dataHora;
             }
 
             if (evt.to_status === 'CLIENT_RESPONDED') {
@@ -317,6 +322,10 @@
 
             if (evt.to_status === 'REJECTED') {
                 return nome + ' rejeitou o pedido em ' + dataHora;
+            }
+
+            if (evt.to_status === 'DRAFT') {
+                return 'Criado por ' + nome + ' em ' + dataHora;
             }
 
             return nome + ' em ' + dataHora;

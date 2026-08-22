@@ -13,7 +13,7 @@ try {
     $stmtTotal = $pdo->prepare("
         SELECT COUNT(*) as total
         FROM arms.request r
-        WHERE 1=1 $filtroAcesso
+        WHERE r.status <> 'DRAFT' $filtroAcesso
     ");
     $stmtTotal->execute($params);
     $totalPedidos = (int)($stmtTotal->fetch()['total'] ?? 0);
@@ -21,7 +21,7 @@ try {
     $stmtAbertos = $pdo->prepare("
         SELECT COUNT(*) as total
         FROM arms.request r
-        WHERE r.status IN ('DRAFT', 'SENT', 'RECEIVED', 'CLIENT_RESPONDED') $filtroAcesso
+        WHERE r.status IN ('SENT', 'RECEIVED', 'CLIENT_RESPONDED') $filtroAcesso
     ");
     $stmtAbertos->execute($params);
     $pedidosAbertos = (int)($stmtAbertos->fetch()['total'] ?? 0);
@@ -30,7 +30,7 @@ try {
         SELECT COUNT(*) as total
         FROM arms.request r
         WHERE r.deadline_at < NOW()
-          AND r.status NOT IN ('ACCEPTED', 'REJECTED', 'CLOSED') $filtroAcesso
+          AND r.status NOT IN ('DRAFT', 'ACCEPTED', 'REJECTED', 'CLOSED') $filtroAcesso
     ");
     $stmtVencidos->execute($params);
     $pedidosVencidos = (int)($stmtVencidos->fetch()['total'] ?? 0);
@@ -60,7 +60,7 @@ try {
         LEFT JOIN arms.area a ON r.area_id = a.id
         LEFT JOIN arms.auth_user au_creator ON r.created_by = au_creator.id
         LEFT JOIN arms.user_profile up_creator ON r.created_by = up_creator.user_id
-        WHERE 1=1 $filtroAcesso
+        WHERE r.status <> 'DRAFT' $filtroAcesso
         ORDER BY r.created_at DESC
         LIMIT 10
     ");
@@ -71,7 +71,7 @@ try {
         SELECT a.name as area_name, COUNT(r.id) as total
         FROM arms.area a
         LEFT JOIN arms.request r ON a.id = r.area_id
-        WHERE 1=1 $filtroAcesso
+        WHERE r.status <> 'DRAFT' $filtroAcesso
         GROUP BY a.id, a.name
         ORDER BY total DESC
     ");
@@ -81,7 +81,7 @@ try {
     $stmtPorStatus = $pdo->prepare("
         SELECT r.status, COUNT(r.id) as total
         FROM arms.request r
-        WHERE 1=1 $filtroAcesso
+        WHERE r.status <> 'DRAFT' $filtroAcesso
         GROUP BY r.status
         ORDER BY total DESC
     ");
@@ -94,7 +94,7 @@ try {
             SELECT c.name as client_name, COUNT(r.id) as total
             FROM arms.request r
             JOIN arms.client c ON r.client_id = c.id
-            WHERE 1=1 $filtroAcesso
+            WHERE r.status <> 'DRAFT' $filtroAcesso
             GROUP BY c.id, c.name
             ORDER BY total DESC
             LIMIT 5
@@ -109,7 +109,8 @@ try {
             TO_CHAR(r.created_at, 'Mon') as mes_nome,
             COUNT(r.id) as total
         FROM arms.request r
-        WHERE r.created_at >= NOW() - INTERVAL '6 months' $filtroAcesso
+        WHERE r.created_at >= NOW() - INTERVAL '6 months'
+          AND r.status <> 'DRAFT' $filtroAcesso
         GROUP BY mes_num, mes_nome
         ORDER BY mes_num ASC
     ");

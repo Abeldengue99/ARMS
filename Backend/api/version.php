@@ -7,7 +7,7 @@ header('Expires: 0');
 echo json_encode([
     'sucesso' => true,
     'app' => 'ARMS',
-    'deploy_marker' => '2026-08-22T13:58:49+01:00',
+    'deploy_marker' => '2026-08-22T15:36:51+01:00',
     'backend' => [
         'api' => true,
         'session_driver_env' => getenv('ARMS_SESSION_DRIVER') ?: 'files',
