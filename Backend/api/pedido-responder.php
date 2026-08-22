@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * ARMS — API de Resposta Formal do Cliente
  * Permite ao cliente aceitar, rejeitar ou responder oficialmente a um pedido,
