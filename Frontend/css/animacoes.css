@@ -12,6 +12,16 @@
     }
 }
 
+@keyframes aparecerSemDeslocar {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 /* Estou a criar um comando (classe) que podemos encostar a qualquer peça do nosso puzzle (um cartão, uma tabela de pedidos, etc) para usar esta mesma animação de entrada com suavidade */
 .animacao-entrar {
     /* Estou a ligar a animação "entrarSuave" a esta peça, ordenando que toda a coreografia dure apenas meio segundo, usando uma curva de velocidade (bezier) que começa rápida e abranda suavemente no fim, fixando-se no lugar final (forwards) */

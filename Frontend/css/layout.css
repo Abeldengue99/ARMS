@@ -222,10 +222,9 @@ html.sidebar-minimized .area-conteudo {
     max-width: 1100px;
     width: 100%;
     margin: 0 auto;
-    /* Animação isolada apenas ao conteúdo, preservando o Header imutável */
-    animation: entrarSuave 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: aparecerSemDeslocar 0.18s ease-out forwards;
     backface-visibility: hidden;
-    will-change: transform, opacity;
+    will-change: opacity;
 }
 
 /* Centralizar e dar destaque ao logótipo na barra lateral */

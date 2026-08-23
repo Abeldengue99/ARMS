@@ -137,17 +137,6 @@ function initSidebarMobile() {
         });
     }
 
-    function moveSearchBar() {
-        const barraPesquisa = document.getElementById('barra-pesquisa-topo');
-        const cabecalhoAcoes = document.querySelector('.cabecalho-acoes');
-        if (barraPesquisa && cabecalhoAcoes) {
-            // Remove margin-left para alinhar bem na direita
-            barraPesquisa.style.marginLeft = '0';
-            cabecalhoAcoes.insertBefore(barraPesquisa, cabecalhoAcoes.firstChild);
-        }
-    }
-
-    moveSearchBar();
     ensureMenuButton();
     ensureMobileMenuHeader();
     bindSidebarEvents();
@@ -215,26 +204,3 @@ document.addEventListener('click', function(e) {
         }
     }
 });
-
-// Garantir que todas as telas têm o mesmo cabeçalho (barra de pesquisa) no telemóvel
-const headerEsq = document.querySelector('.cabecalho-principal > div:first-child');
-if (headerEsq) {
-    headerEsq.style.flex = '1';
-    
-    // Se não tiver a barra de pesquisa, injectamos
-    if (!document.getElementById('barra-pesquisa-topo')) {
-        const barraHtml = `<div style="position: relative; margin-left: 0; width: 300px; display: none;" id="barra-pesquisa-topo">
-            <input type="text" id="input-pesquisa-geral" class="input-controlo" placeholder="Pesquisar pedidos..." style="padding-left: 40px; border-radius: 20px; background-color: #f8fafc; border: 1px solid #e2e8f0; width: 100%;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 11px;">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-        </div>`;
-        headerEsq.insertAdjacentHTML('beforeend', barraHtml);
-        
-        const h2 = headerEsq.querySelector('h2');
-        if (h2) {
-            h2.classList.add('titulo-pagina-desktop');
-        }
-    }
-}
