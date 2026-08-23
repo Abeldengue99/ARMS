@@ -62,6 +62,7 @@ try {
         WHERE r.reference = ?
         ORDER BY cc.user_id IS NULL, cc.created_at ASC
         LIMIT 1
+        FOR UPDATE OF r
     ");
     $stmt->execute([$ref]);
     $req = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -72,10 +73,13 @@ try {
 
     $reqId = $req['id'];
 
-    $destinoInternoAksanti = strtoupper($req['destination_type'] ?? 'CLIENT') === 'AKSANTI'
-        && !empty($req['recipient_user_id']);
-    $utilizadorEDestinatarioInterno = $destinoInternoAksanti
+    $destinoInternoAksanti = strtoupper($req['destination_type'] ?? 'CLIENT') === 'AKSANTI';
+    $destinatarioAtual = armsPedidosObterDestinatarioAtual($pdo, $reqId, $userId);
+    $utilizadorEDestinatarioDireto = $destinoInternoAksanti
+        && !empty($req['recipient_user_id'])
         && strcasecmp((string)$req['recipient_user_id'], (string)$userId) === 0;
+    $utilizadorEDestinatarioInterno = $destinoInternoAksanti
+        && ($utilizadorEDestinatarioDireto || $destinatarioAtual !== null);
     $adminAtual = armsAuthBool($_SESSION['arms_is_admin'] ?? false);
 
     // Validar se o cliente atual é dono do pedido (se for cliente)
@@ -94,12 +98,23 @@ try {
         throw new Exception("Este pedido não aguarda resposta administrativa.");
     }
 
+    if ($utilizadorEDestinatarioInterno && $destinatarioAtual) {
+        $resumoDestinatarios = armsPedidosResumoDestinatarios($pdo, $reqId);
+        if ((int)($resumoDestinatarios['responded_count'] ?? 0) > 0) {
+            throw new Exception("Este pedido ja foi respondido por um membro do departamento.");
+        }
+    }
+
     // 2. Inserir a resposta oficial na tabela request_response
     //    Colunas reais: body, decision, decided_by, decided_at (schema exige decided_by/at quando != PENDING)
     $sqlResp = "INSERT INTO arms.request_response (request_id, responded_by, body, decision, decided_by, decided_at)
                 VALUES (?, ?, ?, ?, ?, NOW()) RETURNING id";
     $stmtResp = $pdo->prepare($sqlResp);
     $stmtResp->execute([$reqId, $userId, $mensagem, $decisao, $userId]);
+
+    if ($destinatarioAtual) {
+        armsPedidosMarcarDestinatarioRespondido($pdo, $reqId, $userId);
+    }
     
     // 3. Atualizar o estado do pedido na tabela request
     //    Mapear decisão para status do pedido conforme o state machine:

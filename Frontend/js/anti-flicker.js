@@ -5,6 +5,13 @@
  */
 (function () {
     try {
+        var pathname = window.location.pathname || '';
+        var isPublicEntry = pathname === '/' || /\/index\.html?$/i.test(pathname);
+
+        if (!isPublicEntry) {
+            document.documentElement.classList.add('preload');
+        }
+
         if (localStorage.getItem('arms_sidebar_minimized') === 'true' && window.innerWidth > 1024) {
             document.documentElement.classList.add('sidebar-minimized');
         }

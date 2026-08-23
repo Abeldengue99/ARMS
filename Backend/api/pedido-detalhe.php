@@ -101,6 +101,23 @@ try {
     }
 
     $req_id = $pedido['id'];
+    $pedidoCriadoPeloUtilizador = (string)($pedido['created_by_id'] ?? '') === $sessionUserId;
+    $destinatarioAtual = armsPedidosObterDestinatarioAtual($pdo, $req_id, $sessionUserId);
+
+    if ($destinatarioAtual && !$pedidoCriadoPeloUtilizador && strtoupper((string)($pedido['status'] ?? '')) !== 'DRAFT') {
+        armsPedidosMarcarDestinatarioVisualizado($pdo, $req_id, $sessionUserId);
+        $destinatarioAtual = armsPedidosObterDestinatarioAtual($pdo, $req_id, $sessionUserId);
+    }
+
+    $destinatariosResumo = armsPedidosResumoDestinatarios($pdo, $req_id);
+    $pedido['current_user_is_recipient'] = $destinatarioAtual !== null;
+    $pedido['current_user_recipient_type'] = $destinatarioAtual['recipient_type'] ?? null;
+    $pedido['current_user_received_at'] = $destinatarioAtual['received_at'] ?? null;
+    $pedido['current_user_viewed_at'] = $destinatarioAtual['viewed_at'] ?? null;
+    $pedido['current_user_responded_at'] = $destinatarioAtual['responded_at'] ?? null;
+    $pedido['recipient_group_has_response'] = (int)($destinatariosResumo['responded_count'] ?? 0) > 0;
+    $pedido['recipient_group_response_by_name'] = $destinatariosResumo['last_response_by_name'] ?? null;
+    $pedido['recipient_group_response_at'] = $destinatariosResumo['last_response_at'] ?? null;
 
     // Timeline
     $sql = "SELECT ral.to_status, to_char(ral.created_at, 'YYYY-MM-DD HH24:MI') as data_hora,
@@ -127,8 +144,6 @@ try {
     // Quem RECEBEU o pedido (não é o criador e não é admin) só vê:
     //   - a data que recebeu (RECEIVED)
     //   - a data que respondeu (CLIENT_RESPONDED, ACCEPTED, REJECTED)
-    $pedidoCriadoPeloUtilizador = (string)($pedido['created_by_id'] ?? '') === $sessionUserId;
-
     if (!$pedidoCriadoPeloUtilizador) {
         // Quem recebeu o pedido não vê DRAFT. Vê SENT, RECEIVED, e as respostas.
         $sql .= " AND ral.to_status IN ('SENT', 'RECEIVED', 'CLIENT_RESPONDED', 'ACCEPTED', 'REJECTED')";
@@ -242,6 +257,7 @@ try {
         'comentarios' => $comentarios,
         'anexos' => $anexos,
         'respostas' => $respostas,
+        'destinatarios' => $destinatariosResumo,
         'configuracoes' => $configuracoes
     ]);
 

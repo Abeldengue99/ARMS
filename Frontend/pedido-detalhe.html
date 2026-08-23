@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="shortcut icon" type="image/png" href="img/favicon.png">
     <meta name="theme-color" content="#111111">
-    <script src="js/anti-flicker.js?v=15"></script>
+    <script src="js/anti-flicker.js?v=16"></script>
     <link rel="stylesheet" href="css/pages/pedido-detalhe.css?v=10">
     <link rel="stylesheet" href="css/reset.css?v=10">
     <link rel="stylesheet" href="css/variaveis.css?v=10">
@@ -47,6 +47,11 @@
                     <h2 style="font-size: 1.25rem;">Detalhe do Pedido</h2>
                 </div>
                 <div class="cabecalho-acoes" style="display: flex; align-items: center; gap: 16px;">
+                    <select id="select-idioma-aksanti" class="input-controlo select-idioma-admin" style="width: auto; padding: 6px 12px;">
+                        <option value="pt">Português</option>
+                        <option value="en">English</option>
+                        <option value="fr">Français</option>
+                    </select>
                     <a href="notificacoes.html" style="color: var(--texto-secundario); position: relative; width: 40px; height: 40px; background: #f4f4f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none;" title="Notificações">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background-color: var(--cor-perigo); border-radius: 50%; border: 2px solid #f4f4f5;"></span>
                     </a>
@@ -105,6 +110,8 @@
                         </div>
                     </div>
                 </div>
+
+                <div id="resumo-destinatarios-pedido" class="card deslizar-cima-isaf" style="display: none; margin-top: 24px; border-left: 4px solid #3b82f6; background: #f8fafc;"></div>
 
                 <!-- PAINEL DE DECISÃO FORMAL DO CLIENTE (Visível Apenas para Cliente quando pendente) -->
                 <div id="painel-decisao-cliente" class="card deslizar-cima-isaf" style="display: none; margin-top: 24px; border-left: 4px solid var(--aksanti-gold); background: #fffbeb;">
@@ -168,7 +175,7 @@
     <script src="js/modal.js?v=2"></script>
     <script src="js/notificacoes.js?v=12"></script>
     <script src="js/tempo-real.js?v=12"></script>
-    <script src="js/pages/pedido-detalhe.js?v=15" defer></script>
+    <script src="js/pages/pedido-detalhe.js?v=16" defer></script>
     
     <!-- Bottom Navigation Bar (Apenas Mobile) -->
     <nav class="bottom-nav">

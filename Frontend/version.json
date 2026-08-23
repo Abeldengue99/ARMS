@@ -1,12 +1,13 @@
 {
   "app": "ARMS",
-  "deploy_marker": "2026-08-23T13:23:00+01:00",
+  "deploy_marker": "2026-08-23T14:12:45+01:00",
   "frontend": {
     "layout_css": "v=16",
     "animacoes_css": "v=11",
     "sidebar_js": "v=17",
-    "pedido_detalhe_js": "v=15",
+    "pedido_detalhe_js": "v=16",
     "pwa_js": "v=2",
-    "service_worker": "/sw.js"
+    "service_worker": "/sw.js",
+    "anti_flicker_js": "v=16"
   }
 }

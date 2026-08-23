@@ -558,6 +558,59 @@
             container.innerHTML = html;
         }
 
+        function nomesResumoPedido(nomes, limite = 5) {
+            const lista = Array.isArray(nomes) ? nomes.filter(Boolean) : [];
+            if (!lista.length) return '';
+
+            const visiveis = lista.slice(0, limite).map((nome) => escaparHtmlPedido(nome));
+            const restantes = lista.length - visiveis.length;
+            return visiveis.join(', ') + (restantes > 0 ? ` e mais ${restantes}` : '');
+        }
+
+        function renderResumoDestinatariosPedido(resumo, pedido, destinoInternoAksanti) {
+            const container = document.getElementById('resumo-destinatarios-pedido');
+            if (!container) return;
+
+            const total = Number(resumo?.total || 0);
+            if (!destinoInternoAksanti || total <= 1) {
+                container.style.display = 'none';
+                container.innerHTML = '';
+                return;
+            }
+
+            const recebidos = Number(resumo?.received_count || 0);
+            const respondidos = Number(resumo?.responded_count || 0);
+            const respondeuNome = resumo?.last_response_by_name || pedido?.recipient_group_response_by_name || pedido?.latest_response_by_name || '';
+            const respondeuEm = resumo?.last_response_at || pedido?.recipient_group_response_at || '';
+            const faltam = nomesResumoPedido(resumo?.missing_names || []);
+
+            let titulo = 'Acompanhamento do Departamento';
+            let detalhe = `${recebidos}/${total} membros visualizaram este pedido.`;
+            let apoio = faltam ? `Falta visualizar: ${faltam}.` : 'Todos os membros do departamento visualizaram o pedido.';
+            let cor = '#3b82f6';
+
+            if (respondidos > 0) {
+                titulo = 'Resposta do Departamento';
+                detalhe = respondeuNome
+                    ? `${escaparHtmlPedido(respondeuNome)} respondeu por este departamento${respondeuEm ? ` em ${escaparHtmlPedido(respondeuEm)}` : ''}.`
+                    : 'Um membro deste departamento ja respondeu pelo grupo.';
+                apoio = 'A decisao do grupo ja foi registada; os outros membros deixam de ver os botoes de resposta.';
+                cor = '#10b981';
+            } else if (recebidos >= total && total > 0) {
+                titulo = 'Todos Receberam';
+                apoio = 'Todos os membros do departamento ja visualizaram este pedido.';
+                cor = '#10b981';
+            }
+
+            container.style.borderLeftColor = cor;
+            container.innerHTML = `
+                <h3 style="font-size: 1rem; margin-bottom: 8px; color: #1f2937; font-weight: 800;">${titulo}</h3>
+                <p style="margin: 0 0 6px; color: #374151; font-size: 0.95rem;">${detalhe}</p>
+                <small style="display: block; color: #6b7280; line-height: 1.5;">${apoio}</small>
+            `;
+            container.style.display = 'block';
+        }
+
         function submeterDecisao(decisaoStr) {
             const textosDecisao = {
                 ACCEPTED: {
@@ -645,15 +698,19 @@
                     const isExternalClient = ud.tipo === 'CLIENT';
                     const isSuperAdmin = ud.admin === true;
                     const isClientRole = isExternalClient || ud.admin !== true;
-                    const destinoInternoAksanti = String(p.destination_type || '').toUpperCase() === 'AKSANTI' && p.recipient_user_id;
-                    const isInternalRecipient = destinoInternoAksanti && String(p.recipient_user_id || '') === String(ud.id || '');
+                    const destinoInternoAksanti = String(p.destination_type || '').toUpperCase() === 'AKSANTI';
+                    const destinatarioInternoDireto = destinoInternoAksanti && p.recipient_user_id && String(p.recipient_user_id || '') === String(ud.id || '');
+                    const destinatarioInternoRegistado = valorAtivoPedido(p.current_user_is_recipient);
+                    const isInternalRecipient = Boolean(destinatarioInternoDireto || destinatarioInternoRegistado);
+                    const grupoDestinatarios = data.destinatarios || {};
+                    const grupoJaRespondeu = valorAtivoPedido(p.recipient_group_has_response) || Number(grupoDestinatarios.responded_count || 0) > 0;
                     const pedidoCriadoPeloUtilizador = String(p.created_by_id || '') === String(ud.id || '');
                     const isReceiver = !pedidoCriadoPeloUtilizador;
                     const alteracaoSolicitada = pedidoComAlteracaoSolicitada(p);
                     const clienteLabel = document.getElementById('pedido-cliente-label');
                     if (clienteLabel) clienteLabel.textContent = isClientRole ? 'Parceiro' : (destinoInternoAksanti ? 'Destinatário' : 'Cliente');
 
-                    if ((isExternalClient || isInternalRecipient) && p.status === 'SENT' && String(p.created_by_id || '') !== String(ud.id || '')) {
+                    if ((isExternalClient || destinatarioInternoDireto) && p.status === 'SENT' && String(p.created_by_id || '') !== String(ud.id || '')) {
                         fetch('api/pedido-atualizar-status.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -702,6 +759,7 @@
                     renderComentarios(data.comentarios);
                     renderAnexos(data.anexos);
                     if (data.respostas) renderRespostasFormais(data.respostas, isClientRole);
+                    renderResumoDestinatariosPedido(grupoDestinatarios, p, destinoInternoAksanti);
 
                     const statusEditaveis = ['DRAFT', 'CLIENT_RESPONDED'];
                     const criadorPodeGerirPedido = pedidoCriadoPeloUtilizador && (!destinoInternoAksanti || pedidoCriadoPeloUtilizador);
@@ -722,7 +780,7 @@
                     const pedidoCriadoPorSuperAdmin = valorAtivoPedido(p.created_by_is_admin);
                     const pedidoVeioDeClienteOuColaborador = !pedidoCriadoPorSuperAdmin && !pedidoCriadoPeloUtilizadorAtual;
                     const clientePodeResponder = isExternalClient && !pedidoCriadoPeloUtilizadorAtual && aguardaDecisao;
-                    const destinatarioInternoPodeResponder = isInternalRecipient && !pedidoCriadoPeloUtilizadorAtual && aguardaDecisao;
+                    const destinatarioInternoPodeResponder = isInternalRecipient && !pedidoCriadoPeloUtilizadorAtual && aguardaDecisao && !grupoJaRespondeu;
                     const adminPodeResponder = isSuperAdmin && pedidoVeioDeClienteOuColaborador && aguardaDecisao;
 
                     if (clientePodeResponder || adminPodeResponder || destinatarioInternoPodeResponder) {

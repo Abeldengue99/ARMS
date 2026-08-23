@@ -129,6 +129,175 @@ function armsPedidosDestinatariosIds(PDO $pdo, string $requestId) {
     return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
 }
 
+function armsPedidosObterDestinatarioAtual(PDO $pdo, ?string $requestId, ?string $userId) {
+    if (!$requestId || !$userId) {
+        return null;
+    }
+
+    armsPedidosGarantirDestinoInterno($pdo);
+
+    $stmt = $pdo->prepare("
+        SELECT
+            rr.id,
+            rr.request_id,
+            rr.user_id,
+            rr.client_id,
+            rr.area_id,
+            rr.recipient_type,
+            to_char(rr.created_at, 'YYYY-MM-DD HH24:MI') as created_at,
+            to_char(rr.received_at, 'YYYY-MM-DD HH24:MI') as received_at,
+            to_char(rr.viewed_at, 'YYYY-MM-DD HH24:MI') as viewed_at,
+            to_char(rr.responded_at, 'YYYY-MM-DD HH24:MI') as responded_at,
+            COALESCE(up.full_name, au.email, rr.user_id::text) as recipient_name,
+            COALESCE(au.user_type, '') as recipient_user_type
+        FROM arms.request_recipient rr
+        LEFT JOIN arms.user_profile up ON rr.user_id = up.user_id
+        LEFT JOIN arms.auth_user au ON rr.user_id = au.id
+        WHERE rr.request_id = :request_id
+          AND rr.user_id = :user_id
+        LIMIT 1
+    ");
+    $stmt->execute([
+        ':request_id' => $requestId,
+        ':user_id' => $userId,
+    ]);
+
+    $linha = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $linha ?: null;
+}
+
+function armsPedidosMarcarDestinatarioVisualizado(PDO $pdo, string $requestId, string $userId) {
+    armsPedidosGarantirDestinoInterno($pdo);
+
+    $stmt = $pdo->prepare("
+        UPDATE arms.request_recipient
+        SET received_at = COALESCE(received_at, NOW()),
+            viewed_at = COALESCE(viewed_at, NOW())
+        WHERE request_id = :request_id
+          AND user_id = :user_id
+    ");
+    $stmt->execute([
+        ':request_id' => $requestId,
+        ':user_id' => $userId,
+    ]);
+}
+
+function armsPedidosMarcarDestinatarioRespondido(PDO $pdo, string $requestId, string $userId) {
+    armsPedidosGarantirDestinoInterno($pdo);
+
+    $stmt = $pdo->prepare("
+        UPDATE arms.request_recipient
+        SET received_at = COALESCE(received_at, NOW()),
+            viewed_at = COALESCE(viewed_at, NOW()),
+            responded_at = COALESCE(responded_at, NOW())
+        WHERE request_id = :request_id
+          AND user_id = :user_id
+    ");
+    $stmt->execute([
+        ':request_id' => $requestId,
+        ':user_id' => $userId,
+    ]);
+}
+
+function armsPedidosReiniciarRastreioDestinatarios(PDO $pdo, string $requestId) {
+    armsPedidosGarantirDestinoInterno($pdo);
+
+    $stmt = $pdo->prepare("
+        UPDATE arms.request_recipient
+        SET received_at = NULL,
+            viewed_at = NULL,
+            responded_at = NULL
+        WHERE request_id = :request_id
+    ");
+    $stmt->execute([':request_id' => $requestId]);
+}
+
+function armsPedidosResumoDestinatarios(PDO $pdo, string $requestId) {
+    armsPedidosGarantirDestinoInterno($pdo);
+
+    $stmt = $pdo->prepare("
+        SELECT
+            rr.user_id,
+            rr.recipient_type,
+            rr.received_at,
+            rr.viewed_at,
+            rr.responded_at,
+            COALESCE(up.full_name, au.email, rr.user_id::text) as recipient_name
+        FROM arms.request_recipient rr
+        LEFT JOIN arms.user_profile up ON rr.user_id = up.user_id
+        LEFT JOIN arms.auth_user au ON rr.user_id = au.id
+        WHERE rr.request_id = :request_id
+        ORDER BY COALESCE(up.full_name, au.email, rr.user_id::text) ASC
+    ");
+    $stmt->execute([':request_id' => $requestId]);
+
+    $destinatarios = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $total = count($destinatarios);
+    $recebidos = 0;
+    $vistos = 0;
+    $respondidos = 0;
+    $nomesFaltam = [];
+    $nomesRecebidos = [];
+    $nomesVistos = [];
+    $nomesRespondidos = [];
+    $ultimoRespondido = null;
+
+    foreach ($destinatarios as $destinatario) {
+        $nome = trim((string)($destinatario['recipient_name'] ?? ''));
+        if ($nome === '') {
+            $nome = (string)($destinatario['user_id'] ?? 'Desconhecido');
+        }
+
+        $temRecebido = !empty($destinatario['received_at']);
+        $temVisto = !empty($destinatario['viewed_at']);
+        $temResposta = !empty($destinatario['responded_at']);
+
+        if ($temRecebido) {
+            $recebidos++;
+            $nomesRecebidos[] = $nome;
+        } else {
+            $nomesFaltam[] = $nome;
+        }
+
+        if ($temVisto) {
+            $vistos++;
+            $nomesVistos[] = $nome;
+        }
+
+        if ($temResposta) {
+            $respondidos++;
+            $nomesRespondidos[] = $nome;
+
+            if (!$ultimoRespondido || strtotime((string)$destinatario['responded_at']) > strtotime((string)($ultimoRespondido['responded_at'] ?? '1970-01-01 00:00'))) {
+                $ultimoRespondido = [
+                    'nome' => $nome,
+                    'responded_at' => $destinatario['responded_at'],
+                    'recipient_type' => $destinatario['recipient_type'] ?? null,
+                    'user_id' => $destinatario['user_id'] ?? null,
+                ];
+            }
+        }
+    }
+
+    return [
+        'has_recipients' => $total > 0,
+        'total' => $total,
+        'received_count' => $recebidos,
+        'viewed_count' => $vistos,
+        'responded_count' => $respondidos,
+        'all_received' => $total > 0 && $recebidos === $total,
+        'all_viewed' => $total > 0 && $vistos === $total,
+        'missing_names' => array_values(array_unique($nomesFaltam)),
+        'received_names' => array_values(array_unique($nomesRecebidos)),
+        'viewed_names' => array_values(array_unique($nomesVistos)),
+        'responded_names' => array_values(array_unique($nomesRespondidos)),
+        'last_response_by_name' => $ultimoRespondido['nome'] ?? null,
+        'last_response_at' => $ultimoRespondido['responded_at'] ?? null,
+        'last_response_type' => $ultimoRespondido['recipient_type'] ?? null,
+        'last_response_user_id' => $ultimoRespondido['user_id'] ?? null,
+    ];
+}
+
 function armsPedidosRegistrarDestinatarios(PDO $pdo, string $requestId, string $destinationType, ?string $clientId, ?string $areaId, string $createdBy, ?string $recipientUserId = null, array $areaIds = []) {
     armsPedidosGarantirDestinoInterno($pdo);
 

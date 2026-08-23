@@ -104,6 +104,12 @@ try {
     $stmt = $pdo->prepare("UPDATE arms.request SET status = ? WHERE id = ?");
     $stmt->execute([$novoStatus, $reqData['id']]);
 
+    if ($novoStatus === 'SENT') {
+        armsPedidosReiniciarRastreioDestinatarios($pdo, $reqData['id']);
+    } elseif ($novoStatus === 'RECEIVED' && ($userType === 'CLIENT' || $utilizadorEDestinatarioInterno)) {
+        armsPedidosMarcarDestinatarioVisualizado($pdo, $reqData['id'], $userId);
+    }
+
     $payload = json_encode([
         'pedido_ref' => $reference,
         'from_status' => $reqData['status'],
