@@ -2,7 +2,6 @@
 html.is-client-role .menu-admin-only,
 html.is-client-role .menu-super-admin-only { display: none !important; }
 html.role-pending .layout-principal { visibility: hidden; opacity: 0; }
-.bottom-nav { display: none !important; }
 .bottom-nav svg {
     width: 24px !important;
     height: 24px !important;
