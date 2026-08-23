@@ -39,13 +39,19 @@ try {
             ) as latest_response_actor_type,
             a.name as area_name,
             CASE
-                WHEN c.name = 'Aksanti' THEN COALESCE(up_creator.full_name, au_creator.email, c.name)
+                WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI' AND r.recipient_user_id IS NOT NULL
+                    THEN COALESCE(up_recipient.full_name, au_recipient.email, c.name)
+                WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI'
+                    THEN COALESCE(up_creator.full_name, au_creator.email, c.name)
                 ELSE c.name
             END as client_name,
-            COALESCE(up_creator.full_name, au_creator.email) as recipient_name
+            COALESCE(up_recipient.full_name, au_recipient.email) as recipient_name,
+            COALESCE(up_creator.full_name, au_creator.email) as created_by_name
         FROM arms.request r
         JOIN arms.area a ON r.area_id = a.id
         JOIN arms.client c ON r.client_id = c.id
+        LEFT JOIN arms.auth_user au_recipient ON r.recipient_user_id = au_recipient.id
+        LEFT JOIN arms.user_profile up_recipient ON r.recipient_user_id = up_recipient.user_id
         LEFT JOIN arms.auth_user au_creator ON r.created_by = au_creator.id
         LEFT JOIN arms.user_profile up_creator ON r.created_by = up_creator.user_id
         $filtroAcesso

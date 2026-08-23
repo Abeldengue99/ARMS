@@ -101,10 +101,15 @@ try {
             $stmt4 = $pdo->prepare("
                 SELECT r.reference, r.status, r.destination_type,
                        r.created_by as created_by_id,
+                       r.recipient_user_id,
                        CASE
-                           WHEN c.name = 'Aksanti' THEN COALESCE(up_creator.full_name, au_creator.email, c.name)
+                           WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI' AND r.recipient_user_id IS NOT NULL
+                               THEN COALESCE(up_recente.full_name, au_recente.email, c.name)
+                           WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI'
+                               THEN COALESCE(up_creator.full_name, au_creator.email, c.name)
                            ELSE c.name
                        END as client_name,
+                       COALESCE(up_recente.full_name, au_recente.email) as recipient_name,
                        a.name as area_name, 
                        to_char(r.created_at, 'DD/MM/YYYY') as date
                 FROM arms.request r
@@ -193,10 +198,14 @@ try {
                        r.created_by as created_by_id,
                        a.name as area_name,
                        CASE
-                           WHEN c.name = 'Aksanti' THEN COALESCE(up_creator.full_name, au_creator.email, c.name)
+                           WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI' AND r.recipient_user_id IS NOT NULL
+                               THEN COALESCE(up_recipient.full_name, au_recipient.email, c.name)
+                           WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI'
+                               THEN COALESCE(up_creator.full_name, au_creator.email, c.name)
                            ELSE c.name
                        END as client_name,
-                       COALESCE(up_recipient.full_name, au_recipient.email) as recipient_name
+                       COALESCE(up_recipient.full_name, au_recipient.email) as recipient_name,
+                       COALESCE(up_creator.full_name, au_creator.email) as created_by_name
                 FROM arms.request r
                 JOIN arms.area a ON r.area_id = a.id
                 JOIN arms.client c ON r.client_id = c.id
