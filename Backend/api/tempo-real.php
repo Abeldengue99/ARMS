@@ -105,6 +105,8 @@ try {
                        CASE
                            WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI' AND r.recipient_user_id IS NOT NULL
                                THEN COALESCE(up_recente.full_name, au_recente.email, c.name)
+                           WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI' AND COALESCE(au_creator.is_admin, FALSE) = TRUE
+                               THEN c.name
                            WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI'
                                THEN COALESCE(up_creator.full_name, au_creator.email, c.name)
                            ELSE c.name
@@ -200,6 +202,8 @@ try {
                        CASE
                            WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI' AND r.recipient_user_id IS NOT NULL
                                THEN COALESCE(up_recipient.full_name, au_recipient.email, c.name)
+                           WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI' AND COALESCE(au_creator.is_admin, FALSE) = TRUE
+                               THEN c.name
                            WHEN COALESCE(r.destination_type, 'CLIENT') = 'AKSANTI'
                                THEN COALESCE(up_creator.full_name, au_creator.email, c.name)
                            ELSE c.name
