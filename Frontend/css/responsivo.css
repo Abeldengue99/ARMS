@@ -198,6 +198,57 @@
         width: 100% !important;
         background-color: rgba(248, 250, 252, 0.7) !important;
     }
+
+    .cabecalho-principal:has(#barra-pesquisa-topo) {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        flex-wrap: nowrap !important;
+        gap: 10px !important;
+        min-height: 72px;
+        padding: 12px 18px !important;
+    }
+
+    .cabecalho-principal:has(#barra-pesquisa-topo) > div:first-child,
+    .cabecalho-principal:has(#barra-pesquisa-topo) > .cabecalho-acoes {
+        display: contents !important;
+    }
+
+    .cabecalho-principal:has(#barra-pesquisa-topo) a[href="perfil.html"] {
+        order: 1 !important;
+        flex: 0 0 44px !important;
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .cabecalho-principal:has(#barra-pesquisa-topo) #barra-pesquisa-topo {
+        order: 2 !important;
+        display: block !important;
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        margin: 0 !important;
+    }
+
+    .cabecalho-principal:has(#barra-pesquisa-topo) #barra-pesquisa-topo input {
+        height: 48px !important;
+        min-width: 0 !important;
+        font-size: 16px !important;
+    }
+
+    .cabecalho-principal:has(#barra-pesquisa-topo) a[href="notificacoes.html"] {
+        order: 3 !important;
+        flex: 0 0 44px !important;
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
     
     /* Efeito premium na barra inferior */
     .bottom-nav {

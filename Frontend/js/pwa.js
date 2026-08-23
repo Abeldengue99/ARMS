@@ -2,6 +2,11 @@
 
 let deferredPrompt;
 let newWorker;
+let versionMonitorTimer = null;
+
+const ARMS_DEPLOY_MARKER_STORAGE_KEY = 'arms_deploy_marker_seen';
+const ARMS_DEPLOY_MARKER_ALERT_KEY = 'arms_deploy_marker_alerted';
+const ARMS_VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000;
 
 // Estilos dinâmicos para os modais de PWA (Atualização e Instalação)
 const pwaStyles = `
@@ -118,19 +123,41 @@ toastContainer.className = 'pwa-toast-container';
 document.body.appendChild(toastContainer);
 
 // Mostrar o toast de atualização
-function showUpdateToast() {
+function showUpdateToast(options = {}) {
+  if (toastContainer.querySelector('[data-pwa-toast="update"]')) {
+    return;
+  }
+
+  const titulo = options.title || 'Nova Versão Disponível';
+  const mensagem = options.message || 'Uma atualização elegante e inovadora acabou de chegar. Atualize para continuar a usar a melhor versão do ARMS.';
+  const textoBotaoPrimario = options.primaryLabel || 'Atualizar Agora';
+  const textoBotaoSecundario = options.secondaryLabel || 'Mais Tarde';
+  const acaoPrimaria = typeof options.onPrimary === 'function'
+    ? options.onPrimary
+    : () => {
+        if (newWorker) {
+          try {
+            sessionStorage.setItem('arms_sw_update_pending_reload', '1');
+          } catch (e) {}
+          newWorker.postMessage('SKIP_WAITING');
+        } else {
+          window.location.reload();
+        }
+      };
+
   const card = document.createElement('div');
   card.className = 'pwa-card';
+  card.dataset.pwaToast = 'update';
   card.innerHTML = `
     <div class="pwa-icon">
       <img src="img/favicon.png" alt="ARMS" class="pwa-favicon-img" onerror="this.src='img/icon-192x192.png'">
     </div>
     <div class="pwa-content">
-      <h4>Nova Versão Disponível</h4>
-      <p>Uma atualização elegante e inovadora acabou de chegar. Atualize para continuar a usar a melhor versão do ARMS.</p>
+      <h4>${titulo}</h4>
+      <p>${mensagem}</p>
       <div class="pwa-actions">
-        <button class="pwa-btn pwa-btn-primary" id="btn-pwa-update">Atualizar Agora</button>
-        <button class="pwa-btn pwa-btn-secondary" id="btn-pwa-dismiss">Mais Tarde</button>
+        <button class="pwa-btn pwa-btn-primary" id="btn-pwa-update">${textoBotaoPrimario}</button>
+        <button class="pwa-btn pwa-btn-secondary" id="btn-pwa-dismiss">${textoBotaoSecundario}</button>
       </div>
     </div>
   `;
@@ -140,13 +167,13 @@ function showUpdateToast() {
   // Animar a entrada
   setTimeout(() => card.classList.add('pwa-show'), 100);
   
-  document.getElementById('btn-pwa-update').addEventListener('click', () => {
-    if (newWorker) {
-      newWorker.postMessage('SKIP_WAITING');
-    }
+  card.querySelector('#btn-pwa-update').addEventListener('click', () => {
+    card.classList.remove('pwa-show');
+    setTimeout(() => card.remove(), 500);
+    acaoPrimaria();
   });
   
-  document.getElementById('btn-pwa-dismiss').addEventListener('click', () => {
+  card.querySelector('#btn-pwa-dismiss').addEventListener('click', () => {
     card.classList.remove('pwa-show');
     setTimeout(() => card.remove(), 500);
   });
@@ -203,6 +230,92 @@ window.addEventListener('beforeinstallprompt', (e) => {
     sessionStorage.setItem('pwa_install_prompted', 'true');
   }
 });
+
+async function verificarNovaVersaoPublicada() {
+  try {
+    const resposta = await fetch(`version.json?t=${Date.now()}`, {
+      cache: 'no-store',
+      credentials: 'same-origin'
+    });
+
+    if (!resposta.ok) return;
+
+    const info = await resposta.json();
+    const marcadorServidor = String(info && info.deploy_marker ? info.deploy_marker : '').trim();
+    if (!marcadorServidor) return;
+
+    const atualizarMarcadorConhecido = () => {
+      try {
+        localStorage.setItem(ARMS_DEPLOY_MARKER_STORAGE_KEY, marcadorServidor);
+      } catch (e) {}
+    };
+
+    let marcadorGuardado = '';
+    try {
+      marcadorGuardado = localStorage.getItem(ARMS_DEPLOY_MARKER_STORAGE_KEY) || '';
+    } catch (e) {}
+
+    if (!marcadorGuardado) {
+      atualizarMarcadorConhecido();
+      return;
+    }
+
+    if (marcadorGuardado === marcadorServidor) {
+      return;
+    }
+
+    let saltoAceiteSW = false;
+    try {
+      saltoAceiteSW = sessionStorage.getItem('arms_sw_update_pending_reload') === '1';
+      if (saltoAceiteSW) {
+        sessionStorage.removeItem('arms_sw_update_pending_reload');
+      }
+    } catch (e) {}
+
+    atualizarMarcadorConhecido();
+
+    if (saltoAceiteSW) {
+      return;
+    }
+
+    let marcadorAlertado = '';
+    try {
+      marcadorAlertado = sessionStorage.getItem(ARMS_DEPLOY_MARKER_ALERT_KEY) || '';
+    } catch (e) {}
+
+    if (marcadorAlertado === marcadorServidor) {
+      return;
+    }
+
+    try {
+      sessionStorage.setItem(ARMS_DEPLOY_MARKER_ALERT_KEY, marcadorServidor);
+    } catch (e) {}
+
+    showUpdateToast({
+      title: 'Nova versão do site',
+      message: 'Foi publicada uma nova versão do ARMS. Atualize para carregar o conteúdo mais recente.',
+      primaryLabel: 'Atualizar agora',
+      secondaryLabel: 'Mais tarde',
+      onPrimary: () => {
+        window.location.reload();
+      }
+    });
+  } catch (e) {
+  }
+}
+
+function iniciarMonitorVersaoAplicacao() {
+  verificarNovaVersaoPublicada();
+
+  if (versionMonitorTimer) return;
+  versionMonitorTimer = window.setInterval(verificarNovaVersaoPublicada, ARMS_VERSION_CHECK_INTERVAL_MS);
+}
+
+if (document.readyState === 'complete') {
+  iniciarMonitorVersaoAplicacao();
+} else {
+  window.addEventListener('load', iniciarMonitorVersaoAplicacao);
+}
 
 // Registo do Service Worker
 if ('serviceWorker' in navigator) {
