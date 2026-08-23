@@ -12,6 +12,12 @@
     <!-- Script Anti-Flicker: Ocultar imediatamente links admin para clientes usando localStorage antes de renderizar a página -->
     <script>
         (function () {
+            var pathname = window.location.pathname || '';
+            var isPublicEntry = pathname === '/' || /\/index\.html?$/i.test(pathname);
+            if (!isPublicEntry) {
+                document.documentElement.classList.add('preload');
+            }
+
             try {
                 var dados = JSON.parse(localStorage.getItem('arms_utilizador_dados') || 'null');
                 if (!dados) {

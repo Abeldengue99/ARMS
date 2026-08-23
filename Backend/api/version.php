@@ -7,7 +7,7 @@ header('Expires: 0');
 echo json_encode([
     'sucesso' => true,
     'app' => 'ARMS',
-    'deploy_marker' => '2026-08-23T14:12:45+01:00',
+    'deploy_marker' => '2026-08-23T14:41:22+01:00',
     'frontend' => [
         'layout_css' => 'v=16',
         'animacoes_css' => 'v=11',
