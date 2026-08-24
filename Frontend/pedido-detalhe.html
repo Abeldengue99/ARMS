@@ -42,20 +42,30 @@
 
         <main class="area-conteudo" style="min-width: 0; overflow-x: hidden;">
             <header class="cabecalho-principal">
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <a href="pedidos.html" style="color: var(--texto-secundario); text-decoration: none;">&larr; Voltar</a>
-                    <h2 style="font-size: 1.25rem;">Detalhe do Pedido</h2>
+                <div style="display: flex; align-items: center;">
+                    <a href="pedidos.html" style="color: var(--texto-secundario); text-decoration: none; margin-right: 16px;">&larr; Voltar</a>
+                    <div style="position: relative; margin-left: 0; width: 300px; display: none;" id="barra-pesquisa-topo">
+                        <input type="text" id="input-pesquisa-geral" class="input-controlo" placeholder="Pesquisar pedidos..." style="padding-left: 40px; border-radius: 20px; background-color: #f8fafc; border: 1px solid #e2e8f0; width: 100%;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 11px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <script>
+                        if (window.innerWidth > 768) {
+                            document.getElementById('barra-pesquisa-topo').style.display = 'block';
+                        }
+                    </script>
+                    <h2 style="font-size: 1.25rem; margin-left: 16px;" class="desktop-only">Detalhe do Pedido</h2>
                 </div>
                 <div class="cabecalho-acoes" style="display: flex; align-items: center; gap: 16px;">
-                    <select id="select-idioma-aksanti" class="input-controlo select-idioma-admin" style="width: auto; padding: 6px 12px;">
-                        <option value="pt">Português</option>
-                        <option value="en">English</option>
-                        <option value="fr">Français</option>
-                    </select>
-                    <a href="notificacoes.html" style="color: var(--texto-secundario); position: relative; width: 40px; height: 40px; background: #f4f4f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none;" title="Notificações">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background-color: var(--cor-perigo); border-radius: 50%; border: 2px solid #f4f4f5;"></span>
+                    <a href="notificacoes.html" style="color: var(--texto-secundario); position: relative; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: #f4f4f5; transition: var(--transicao);" onmouseover="this.style.backgroundColor='#e4e4e7'" onmouseout="this.style.backgroundColor='#f4f4f5'" title="Notificações">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background-color: var(--cor-perigo); border-radius: 50%; border: 2px solid #f4f4f5;"></span>
                     </a>
-                    <a href="perfil.html" style="width: 40px; height: 40px; background: var(--aksanti-gold); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; text-decoration: none;" title="O Meu Perfil" data-arms-avatar aria-label="Utilizador"></a>
+
+                    <a href="perfil.html" style="text-decoration: none;" title="O Meu Perfil">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--aksanti-gold); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" data-arms-avatar aria-label="Utilizador"></div>
+                    </a>
+
+                    <div style="width: 1px; height: 24px; background-color: #e4e4e7; margin: 0 8px;" class="desktop-only"></div>
+                    <select id="select-idioma-aksanti" class="input-controlo desktop-only" style="width: auto; padding: 6px 12px;"><option value="pt">Português</option><option value="en">English</option><option value="fr">Français</option></select>
                 </div>
             </header>
 

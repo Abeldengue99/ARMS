@@ -43,6 +43,9 @@ function armsMontarConviteUtilizador($fullName, $email, $senha, $userType, $clie
     <p style="margin:0 0 8px;"><strong>E-mail de acesso:</strong> {$emailSeguro}</p>
     <p style="margin:0;"><strong>Senha inicial:</strong> {$senhaSegura}</p>
 </div>
+<div style="margin: 28px 0;">
+    <a href="https://arms.support/" target="_blank" style="display: inline-block; padding: 12px 24px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Aceder à Plataforma (arms.support)</a>
+</div>
 <p style="margin:18px 0 0; color:#92400e;"><strong>Nota:</strong> se recebeu mais de um convite, use apenas a senha do e-mail mais recente.</p>
 <p style="margin:18px 0 0;">Por segurança, recomendamos alterar a senha no primeiro acesso.</p>
 HTML
@@ -61,6 +64,9 @@ HTML
 <div style="background:#fff7ed; border:1px solid #fed7aa; border-radius:10px; padding:18px; margin:22px 0;">
     <p style="margin:0 0 8px;"><strong>E-mail de acesso:</strong> {$emailSeguro}</p>
     <p style="margin:0;"><strong>Senha inicial:</strong> {$senhaSegura}</p>
+</div>
+<div style="margin: 28px 0;">
+    <a href="https://arms.support/" target="_blank" style="display: inline-block; padding: 12px 24px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Aceder à Plataforma (arms.support)</a>
 </div>
 <p style="margin:18px 0 0; color:#92400e;"><strong>Nota:</strong> se recebeu mais de um convite, use apenas a senha do e-mail mais recente.</p>
 <p style="margin:18px 0 0;">Por segurança, recomendamos alterar a senha no primeiro acesso.</p>
