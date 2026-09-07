@@ -144,10 +144,10 @@ function armsPedidosObterDestinatarioAtual(PDO $pdo, ?string $requestId, ?string
             rr.client_id,
             rr.area_id,
             rr.recipient_type,
-            to_char(rr.created_at, 'YYYY-MM-DD HH24:MI') as created_at,
-            to_char(rr.received_at, 'YYYY-MM-DD HH24:MI') as received_at,
-            to_char(rr.viewed_at, 'YYYY-MM-DD HH24:MI') as viewed_at,
-            to_char(rr.responded_at, 'YYYY-MM-DD HH24:MI') as responded_at,
+            to_char(rr.created_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD HH24:MI') as created_at,
+            to_char(rr.received_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD HH24:MI') as received_at,
+            to_char(rr.viewed_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD HH24:MI') as viewed_at,
+            to_char(rr.responded_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD HH24:MI') as responded_at,
             COALESCE(up.full_name, au.email, rr.user_id::text) as recipient_name,
             COALESCE(au.user_type, '') as recipient_user_type
         FROM arms.request_recipient rr
@@ -409,10 +409,10 @@ function armsPedidosGarantirTransicoes(PDO $pdo = null) {
 
                 allowed := CASE OLD.status
                     WHEN 'DRAFT'            THEN ARRAY['SENT']
-                    WHEN 'SENT'             THEN ARRAY['RECEIVED']
-                    WHEN 'RECEIVED'         THEN ARRAY['CLIENT_RESPONDED']
-                    WHEN 'CLIENT_RESPONDED' THEN ARRAY['SENT','ACCEPTED','REJECTED']
-                    WHEN 'REJECTED'         THEN ARRAY['CLIENT_RESPONDED']
+                    WHEN 'SENT'             THEN ARRAY['RECEIVED', 'CLOSED']
+                    WHEN 'RECEIVED'         THEN ARRAY['CLIENT_RESPONDED', 'CLOSED']
+                    WHEN 'CLIENT_RESPONDED' THEN ARRAY['SENT','ACCEPTED','REJECTED', 'CLOSED']
+                    WHEN 'REJECTED'         THEN ARRAY['CLIENT_RESPONDED', 'CLOSED']
                     WHEN 'ACCEPTED'         THEN ARRAY['CLOSED']
                     WHEN 'CLOSED'           THEN ARRAY[]::TEXT[]
                     ELSE ARRAY[]::TEXT[]

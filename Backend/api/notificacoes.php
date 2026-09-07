@@ -47,6 +47,7 @@ function armsNotifTipoVisual($tipo, $payload = []) {
         'DEADLINE' => ['categoria' => (($payload['automacao_tipo'] ?? '') === 'deadline_warning' ? 'prazo' : 'urgente'), 'icone' => 'clock', 'etiqueta' => (($payload['automacao_tipo'] ?? '') === 'deadline_warning' ? 'Prazo' : 'Urgente')],
         'COMMENT' => ['categoria' => 'comentario', 'icone' => $acao === 'edited' ? 'edit' : 'message', 'etiqueta' => $acao === 'edited' ? 'Comentário editado' : 'Comentário'],
         'ATTACHMENT' => ['categoria' => 'documento', 'icone' => $acao === 'downloaded' ? 'download' : 'paperclip', 'etiqueta' => $acao === 'updated' ? 'Documento atualizado' : ($acao === 'downloaded' ? 'Documento baixado' : 'Documento')],
+        'MENTION' => ['categoria' => 'mencao', 'icone' => 'at-sign', 'etiqueta' => 'Menção'],
         'SYSTEM' => ['categoria' => 'sistema', 'icone' => 'bell', 'etiqueta' => 'Sistema'],
     ];
 
@@ -156,6 +157,12 @@ function armsNotifMensagem(array $n, array $payload) {
                 'descricao' => $fileName
                     ? "O ficheiro $fileName foi enviado para o pedido."
                     : 'Foi enviado um novo documento para o pedido.',
+            ];
+
+        case 'MENTION':
+            return [
+                'titulo' => $ref ? "Você foi mencionado no pedido $ref" : 'Você foi mencionado num pedido',
+                'descricao' => 'Foi feita uma referência direta a si num comentário ou descrição.',
             ];
 
         default:

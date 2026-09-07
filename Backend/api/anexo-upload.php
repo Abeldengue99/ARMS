@@ -28,14 +28,20 @@ $authorId = $_SESSION['arms_user_id'];
 $authorType = $_SESSION['arms_user_type'] ?? 'AKSANTI';
 $authorIsAdmin = armsAuthBool($_SESSION['arms_is_admin'] ?? false);
 
+
 try {
     [$filtroAcesso, $paramsAcesso] = armsPedidosFiltroSql('r', 'anexo');
-    $stmt = $pdo->prepare("SELECT r.id FROM arms.request r WHERE r.reference = :ref $filtroAcesso");
+    $stmt = $pdo->prepare("SELECT r.id, r.status FROM arms.request r WHERE r.reference = :ref $filtroAcesso");
     $stmt->execute(array_merge([':ref' => $_POST['reference']], $paramsAcesso));
     $req = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$req) {
         echo json_encode(['sucesso' => false, 'erro' => 'Pedido não encontrado']);
+        exit;
+    }
+
+    if ($req['status'] === 'CLOSED') {
+        echo json_encode(['sucesso' => false, 'erro' => 'Este pedido está encerrado. Não é possível carregar anexos.']);
         exit;
     }
 

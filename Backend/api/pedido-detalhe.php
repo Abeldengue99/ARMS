@@ -31,9 +31,9 @@ try {
             r.recipient_user_id,
             r.area_id,
             r.client_id,
-            to_char(r.created_at, 'YYYY-MM-DD HH24:MI') as date,
-            to_char(r.deadline_at, 'DD/MM/YYYY HH24:MI') as deadline,
-            to_char(r.deadline_at, 'YYYY-MM-DD') as deadline_raw,
+            to_char(r.created_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD HH24:MI') as date,
+            to_char(r.deadline_at AT TIME ZONE 'Africa/Luanda', 'DD/MM/YYYY HH24:MI') as deadline,
+            to_char(r.deadline_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD') as deadline_raw,
             (r.deadline_at < NOW() AND r.status IN ('SENT', 'RECEIVED')) as deadline_expirado,
             a.name as area_name,
             CASE
@@ -120,7 +120,7 @@ try {
     $pedido['recipient_group_response_at'] = $destinatariosResumo['last_response_at'] ?? null;
 
     // Timeline
-    $sql = "SELECT ral.to_status, to_char(ral.created_at, 'YYYY-MM-DD HH24:MI') as data_hora,
+    $sql = "SELECT ral.to_status, to_char(ral.created_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD HH24:MI') as data_hora,
             COALESCE(u.full_name, 'Sistema') as actor_name,
             COALESCE(au.user_type, '') as actor_type,
             CASE
@@ -178,8 +178,8 @@ try {
             rc.author_id,
             rc.body,
             rc.edit_count,
-            to_char(rc.created_at, 'YYYY-MM-DD HH24:MI') as data_hora,
-            to_char(rc.edited_at, 'YYYY-MM-DD HH24:MI') as edited_at,
+            to_char(rc.created_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD HH24:MI') as data_hora,
+            to_char(rc.edited_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD HH24:MI') as edited_at,
             u.full_name as author_name,
             editor.full_name as edited_by_name
             FROM arms.request_comment rc
@@ -202,8 +202,8 @@ try {
             a.size_bytes,
             a.uploaded_by,
             a.update_count,
-            to_char(a.created_at, 'YYYY-MM-DD HH24:MI') as data_hora,
-            to_char(a.updated_at, 'YYYY-MM-DD HH24:MI') as updated_at,
+            to_char(a.created_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD HH24:MI') as data_hora,
+            to_char(a.updated_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD HH24:MI') as updated_at,
             u.full_name as uploaded_by_name,
             updater.full_name as updated_by_name
             FROM arms.attachment a
@@ -220,7 +220,7 @@ try {
     unset($anexo);
 
     // Respostas Formais do Cliente
-    $sql = "SELECT rr.decision as status_decision, rr.body as message, to_char(rr.created_at, 'YYYY-MM-DD HH24:MI') as data_hora,
+    $sql = "SELECT rr.decision as status_decision, rr.body as message, to_char(rr.created_at AT TIME ZONE 'Africa/Luanda', 'YYYY-MM-DD HH24:MI') as data_hora,
             u.full_name as responded_by_name FROM arms.request_response rr
             LEFT JOIN arms.user_profile u ON rr.responded_by = u.user_id
             WHERE rr.request_id = ? ORDER BY rr.created_at ASC";

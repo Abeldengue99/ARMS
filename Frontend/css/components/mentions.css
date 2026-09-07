@@ -1,0 +1,153 @@
+/* Style sheet para Componente de Menções (@) */
+
+.arms-mentions-container {
+    position: absolute;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.04);
+    min-width: 260px;
+    max-width: 320px;
+    overflow: hidden;
+    animation: fadeInDownMentions 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arms-mentions-list {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.arms-mentions-list::-webkit-scrollbar {
+    width: 6px;
+}
+.arms-mentions-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.arms-mentions-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+
+.arms-mentions-item {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background 0.1s ease;
+}
+
+.arms-mentions-item.active,
+.arms-mentions-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.arms-mentions-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--texto-principal, #111111);
+}
+
+.arms-mentions-email {
+    font-size: 0.75rem;
+    color: var(--texto-secundario, #71717a);
+    margin-top: 2px;
+}
+
+.arms-mentions-empty {
+    padding: 12px 16px;
+    color: var(--texto-secundario, #71717a);
+    font-size: 0.85rem;
+    text-align: center;
+    font-style: italic;
+}
+
+.arms-mentions-loading {
+    padding: 12px 16px;
+    color: var(--texto-secundario, #71717a);
+    font-size: 0.85rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Spinner animado */
+.arms-mentions-loading::before {
+    content: "";
+    display: block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #e4e4e7;
+    border-top-color: var(--aksanti-gold, #cfa856);
+    border-radius: 50%;
+    animation: rotateMentionLoading 0.8s linear infinite;
+}
+
+@keyframes rotateMentionLoading {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInDownMentions {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsivo para mobile */
+@media (max-width: 767px) {
+    .arms-mentions-container {
+        position: fixed;
+        bottom: 0 !important;
+        top: auto !important;
+        left: 0 !important;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 12px 12px 0 0;
+        border: none;
+        border-top: 1px solid #e4e4e7;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+        animation: slideUpMentions 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .arms-mentions-list {
+        max-height: 40vh;
+        padding: 12px 0;
+    }
+    
+    .arms-mentions-item {
+        padding: 12px 16px;
+    }
+}
+
+@keyframes slideUpMentions {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilo para menções renderizadas (fora do textarea) */
+.mencao {
+    background-color: rgba(207, 168, 86, 0.15); /* var(--aksanti-gold) clarinho */
+    color: #9a6d14;
+    font-weight: 600;
+    padding: 0 4px;
+    border-radius: 4px;
+    display: inline-block;
+}

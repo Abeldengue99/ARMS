@@ -364,7 +364,8 @@
                 const auditoria = Number(c.edit_count || 0) > 0
                     ? '<span class="comentario-auditoria">Editado por ' + escaparHtmlPedido(valorPedido(c.edited_by_name)) + ' em ' + escaparHtmlPedido(valorPedido(c.edited_at)) + '</span>'
                     : '';
-                const acoes = c.can_edit
+                const isClosed = pedidoAtual && pedidoAtual.status === 'CLOSED';
+                const acoes = (c.can_edit && !isClosed)
                     ? '<button type="button" class="btn-link-detalhe" onclick="abrirEdicaoComentario(\'' + escaparHtmlPedido(c.id) + '\')">Editar</button>'
                     : '';
 
@@ -391,7 +392,8 @@
                 const auditoria = Number(a.update_count || 0) > 0
                     ? '<span class="anexo-auditoria">Atualizado por ' + escaparHtmlPedido(valorPedido(a.updated_by_name)) + ' em ' + escaparHtmlPedido(valorPedido(a.updated_at)) + '</span>'
                     : '';
-                const botaoAtualizar = a.can_update
+                const isClosed = pedidoAtual && pedidoAtual.status === 'CLOSED';
+                const botaoAtualizar = (a.can_update && !isClosed)
                     ? '<button type="button" class="btn-link-detalhe" onclick="abrirAtualizacaoAnexo(\'' + escaparHtmlPedido(a.id) + '\')">Atualizar</button>'
                     : '';
 
@@ -766,12 +768,34 @@
                     const adminPodeGerirPedido = isSuperAdmin && (!destinoInternoAksanti || pedidoCriadoPeloUtilizador);
                     const membroAksantiPodeGerirPedido = ud.user_type === 'AKSANTI';
                     const podeEditarPedido = statusEditaveis.includes(p.status) && (criadorPodeGerirPedido || adminPodeGerirPedido || membroAksantiPodeGerirPedido);
-                    document.getElementById('btn-editar-pedido').style.display = podeEditarPedido ? 'inline-block' : 'none';
+                    
+                    const isClosed = p.status === 'CLOSED';
+                    if (isClosed) {
+                        document.getElementById('pedido-encerrado-banner').style.display = 'flex';
+                        document.getElementById('btn-editar-pedido').style.display = 'none';
+                        document.getElementById('btn-enviar-pedido').style.display = 'none';
+                        document.getElementById('btn-fechar-pedido').style.display = 'none';
+                        
+                        const dropZone = document.getElementById('drop-zone');
+                        if (dropZone) dropZone.style.display = 'none';
+                        
+                        const novoComentarioForm = document.querySelector('.card-comentarios .grupo-formulario');
+                        if (novoComentarioForm) novoComentarioForm.style.display = 'none';
+                        const btnGuardarComentario = document.getElementById('btn-guardar-comentario');
+                        if (btnGuardarComentario) btnGuardarComentario.style.display = 'none';
+                    } else {
+                        document.getElementById('pedido-encerrado-banner').style.display = 'none';
+                        document.getElementById('btn-editar-pedido').style.display = podeEditarPedido ? 'inline-block' : 'none';
+                        
+                        const btnEnviarPedido = document.getElementById('btn-enviar-pedido');
+                        const podeEnviarPedido = ['DRAFT', 'CLIENT_RESPONDED'].includes(p.status) && (criadorPodeGerirPedido || adminPodeGerirPedido);
+                        btnEnviarPedido.style.display = podeEnviarPedido ? 'inline-block' : 'none';
+                        btnEnviarPedido.textContent = p.status === 'DRAFT' ? 'Enviar' : 'Reenviar';
 
-                    const btnEnviarPedido = document.getElementById('btn-enviar-pedido');
-                    const podeEnviarPedido = ['DRAFT', 'CLIENT_RESPONDED'].includes(p.status) && (criadorPodeGerirPedido || adminPodeGerirPedido);
-                    btnEnviarPedido.style.display = podeEnviarPedido ? 'inline-block' : 'none';
-                    btnEnviarPedido.textContent = p.status === 'DRAFT' ? 'Enviar' : 'Reenviar';
+                        const btnFecharPedido = document.getElementById('btn-fechar-pedido');
+                        const podeFecharPedido = pedidoCriadoPeloUtilizador && p.status !== 'DRAFT';
+                        btnFecharPedido.style.display = podeFecharPedido ? 'inline-block' : 'none';
+                    }
 
                     // Verifica quem deve responder formalmente ao pedido.
                     const respostaDaAksanti = p.status === 'CLIENT_RESPONDED' && decisaoResposta(p.latest_response_actor_type) === 'AKSANTI';
@@ -1026,6 +1050,32 @@
                     btnEditar.disabled = false;
                     mostrarMensagem('Atenção', 'Erro ao carregar os dados de edição.');
                 });
+        });
+
+        document.getElementById('btn-fechar-pedido').addEventListener('click', () => {
+            if (!pedidoAtual) return;
+            confirmarAcao(
+                'Fechar Pedido',
+                'Tem a certeza de que deseja encerrar este pedido? O pedido ficará bloqueado para alterações e comentários.',
+                () => {
+                    fetch('api/pedido-atualizar-status.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ reference: pedidoAtual.reference, novo_status: 'CLOSED' })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.sucesso) {
+                            mostrarMensagem('Sucesso', 'O pedido foi encerrado com sucesso.', {
+                                aoFechar: () => window.location.reload()
+                            });
+                            return;
+                        }
+                        mostrarMensagem('Atenção', data.erro || 'Erro ao fechar o pedido.');
+                    })
+                    .catch(() => mostrarMensagem('Atenção', 'Erro de ligação ao servidor.'));
+                }
+            );
         });
         document.getElementById('btn-enviar-pedido').addEventListener('click', () => {
             const estaAReenviar = pedidoAtual && pedidoAtual.status === 'CLIENT_RESPONDED';
