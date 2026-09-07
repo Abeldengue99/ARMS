@@ -76,7 +76,6 @@ window.abrirModalNovoPedido = function() {
                     </div>
                 `;
                 abrirModal(tituloModal, formHTML, { largura: modoAdmin ? '640px' : '580px' });
-                if (typeof ArmsMentions !== 'undefined') new ArmsMentions('campo-descricao');
 
                 // Preencher os dropdowns com dados reais do PostgreSQL
                 fetch('api/formulario-dados.php')
