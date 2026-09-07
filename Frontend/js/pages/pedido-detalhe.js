@@ -1143,6 +1143,11 @@
             limparCachesExpiradosComentarios();
             configurarCacheNovoComentario();
 
+            // Inicializar menções @utilizador no textarea de comentários
+            if (typeof ArmsMentions !== 'undefined') {
+                new ArmsMentions('novo-comentario');
+            }
+
             const params = new URLSearchParams(window.location.search);
             const ref = params.get('id') || params.get('ref');
             if (!ref) {
