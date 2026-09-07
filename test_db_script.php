@@ -1,1 +1,0 @@
-<?php ini_set('display_errors', 1); error_reporting(E_ALL); $pdo = new PDO('pgsql:host=localhost;port=5432;dbname=postgres', 'postgres', '5850', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]); $stmt = $pdo->query('SELECT datname FROM pg_database'); while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { echo $row['datname'] . PHP_EOL; } ?>
