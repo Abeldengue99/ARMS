@@ -60,6 +60,10 @@ try {
         throw new Exception('Pedido não encontrado.');
     }
 
+    if ($reqData['status'] === 'CLOSED') {
+        throw new Exception('Este pedido está encerrado e já não pode alterar de estado.');
+    }
+
     $destinoInternoAksanti = strtoupper($reqData['destination_type'] ?? 'CLIENT') === 'AKSANTI'
         && !empty($reqData['recipient_user_id']);
     $utilizadorEDestinatarioInterno = $destinoInternoAksanti
@@ -70,7 +74,14 @@ try {
         && $novoStatus === 'SENT'
         && in_array($reqData['status'], ['DRAFT', 'CLIENT_RESPONDED'], true);
 
-    if ($criadorPodeEnviar) {
+    if ($novoStatus === 'CLOSED') {
+        if (!$pedidoCriadoPeloUtilizador) {
+            throw new Exception('Apenas o remetente pode encerrar este pedido.');
+        }
+        if ($reqData['status'] === 'DRAFT') {
+            throw new Exception('Rascunhos não podem ser encerrados.');
+        }
+    } elseif ($criadorPodeEnviar) {
         // O criador do pedido pode enviar o próprio rascunho, seja admin, cliente ou colaborador.
     } elseif ($userType === 'CLIENT') {
         if (
@@ -101,7 +112,11 @@ try {
         throw new Exception('Apenas pedidos em rascunho ou com alteração solicitada podem ser enviados.');
     }
 
-    $stmt = $pdo->prepare("UPDATE arms.request SET status = ? WHERE id = ?");
+    if ($novoStatus === 'CLOSED') {
+        $stmt = $pdo->prepare("UPDATE arms.request SET status = ?, closed_at = NOW() WHERE id = ?");
+    } else {
+        $stmt = $pdo->prepare("UPDATE arms.request SET status = ? WHERE id = ?");
+    }
     $stmt->execute([$novoStatus, $reqData['id']]);
 
     if ($novoStatus === 'SENT') {

@@ -75,8 +75,10 @@ try {
             a.file_name,
             a.content_type,
             a.size_bytes,
-            a.storage_key
+            a.storage_key,
+            r.status as request_status
         FROM arms.attachment a
+        INNER JOIN arms.request r ON r.id = a.request_id
         WHERE a.id = :id
         FOR UPDATE
     ");
@@ -86,6 +88,12 @@ try {
     if (!$anexo) {
         $pdo->rollBack();
         echo json_encode(['sucesso' => false, 'erro' => 'Anexo não encontrado.']);
+        exit;
+    }
+
+    if ($anexo['request_status'] === 'CLOSED') {
+        $pdo->rollBack();
+        echo json_encode(['sucesso' => false, 'erro' => 'Este pedido está encerrado. Não é possível atualizar anexos.']);
         exit;
     }
 

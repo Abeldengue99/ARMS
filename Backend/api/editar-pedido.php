@@ -3,6 +3,7 @@
 require_once 'db.php';
 require_once 'auth.php';
 require_once 'acesso-pedidos.php';
+require_once 'mencoes-servico.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -43,6 +44,11 @@ try {
 
     if (!$pedido) {
         echo json_encode(['sucesso' => false, 'erro' => 'Pedido não encontrado.']);
+        exit;
+    }
+
+    if ($pedido['status'] === 'CLOSED') {
+        echo json_encode(['sucesso' => false, 'erro' => 'Este pedido está encerrado e não pode ser editado.']);
         exit;
     }
 
@@ -98,6 +104,8 @@ try {
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
+
+    armsNotificarMencoes($pdo, $descricao, $pedido['id'], $userId);
 
     echo json_encode([
         'sucesso' => true,

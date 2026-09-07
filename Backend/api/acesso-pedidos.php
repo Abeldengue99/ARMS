@@ -409,10 +409,10 @@ function armsPedidosGarantirTransicoes(PDO $pdo = null) {
 
                 allowed := CASE OLD.status
                     WHEN 'DRAFT'            THEN ARRAY['SENT']
-                    WHEN 'SENT'             THEN ARRAY['RECEIVED']
-                    WHEN 'RECEIVED'         THEN ARRAY['CLIENT_RESPONDED']
-                    WHEN 'CLIENT_RESPONDED' THEN ARRAY['SENT','ACCEPTED','REJECTED']
-                    WHEN 'REJECTED'         THEN ARRAY['CLIENT_RESPONDED']
+                    WHEN 'SENT'             THEN ARRAY['RECEIVED', 'CLOSED']
+                    WHEN 'RECEIVED'         THEN ARRAY['CLIENT_RESPONDED', 'CLOSED']
+                    WHEN 'CLIENT_RESPONDED' THEN ARRAY['SENT','ACCEPTED','REJECTED', 'CLOSED']
+                    WHEN 'REJECTED'         THEN ARRAY['CLIENT_RESPONDED', 'CLOSED']
                     WHEN 'ACCEPTED'         THEN ARRAY['CLOSED']
                     WHEN 'CLOSED'           THEN ARRAY[]::TEXT[]
                     ELSE ARRAY[]::TEXT[]

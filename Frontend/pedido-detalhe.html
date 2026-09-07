@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/variaveis.css?v=10">
     <link rel="stylesheet" href="css/base.css?v=10">
     <link rel="stylesheet" href="css/layout.css?v=16">
+    <link rel="stylesheet" href="css/components/mentions.css?v=1">
     <link rel="stylesheet" href="css/componentes.css?v=10">
     <link rel="stylesheet" href="css/formularios.css?v=10">
     <link rel="stylesheet" href="css/animacoes.css?v=11">
@@ -87,9 +88,16 @@
                             <p style="color: var(--texto-secundario);" id="pedido-data"></p>
                         </div>
                         <div style="display: flex; gap: 12px;">
+                            <button class="btn btn-fechar-pedido" id="btn-fechar-pedido" style="display: none;">Fechar Pedido</button>
                             <button class="btn btn-secundario" id="btn-editar-pedido">Editar</button>
                             <button class="btn btn-primario" id="btn-enviar-pedido">Enviar</button>
                         </div>
+                    </div>
+
+                    <!-- Banner de Pedido Encerrado -->
+                    <div id="pedido-encerrado-banner" class="pedido-encerrado-banner" style="display: none;">
+                        <span style="font-size: 1.2rem;">🔒</span>
+                        <span>Este pedido foi encerrado e está bloqueado para alterações.</span>
                     </div>
 
                     <div class="formulario-grid">
@@ -185,6 +193,7 @@
     <script src="js/modal.js?v=2"></script>
     <script src="js/notificacoes.js?v=12"></script>
     <script src="js/tempo-real.js?v=12"></script>
+    <script src="js/components/mentions.js?v=1"></script>
     <script src="js/pages/pedido-detalhe.js?v=16" defer></script>
     
     <!-- Bottom Navigation Bar (Apenas Mobile) -->

@@ -2,6 +2,7 @@
 require_once 'db.php';
 require_once 'auth.php';
 require_once 'notificacao-servico.php';
+require_once 'mencoes-servico.php';
 header('Content-Type: application/json; charset=utf-8');
 
 armsAuthIniciarSessao();
@@ -55,8 +56,9 @@ try {
             rc.request_id,
             rc.author_id,
             rc.body,
-            rc.edit_count
-        FROM arms.request_comment rc
+            rc.edit_count,
+            r.status as request_status
+            FROM arms.request_comment rc
         INNER JOIN arms.request r ON r.id = rc.request_id
         WHERE rc.id = :id
         FOR UPDATE
@@ -67,6 +69,12 @@ try {
     if (!$comentario) {
         $pdo->rollBack();
         echo json_encode(['sucesso' => false, 'erro' => 'Comentário não encontrado.']);
+        exit;
+    }
+
+    if ($comentario['request_status'] === 'CLOSED') {
+        $pdo->rollBack();
+        echo json_encode(['sucesso' => false, 'erro' => 'Este pedido está encerrado. Não é possível editar comentários.']);
         exit;
     }
 
@@ -115,6 +123,8 @@ try {
             'comment_id' => $id,
         ]
     );
+
+    armsNotificarMencoes($pdo, $body, $comentario['request_id'], $userId);
 
     $pdo->commit();
 
