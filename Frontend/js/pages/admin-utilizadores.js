@@ -421,6 +421,7 @@ function renderizarTabelaUtilizadores(corpo, utilizadores) {
                     <button type="button" class="link-acao js-editar-utilizador" data-id="${id}" data-nome="${nomeCompleto}" data-cargo="${escaparHtml(cargoValor)}" data-email="${email}" data-tipo="${tipo}" data-cliente-id="${clienteId}" data-is-admin="${superAdmin ? '1' : '0'}" data-permissoes="${permissoes}" data-areas="${areasEncoded}">Editar</button>
                     ${botaoReenviarConvite}
                     <button type="button" class="link-acao ${classeAcaoEstado} js-alternar-estado-utilizador" data-id="${id}" data-nome-completo="${nomeCompleto}" data-ativo="${ativo ? '1' : '0'}">${textoAcaoEstado}</button>
+                    <button type="button" class="link-acao link-acao-perigo js-eliminar-utilizador" data-id="${id}" data-nome-completo="${nomeCompleto}">Eliminar</button>
                 </td>
             </tr>
         `;
@@ -1083,6 +1084,15 @@ document?.addEventListener('DOMContentLoaded', () => {
                     botaoEstado.dataset.nomeCompleto,
                     botaoEstado.dataset.ativo === '1'
                 );
+                return;
+            }
+
+            const botaoEliminar = evento.target.closest('.js-eliminar-utilizador');
+            if (botaoEliminar) {
+                confirmarEliminarUtilizador(
+                    botaoEliminar.dataset.id,
+                    botaoEliminar.dataset.nomeCompleto
+                );
             }
         });
     }
@@ -1472,6 +1482,37 @@ window.reenviarConviteUtilizador = function(id) {
         }
 
         mostrarMensagem('Atenção', data.erro || 'Não foi possível reenviar o convite.');
+    })
+    .catch((err) => {
+        console.error('Erro:', err);
+        mostrarMensagem('Atenção', 'Erro de comunicação com o servidor.');
+    });
+};
+
+window.confirmarEliminarUtilizador = function(id, nomeCompleto) {
+    confirmarAcao(
+        'Eliminar Utilizador',
+        `Tem a certeza de que deseja eliminar <strong>${escaparHtml(nomeCompleto || 'este utilizador')}</strong>? Esta ação é irreversível. Se o utilizador tiver pedidos ou histórico associado, a eliminação será bloqueada automaticamente.`,
+        () => eliminarUtilizador(id)
+    );
+};
+
+window.eliminarUtilizador = function(id) {
+    fetch('api/eliminar-utilizador.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+    })
+    .then((res) => res.json())
+    .then((data) => {
+        if (data.sucesso) {
+            mostrarMensagem('Utilizador eliminado', data.mensagem || 'Utilizador eliminado com sucesso.', {
+                aoFechar: () => window.location.reload()
+            });
+            return;
+        }
+
+        mostrarMensagem('Atenção', data.erro || 'Não foi possível eliminar o utilizador.');
     })
     .catch((err) => {
         console.error('Erro:', err);
