@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<!-- Estou a dizer ao navegador web que isto Ã© um documento HTML5 moderno para que as coisas funcionem bem e perfeitamente no site Aksanti -->
+<!-- Estou a dizer ao navegador web que isto é um documento HTML5 moderno para que as coisas funcionem bem e perfeitamente no site Aksanti -->
 <html lang="pt">
-<!-- Estou a abrir o cabeï¿½alho invisï¿½vel (o Head) da nossa pÃ¡gina onde carregamos todos os motores do sistema e a estï¿½tica (Estilos CSS) do documento -->
+<!-- Estou a abrir o cabeçalho invisível (o Head) da nossa página onde carregamos todos os motores do sistema e a estética (Estilos CSS) do documento -->
 <head>
-    <!-- Estou a mandar o navegador usar as letras perfeitinhas acentuadas de codificaï¿½ï¿½o (O standard da Web UTF-8!) para nï¿½o dar erros com o Ã© e os Tildes -->
+    <!-- Estou a mandar o navegador usar as letras perfeitinhas acentuadas de codificação (O standard da Web UTF-8!) para não dar erros com o é e os Tildes -->
     <meta charset="UTF-8">
-    <!-- Estou a preparar as janelas para os ecrï¿½s mï¿½veis (Viewports dos telemï¿½veis!) dizendo para a largura da pÃ¡gina bater na exata chapa com a largura final dos teus telemï¿½veis -->
+    <!-- Estou a preparar as janelas para os ecrãs móveis (Viewports dos telemóveis!) dizendo para a largura da página bater na exata chapa com a largura final dos teus telemóveis -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Estou a pï¿½r o Letreiro do Tï¿½tulo no pequeno canto acima do browser, nos separadores lÃ¡ no PC para identificares muito bem que aba Ã© a da nossa App -->
-    <title>Login - ARMS (Aksanti Request Management System)</title>
+    <!-- Estou a pôr o Letreiro do Título no pequeno canto acima do browser, nos separadores lá no PC para identificares muito bem que aba é a da nossa App -->
+    <title>Login - ARMS</title>
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="shortcut icon" type="image/png" href="img/favicon.png">
     <meta name="theme-color" content="#111111">
 
     <!-- Estou a chamar por fios na linha com as partes essenciais: Primeiro carrega a Vassoura a limpar bugs de estilo velhos dos computadores! -->
     <link rel="stylesheet" href="css/reset.css?v=3">
-    <!-- Estou a chamar e acender todo o tesouro escondido de Ouro da tua paleta no CSS, as tais variï¿½veis globais! -->
+    <!-- Estou a chamar e acender todo o tesouro escondido de Ouro da tua paleta no CSS, as tais variáveis globais! -->
     <link rel="stylesheet" href="css/variaveis.css?v=7">
-    <!-- Estou a importar tambï¿½m a formataï¿½ï¿½o de corpo na pÃ¡gina base inteirinha das letras com que digitï¿½mos para estarem nas caixas do estilo base! -->
+    <!-- Estou a importar também a formatação de corpo na página base inteirinha das letras com que digitámos para estarem nas caixas do estilo base! -->
     <link rel="stylesheet" href="css/base.css?v=7">
-    <!-- Estou a trazer os pedaï¿½os que constroem as caixas dos inputs brancas no formulÃ¡rio a reluzir como desenhamos nos ficheiros da classe componentes -->
+    <!-- Estou a trazer os pedaços que constroem as caixas dos inputs brancas no formulário a reluzir como desenhamos nos ficheiros da classe componentes -->
     <link rel="stylesheet" href="css/componentes.css?v=3">
-    <!-- Estou a ativar a beleza de cinema, carregando os efeitos da Animaï¿½ï¿½o do CSS que d? vida aos painï¿½is em movimentos na tela -->
+    <!-- Estou a ativar a beleza de cinema, carregando os efeitos da Animação do CSS que dá vida aos painéis em movimentos na tela -->
     <link rel="stylesheet" href="css/animacoes.css?v=11">
 
-    <!-- Estou a inserir um remendo caseiro pequenininho apenas do CSS para que a tela do ecrï¿½ de logar a janela (Sï¿½ ela e mais nada!) bata no centro Ã© medida da cruz na moldura inteira do teu PC  -->
+    <!-- Estou a inserir um remendo caseiro pequenininho apenas do CSS para que a tela do ecrã de logar a janela (Só ela e mais nada!) bata no centro à medida da cruz na moldura inteira do teu PC  -->
     <link rel="stylesheet" href="css/pages/index.css?v=1">
 <link rel="manifest" href="js/manifest.json">
     <meta name="theme-color" content="#1a1a2e">
@@ -32,12 +32,12 @@
 <body>
 
     <div class="login-wrapper animacao-entrar">
-        <!-- Coluna Esquerda: Marca e Descriï¿½ï¿½o -->
+        <!-- Coluna Esquerda: Marca e Descrição -->
         <div class="login-left">
             <img src="img/logo.svg" alt="ARMS" class="login-logo" style="position: relative; z-index: 1;">
         </div>
 
-        <!-- Coluna Direita: FormulÃ¡rio de Login (Lï¿½gica Intacta) -->
+        <!-- Coluna Direita: Formulário de Login (Lógica Intacta) -->
         <div class="login-right">
             <div class="login-right-content">
                 <h2 class="login-right-title">Login</h2>
@@ -99,17 +99,17 @@
                 "pedidos": "Pedidos",
                 "clientes": "Clientes",
                 "areas": "Departamentos",
-                "notificacoes": "NotificaÃ§Ãµes",
+                "notificacoes": "Notificações",
                 "perfil": "O Meu Perfil",
-                "admin": "AdministraÃ§Ã£o",
-                "sair": "Terminar SessÃ£o"
+                "admin": "Administração",
+                "sair": "Terminar Sessão"
             },
             "dashboard": {
                 "titulo": "Painel de Controlo",
                 "total_pedidos": "Total de Pedidos",
                 "pedidos_abertos": "Pedidos Abertos",
                 "taxa_resposta": "Taxa de Resposta",
-                "sla_medio": "SLA Mï¿½dio",
+                "sla_medio": "SLA Médio",
                 "pedidos_recentes": "Pedidos Recentes",
                 "ver_todos": "Ver Todos"
             },
@@ -124,7 +124,7 @@
             },
             "acoes": {
                 "criar_pedido": "Criar Novo Pedido",
-                "guardar": "Guardar Alteraï¿½ï¿½es",
+                "guardar": "Guardar Alterações",
                 "cancelar": "Cancelar",
                 "editar": "Editar",
                 "eliminar": "Eliminar",
@@ -134,16 +134,16 @@
                 "ver_detalhes": "Ver Detalhes"
             },
             "tabela": {
-                "referencia": "Referï¿½ncia",
+                "referencia": "Referência",
                 "cliente": "Cliente",
-                "area": "ï¿½rea",
+                "area": "Área",
                 "status": "Estado",
                 "data": "Data",
-                "acoes": "Aï¿½ï¿½es"
+                "acoes": "Ações"
             },
                 "moeda": {
                 "AOA": "Kwanza",
-                "USD": "DÃ³lar",
+                "USD": "Dólar",
                 "EUR": "Euro"
             },
             "login": {
@@ -232,32 +232,32 @@
                 "dashboard": "Tableau de Bord",
                 "pedidos": "Demandes",
                 "clientes": "Clients",
-                "areas": "DÃ©partements",
+                "areas": "Départements",
                 "notificacoes": "Notifications",
                 "perfil": "Mon Profil",
                 "admin": "Administration",
-                "sair": "Se Dï¿½connecter"
+                "sair": "Se Déconnecter"
             },
             "dashboard": {
                 "titulo": "Tableau de Bord",
                 "total_pedidos": "Total des Demandes",
                 "pedidos_abertos": "Demandes Ouvertes",
-                "taxa_resposta": "Taux de Rï¿½ponse",
+                "taxa_resposta": "Taux de Réponse",
                 "sla_medio": "SLA Moyen",
-                "pedidos_recentes": "Demandes R?centes",
+                "pedidos_recentes": "Demandes Récentes",
                 "ver_todos": "Voir Tout"
             },
             "status": {
                 "DRAFT": "Brouillon",
-                "SENT": "Envoyï¿½",
-                "RECEIVED": "Reï¿½u",
-                "CLIENT_RESPONDED": "Client a Rï¿½pondu",
-                "ACCEPTED": "Acceptï¿½",
-                "REJECTED": "Rejetï¿½",
-                "CLOSED": "Fermï¿½"
+                "SENT": "Envoyé",
+                "RECEIVED": "Reçu",
+                "CLIENT_RESPONDED": "Client a Répondu",
+                "ACCEPTED": "Accepté",
+                "REJECTED": "Rejeté",
+                "CLOSED": "Fermé"
             },
             "acoes": {
-                "criar_pedido": "Crï¿½er une Nouvelle Demande",
+                "criar_pedido": "Créer une Nouvelle Demande",
                 "guardar": "Enregistrer les Modifications",
                 "cancelar": "Annuler",
                 "editar": "Modifier",
@@ -265,12 +265,12 @@
                 "enviar": "Envoyer",
                 "aceitar": "Accepter",
                 "rejeitar": "Rejeter",
-                "ver_detalhes": "Voir les Dï¿½tails"
+                "ver_detalhes": "Voir les Détails"
             },
             "tabela": {
-                "referencia": "Rï¿½fï¿½rence",
+                "referencia": "Référence",
                 "cliente": "Client",
-                "area": "D?partement",
+                "area": "Département",
                 "status": "Statut",
                 "data": "Date",
                 "acoes": "Actions"
@@ -286,12 +286,12 @@
                 "email": "Adresse E-mail",
                 "senha": "Mot de passe",
                 "entrar": "Se Connecter",
-                "esqueceu_senha": "Mot de passe oubliï¿½ ?"
+                "esqueceu_senha": "Mot de passe oublié ?"
             }
         }
         </script>
 
-        <!-- Estou a convocar ao final de todas as caixas visï¿½veis aos olhos do utilizador o ficheiro com o Cï¿½rebro I18n JavaScript, e pï¿½r Ã© prova nos nossos textos as tuas palavras de traduï¿½ï¿½es ao carregar disto. -->
+        <!-- Estou a convocar ao final de todas as caixas visíveis aos olhos do utilizador o ficheiro com o Cérebro I18n JavaScript, e pôr à prova nos nossos textos as tuas palavras de traduções ao carregar disto. -->
     <script src="js/i18n.js?v=7"></script>
         <script src="js/modal.js"></script>
     
