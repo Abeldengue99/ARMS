@@ -210,21 +210,15 @@ function initPaginaProjectos() {
                         <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Descrição</label>
                         <textarea id="campo-descricao-projecto" class="input-controlo-area" rows="3" placeholder="Breve descrição do projecto..."></textarea>
                     </div>
-                    <div class="largura-total">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Associar a <span style="color: var(--cor-perigo);">*</span></label>
-                        <select id="campo-tipo-associacao" class="input-controlo">
-                            <option value="CLIENT">Cliente</option>
-                            <option value="MEMBER">Membro(s) da Equipa Interna</option>
-                        </select>
-                    </div>
-                    <div id="grupo-cliente-projecto">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Cliente <span style="color: var(--cor-perigo);">*</span></label>
+
+                    <div id="grupo-cliente-projecto" class="largura-total" style="margin-top: 10px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Cliente Associado <span style="font-weight:normal; color:var(--texto-secundario); font-size:0.85em;">(Opcional)</span></label>
                         <select id="campo-cliente-projecto" class="input-controlo">
                             <option value="">A carregar...</option>
                         </select>
                     </div>
-                    <div id="grupo-membro-projecto" style="display:none;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Membros da Equipa <span style="color: var(--cor-perigo);">*</span></label>
+                    <div id="grupo-membro-projecto" class="largura-total" style="margin-top: 10px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Membros da Equipa Interna <span style="font-weight:normal; color:var(--texto-secundario); font-size:0.85em;">(Opcional)</span></label>
                         <div id="container-membros-projecto"><div style="padding: 12px; color: var(--texto-secundario);">A carregar...</div></div>
                     </div>
                 </div>
@@ -258,24 +252,16 @@ function initPaginaProjectos() {
                     if (selCliente) selCliente.innerHTML = '<option value="">Erro ao carregar</option>';
                 });
 
-            // Toggle visibilidade
-            document.getElementById('campo-tipo-associacao').addEventListener('change', (e) => {
-                const isClient = e.target.value === 'CLIENT';
-                document.getElementById('grupo-cliente-projecto').style.display = isClient ? '' : 'none';
-                document.getElementById('grupo-membro-projecto').style.display = isClient ? 'none' : '';
-            });
+
 
             // Guardar
             document.getElementById('btn-guardar-projecto').addEventListener('click', () => {
                 const feedback = document.getElementById('modal-feedback-projecto');
-                const tipoAssociacao = document.getElementById('campo-tipo-associacao').value;
-                const membrosSelecionados = obterIdsSelecionados('container-membros-projecto');
-
                 const dados = {
                     name: document.getElementById('campo-nome-projecto').value.trim(),
                     description: document.getElementById('campo-descricao-projecto').value.trim(),
-                    client_id: tipoAssociacao === 'CLIENT' ? document.getElementById('campo-cliente-projecto').value : null,
-                    owner_user_ids: tipoAssociacao === 'MEMBER' ? membrosSelecionados : []
+                    client_id: document.getElementById('campo-cliente-projecto').value || null,
+                    owner_user_ids: membrosSelecionados
                 };
 
                 if (!dados.name) {
@@ -344,27 +330,20 @@ function initPaginaProjectos() {
             <div class="formulario-grid">
                 <div class="largura-total">
                     <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Nome do Projecto <span style="color: var(--cor-perigo);">*</span></label>
-                    <input type="text" id="edit-nome-projecto" class="input-controlo" value="${escaparHtml(projecto.name)}">
+                    <input type="text" id="editar-nome-projecto" class="input-controlo" value="${escaparHtml(projecto.name)}">
                 </div>
                 <div class="largura-total">
                     <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Descrição</label>
-                    <textarea id="edit-descricao-projecto" class="input-controlo-area" rows="3">${escaparHtml(projecto.description || '')}</textarea>
+                    <textarea id="editar-descricao-projecto" class="input-controlo-area" rows="3">${escaparHtml(projecto.description || '')}</textarea>
                 </div>
                 <div class="largura-total">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Associar a <span style="color: var(--cor-perigo);">*</span></label>
-                    <select id="edit-tipo-associacao" class="input-controlo">
-                        <option value="CLIENT" ${tipoAtual === 'CLIENT' ? 'selected' : ''}>Cliente</option>
-                        <option value="MEMBER" ${tipoAtual === 'MEMBER' ? 'selected' : ''}>Membro(s) da Equipa Interna</option>
-                    </select>
-                </div>
-                <div id="edit-grupo-cliente-projecto" style="${tipoAtual === 'CLIENT' ? '' : 'display:none;'}">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Cliente <span style="color: var(--cor-perigo);">*</span></label>
-                    <select id="edit-cliente-projecto" class="input-controlo">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Cliente</label>
+                    <select id="editar-cliente-projecto" class="input-controlo">
                         <option value="">A carregar...</option>
                     </select>
                 </div>
-                <div id="edit-grupo-membro-projecto" style="${tipoAtual === 'MEMBER' ? '' : 'display:none;'}">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Membros da Equipa <span style="color: var(--cor-perigo);">*</span></label>
+                <div class="largura-total">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Membros da Equipa</label>
                     <div id="edit-container-membros-projecto"><div style="padding: 12px; color: var(--texto-secundario);">A carregar...</div></div>
                 </div>
             </div>
@@ -382,7 +361,7 @@ function initPaginaProjectos() {
             .then(data => {
                 if (!data.sucesso) return;
 
-                const selCliente = document.getElementById('edit-cliente-projecto');
+                const selCliente = document.getElementById('editar-cliente-projecto');
                 selCliente.innerHTML = '<option value="">Selecionar cliente</option>';
                 (data.clientes || []).forEach(c => {
                     const selected = (String(c.id) === String(projecto.client_id)) ? 'selected' : '';
@@ -394,25 +373,17 @@ function initPaginaProjectos() {
             })
             .catch(() => {});
 
-        // Toggle visibilidade
-        document.getElementById('edit-tipo-associacao').addEventListener('change', (e) => {
-            const isClient = e.target.value === 'CLIENT';
-            document.getElementById('edit-grupo-cliente-projecto').style.display = isClient ? '' : 'none';
-            document.getElementById('edit-grupo-membro-projecto').style.display = isClient ? 'none' : '';
-        });
-
         // Guardar edição
         document.getElementById('btn-salvar-edit-projecto').addEventListener('click', () => {
             const feedback = document.getElementById('modal-feedback-edit-projecto');
-            const tipoAssociacao = document.getElementById('edit-tipo-associacao').value;
             const membrosSelecionados = obterIdsSelecionados('edit-container-membros-projecto');
 
             const dados = {
                 id: projectoId,
-                name: document.getElementById('edit-nome-projecto').value.trim(),
-                description: document.getElementById('edit-descricao-projecto').value.trim(),
-                client_id: tipoAssociacao === 'CLIENT' ? document.getElementById('edit-cliente-projecto').value : null,
-                owner_user_ids: tipoAssociacao === 'MEMBER' ? membrosSelecionados : []
+                name: document.getElementById('editar-nome-projecto').value.trim(),
+                description: document.getElementById('editar-descricao-projecto').value.trim(),
+                client_id: document.getElementById('editar-cliente-projecto').value || null,
+                owner_user_ids: membrosSelecionados
             };
 
             if (!dados.name) {
