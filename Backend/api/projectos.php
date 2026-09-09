@@ -25,13 +25,14 @@ try {
             p.client_id,
             c.name AS client_name,
             p.owner_user_id,
-            u.full_name AS owner_name,
+            COALESCE(up.full_name, au.email) AS owner_name,
             p.is_active,
             CASE WHEN p.is_active = TRUE THEN 'ACTIVE' ELSE 'INACTIVE' END AS status,
             p.created_at
         FROM arms.project p
         LEFT JOIN arms.client c ON p.client_id = c.id
-        LEFT JOIN arms.user_account u ON p.owner_user_id = u.id
+        LEFT JOIN arms.auth_user au ON p.owner_user_id = au.id
+        LEFT JOIN arms.user_profile up ON au.id = up.user_id
         ORDER BY p.name ASC
     ");
     
