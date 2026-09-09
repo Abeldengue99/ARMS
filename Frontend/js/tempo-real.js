@@ -10,9 +10,9 @@ const ArmsTempoReal = (function() {
 
     const CONFIG = {
         URL_BASE: 'api/tempo-real.php',
-        INTERVALO_PADRAO: 8000,   // 8 segundos
+        INTERVALO_PADRAO: 5000,    // 5 segundos (normal)
         INTERVALO_RAPIDO: 3000,    // 3 segundos (após ação do utilizador)
-        INTERVALO_LENTO: 15000,    // 15 segundos (quando inativo)
+        INTERVALO_LENTO: 5000,     // 5 segundos (quando inativo)
         MAX_ERROS: 5
     };
 
@@ -118,7 +118,17 @@ const ArmsTempoReal = (function() {
 
                     // Chamar o callback com os dados atualizados
                     if (_callback && typeof _callback === 'function') {
-                        _callback(data.atualizacoes);
+                        // Novo efeito de atualização elegante e rápido
+                        const areaUpdate = document.querySelector('main') || document.body;
+                        areaUpdate.classList.add('arms-atualizacao-suave');
+                        
+                        setTimeout(() => {
+                            _callback(data.atualizacoes);
+                            
+                            setTimeout(() => {
+                                areaUpdate.classList.remove('arms-atualizacao-suave');
+                            }, 150); // Efeito rápido de revelação
+                        }, 200); // 200ms de desfoque/fade out antes de injetar os dados
                     }
                 }
             })
