@@ -70,10 +70,9 @@ try {
             ) areas ON TRUE
             WHERE au.user_type = 'AKSANTI'
               AND au.is_active = TRUE
-              AND au.id <> :user_id
             ORDER BY COALESCE(au.is_admin, FALSE) DESC, COALESCE(up.full_name, au.email) ASC
         ");
-        $stmtMembros->execute([':user_id' => $userId]);
+        $stmtMembros->execute();
         $membrosAksantiDb = $stmtMembros->fetchAll();
         
         foreach ($membrosAksantiDb as $m) {
