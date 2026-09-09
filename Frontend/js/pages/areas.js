@@ -51,13 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             grelha.innerHTML = '';
+            const iconeEditar = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+            const iconeEliminar = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+
             areasCarregadas.forEach((area, indice) => {
                 const totalPedidos = area.total_pedidos;
 
                 const cartaoHTML = `
                     <div class="card deslizar-cima-isaf" style="animation-delay: ${indice * 0.08}s;">
-                        <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                             <span class="badge" style="background-color: rgba(229, 138, 19, 0.1); color: var(--aksanti-gold); font-weight: 600; font-size: 0.9rem;">${area.code}</span>
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" onclick="window.abrirEditarArea('${area.id}', '${area.name.replace(/'/g, "\\'")}', '${area.code}')" title="Editar" style="display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:6px; background:rgba(229,138,19,0.1); color:var(--aksanti-gold); border:none; cursor:pointer; transition:background 0.2s; padding:0;">${iconeEditar}</button>
+                                <button type="button" onclick="window.confirmarEliminarArea('${area.id}', '${area.name.replace(/'/g, "\\'")}')" title="Eliminar" style="display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:6px; background:transparent; color:var(--texto-secundario); border:1px solid var(--borda-suave); cursor:pointer; transition:all 0.2s; padding:0;" onmouseover="this.style.background='rgba(239,68,68,0.1)'; this.style.color='#ef4444'; this.style.borderColor='transparent';" onmouseout="this.style.background='transparent'; this.style.color='var(--texto-secundario)'; this.style.borderColor='var(--borda-suave)';">${iconeEliminar}</button>
+                            </div>
                         </div>
                         <h3 style="font-size: 1.15rem; margin-bottom: 8px;">${area.name}</h3>
                         <p style="color: var(--texto-secundario); font-size: 0.9rem;">${totalPedidos} pedido${totalPedidos != 1 ? 's' : ''} associado${totalPedidos != 1 ? 's' : ''}</p>
@@ -159,3 +166,101 @@ document.addEventListener('DOMContentLoaded', () => {
         btnExcelAreas.addEventListener('click', () => exportarAreas('excel'));
     }
 });
+
+// Editar departamento
+window.abrirEditarArea = function(id, nome, codigo) {
+    const formHTML = `
+        <div class="formulario-grid">
+            <div class="largura-total">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Nome do Departamento <span style="color: var(--cor-perigo);">*</span></label>
+                <input type="text" id="editar-nome-area" class="input-controlo" value="${nome}">
+            </div>
+            <div class="largura-total">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Código (Sigla)</label>
+                <input type="text" id="editar-codigo-area" class="input-controlo" value="${codigo}" disabled style="opacity: 0.6; cursor: not-allowed;">
+                <span style="display: block; margin-top: 4px; font-size: 0.8rem; color: var(--texto-secundario);">O código não pode ser alterado depois de criado.</span>
+            </div>
+        </div>
+        <div id="modal-feedback-editar-area" style="display:none; padding: 12px 16px; border-radius: var(--raio-borda); margin-top: 16px; font-size: 0.9rem;"></div>
+        <div class="formulario-acoes">
+            <button class="btn btn-secundario" onclick="fecharModal()">Cancelar</button>
+            <button class="btn btn-primario" id="btn-guardar-editar-area">Guardar Alterações</button>
+        </div>
+    `;
+    abrirModal('Editar Departamento', formHTML, { largura: '480px' });
+
+    document.getElementById('btn-guardar-editar-area').addEventListener('click', () => {
+        const feedback = document.getElementById('modal-feedback-editar-area');
+        const novoNome = document.getElementById('editar-nome-area').value.trim();
+
+        if (!novoNome) {
+            feedback.style.display = 'block';
+            feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
+            feedback.style.color = '#ef4444';
+            feedback.textContent = 'O nome é obrigatório.';
+            return;
+        }
+
+        feedback.style.display = 'block';
+        feedback.style.backgroundColor = 'rgba(229,138,19,0.1)';
+        feedback.style.color = 'var(--aksanti-gold)';
+        feedback.textContent = 'A guardar...';
+
+        fetch('api/editar-area.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, nome: novoNome })
+        })
+        .then(res => res.json())
+        .then(resultado => {
+            if (resultado.sucesso) {
+                feedback.style.backgroundColor = 'rgba(34,197,94,0.1)';
+                feedback.style.color = '#22c55e';
+                feedback.textContent = resultado.mensagem || 'Departamento atualizado!';
+                setTimeout(() => {
+                    fecharModal();
+                    location.reload();
+                }, 1500);
+            } else {
+                feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
+                feedback.style.color = '#ef4444';
+                feedback.textContent = 'Erro: ' + resultado.erro;
+            }
+        })
+        .catch(() => {
+            feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
+            feedback.style.color = '#ef4444';
+            feedback.textContent = 'Erro de ligação ao servidor.';
+        });
+    });
+};
+
+// Confirmar e eliminar departamento
+window.confirmarEliminarArea = function(id, nome) {
+    confirmarAcao(
+        'Eliminar Departamento',
+        `Tem a certeza de que deseja eliminar <strong>${nome || 'este departamento'}</strong>? Se tiver pedidos associados, a eliminação será bloqueada automaticamente.`,
+        () => eliminarArea(id)
+    );
+};
+
+window.eliminarArea = function(id) {
+    fetch('api/eliminar-area.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.sucesso) {
+            mostrarMensagem('Sucesso', data.mensagem);
+            fecharModal();
+            location.reload();
+        } else {
+            mostrarMensagem('Atenção', data.erro || 'Não foi possível eliminar o departamento.');
+        }
+    })
+    .catch(() => {
+        mostrarMensagem('Erro', 'Erro de ligação ao servidor.');
+    });
+};

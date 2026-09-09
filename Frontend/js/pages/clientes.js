@@ -82,6 +82,7 @@ function initPaginaClientes() {
             const labelAcoes = (typeof window.t === 'function') ? window.t('tabela.acoes', 'Ações') : 'Ações';
             const labelEditar = (typeof window.t === 'function') ? window.t('clientes.editar_cliente', 'Editar Conta') : 'Editar Conta';
             const iconeEditar = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+            const iconeEliminar = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
 
             const linhaHTML = `
                 <tr style="border-bottom: 1px solid #f4f4f5; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
@@ -100,6 +101,7 @@ function initPaginaClientes() {
                     <td data-label="${labelAcoes}" style="padding: 16px; text-align: right;">
                         <div style="display: flex; gap: 8px; justify-content: flex-end; flex-wrap: nowrap;">
                             <button type="button" onclick="window.abrirEditarCliente('${escaparHtml(cliente.id)}')" title="${labelEditar}" style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; background:rgba(229,138,19,0.1); color:var(--aksanti-gold); border:none; cursor:pointer; transition:background 0.2s; padding:0;">${iconeEditar}</button>
+                            <button type="button" onclick="window.confirmarEliminarCliente('${escaparHtml(cliente.id)}', '${escaparHtml(cliente.company_name)}')" title="Eliminar" style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; background:transparent; color:var(--texto-secundario); border:1px solid var(--borda-suave); cursor:pointer; transition:all 0.2s; padding:0;" onmouseover="this.style.background='rgba(239,68,68,0.1)'; this.style.color='#ef4444'; this.style.borderColor='transparent';" onmouseout="this.style.background='transparent'; this.style.color='var(--texto-secundario)'; this.style.borderColor='var(--borda-suave)';">${iconeEliminar}</button>
                         </div>
                     </td>
                 </tr>
@@ -574,4 +576,34 @@ window.abrirEditarCliente = function(clienteId) {
                 });
             });
         });
+};
+
+// Confirmar e eliminar cliente
+window.confirmarEliminarCliente = function(id, nomeEmpresa) {
+    confirmarAcao(
+        'Desativar Cliente',
+        `Tem a certeza de que deseja desativar <strong>${nomeEmpresa || 'este cliente'}</strong>? Se o cliente tiver pedidos associados, será apenas desativado (não eliminado permanentemente).`,
+        () => eliminarCliente(id)
+    );
+};
+
+window.eliminarCliente = function(id) {
+    fetch('api/eliminar-cliente.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.sucesso) {
+            mostrarMensagem('Sucesso', data.mensagem);
+            fecharModal();
+            location.reload();
+        } else {
+            mostrarMensagem('Atenção', data.erro || 'Não foi possível desativar o cliente.');
+        }
+    })
+    .catch(() => {
+        mostrarMensagem('Erro', 'Erro de ligação ao servidor.');
+    });
 };
