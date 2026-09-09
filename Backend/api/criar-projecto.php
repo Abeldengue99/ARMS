@@ -34,15 +34,22 @@ if (!is_array($input)) {
 $nome = trim($input['name'] ?? '');
 $descricao = trim($input['description'] ?? '');
 $clienteId = !empty($input['client_id']) ? $input['client_id'] : null;
-$ownerUserId = !empty($input['owner_user_id']) ? $input['owner_user_id'] : null;
+
+// Suporte ao novo formato (array de IDs) e retrocompatibilidade com o formato antigo (single ID)
+$ownerUserIds = [];
+if (!empty($input['owner_user_ids']) && is_array($input['owner_user_ids'])) {
+    $ownerUserIds = array_filter($input['owner_user_ids']);
+} elseif (!empty($input['owner_user_id'])) {
+    $ownerUserIds = [$input['owner_user_id']];
+}
 
 if ($nome === '') {
     echo json_encode(['sucesso' => false, 'erro' => 'O nome do projeto é obrigatório.']);
     exit;
 }
 
-if (!$clienteId && !$ownerUserId) {
-    echo json_encode(['sucesso' => false, 'erro' => 'O projeto deve estar associado a um cliente ou a um membro da equipa.']);
+if (!$clienteId && empty($ownerUserIds)) {
+    echo json_encode(['sucesso' => false, 'erro' => 'O projeto deve estar associado a um cliente ou a pelo menos um membro da equipa.']);
     exit;
 }
 
@@ -55,20 +62,40 @@ try {
         exit;
     }
 
+    $pdo->beginTransaction();
+
     $stmt = $pdo->prepare("
-        INSERT INTO arms.project (name, description, client_id, owner_user_id)
-        VALUES (:nome, :descricao, :cliente_id, :owner_user_id)
+        INSERT INTO arms.project (name, description, client_id)
+        VALUES (:nome, :descricao, :cliente_id)
         RETURNING id, name, description, is_active
     ");
 
     $stmt->execute([
         'nome' => $nome,
         'descricao' => $descricao,
-        'cliente_id' => $clienteId,
-        'owner_user_id' => $ownerUserId
+        'cliente_id' => $clienteId
     ]);
 
     $novoProjecto = $stmt->fetch();
+    $projectoId = $novoProjecto['id'];
+
+    // Inserir membros na tabela de ligação
+    if (!empty($ownerUserIds)) {
+        $stmtMembro = $pdo->prepare("
+            INSERT INTO arms.project_member (project_id, user_id)
+            VALUES (:project_id, :user_id)
+            ON CONFLICT (project_id, user_id) DO NOTHING
+        ");
+
+        foreach ($ownerUserIds as $userId) {
+            $stmtMembro->execute([
+                'project_id' => $projectoId,
+                'user_id' => $userId
+            ]);
+        }
+    }
+
+    $pdo->commit();
 
     echo json_encode([
         'sucesso' => true,
@@ -77,6 +104,9 @@ try {
     ]);
 
 } catch (Exception $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     error_log('[ARMS] Erro ao criar projeto: ' . $e->getMessage());
     echo json_encode([
         'sucesso' => false,

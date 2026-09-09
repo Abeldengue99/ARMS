@@ -27,9 +27,10 @@ function initPaginaProjectos() {
     }
 
     function obterResponsavel(projecto) {
-        if (projecto.client_name) return projecto.client_name + ' (Cliente)';
-        if (projecto.owner_name) return projecto.owner_name + ' (Equipa)';
-        return '-';
+        const partes = [];
+        if (projecto.client_name) partes.push(projecto.client_name + ' (Cliente)');
+        if (projecto.member_names) partes.push(projecto.member_names);
+        return partes.length > 0 ? partes.join(' · ') : '-';
     }
 
     function obterProjectosFiltrados() {
@@ -40,7 +41,7 @@ function initPaginaProjectos() {
                 textoBusca(projecto.name).includes(termoAtualPesquisa) ||
                 textoBusca(projecto.description).includes(termoAtualPesquisa) ||
                 textoBusca(projecto.client_name).includes(termoAtualPesquisa) ||
-                textoBusca(projecto.owner_name).includes(termoAtualPesquisa)
+                textoBusca(projecto.member_names).includes(termoAtualPesquisa)
             );
         }
 
@@ -141,6 +142,40 @@ function initPaginaProjectos() {
         };
     }
 
+    // --- Renderização do seletor múltiplo de membros (Glassmorphism) ---
+    function renderizarSeletorMultiplo(containerId, membros, selecionadosIds) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const selecionados = new Set((selecionadosIds || []).map(String));
+
+        let html = '<div style="max-height: 180px; overflow-y: auto; border: 1px solid var(--borda-suave); border-radius: 10px; padding: 8px; background: rgba(255,255,255,0.6); backdrop-filter: blur(8px);">';
+
+        if (!membros.length) {
+            html += '<div style="padding: 8px; color: var(--texto-secundario); font-size: 0.85rem;">Nenhum membro disponível.</div>';
+        }
+
+        membros.forEach(m => {
+            const checked = selecionados.has(String(m.id)) ? 'checked' : '';
+            const cargo = m.cargo ? ' — ' + escaparHtml(m.cargo) : '';
+            html += `
+                <label style="display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; cursor: pointer; transition: background 0.15s; font-size: 0.9rem;" onmouseover="this.style.background='rgba(229,138,19,0.06)'" onmouseout="this.style.background='transparent'">
+                    <input type="checkbox" class="membro-checkbox" value="${m.id}" ${checked} style="accent-color: var(--aksanti-gold); width: 16px; height: 16px; cursor: pointer;">
+                    <span style="font-weight: 500; color: var(--texto-principal);">${escaparHtml(m.full_name)}${cargo}</span>
+                </label>
+            `;
+        });
+
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function obterIdsSelecionados(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return [];
+        return Array.from(container.querySelectorAll('.membro-checkbox:checked')).map(cb => cb.value);
+    }
+
     carregarProjectosViaApi();
 
     const inputFiltro = document.getElementById('filtro-projectos');
@@ -179,7 +214,7 @@ function initPaginaProjectos() {
                         <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Associar a <span style="color: var(--cor-perigo);">*</span></label>
                         <select id="campo-tipo-associacao" class="input-controlo">
                             <option value="CLIENT">Cliente</option>
-                            <option value="MEMBER">Membro da Equipa Interna</option>
+                            <option value="MEMBER">Membro(s) da Equipa Interna</option>
                         </select>
                     </div>
                     <div id="grupo-cliente-projecto">
@@ -189,10 +224,8 @@ function initPaginaProjectos() {
                         </select>
                     </div>
                     <div id="grupo-membro-projecto" style="display:none;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Membro da Equipa <span style="color: var(--cor-perigo);">*</span></label>
-                        <select id="campo-membro-projecto" class="input-controlo">
-                            <option value="">A carregar...</option>
-                        </select>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Membros da Equipa <span style="color: var(--cor-perigo);">*</span></label>
+                        <div id="container-membros-projecto"><div style="padding: 12px; color: var(--texto-secundario);">A carregar...</div></div>
                     </div>
                 </div>
                 <div id="modal-feedback-projecto" style="display:none; padding: 12px 16px; border-radius: var(--raio-borda); margin-top: 16px; font-size: 0.9rem;"></div>
@@ -202,6 +235,8 @@ function initPaginaProjectos() {
                 </div>
             `;
             abrirModal('Novo Projecto', formHTML, { largura: '560px' });
+
+            let membrosDados = [];
 
             // Carregar clientes e membros
             fetch('api/formulario-dados.php')
@@ -215,12 +250,8 @@ function initPaginaProjectos() {
                         selCliente.innerHTML += `<option value="${c.id}">${escaparHtml(c.name)}</option>`;
                     });
 
-                    const selMembro = document.getElementById('campo-membro-projecto');
-                    selMembro.innerHTML = '<option value="">Selecionar membro</option>';
-                    (data.membros_aksanti || []).forEach(m => {
-                        const cargo = m.cargo ? ' - ' + m.cargo : '';
-                        selMembro.innerHTML += `<option value="${m.id}">${escaparHtml(m.full_name)}${escaparHtml(cargo)}</option>`;
-                    });
+                    membrosDados = data.membros_aksanti || [];
+                    renderizarSeletorMultiplo('container-membros-projecto', membrosDados, []);
                 })
                 .catch(() => {
                     const selCliente = document.getElementById('campo-cliente-projecto');
@@ -238,11 +269,13 @@ function initPaginaProjectos() {
             document.getElementById('btn-guardar-projecto').addEventListener('click', () => {
                 const feedback = document.getElementById('modal-feedback-projecto');
                 const tipoAssociacao = document.getElementById('campo-tipo-associacao').value;
+                const membrosSelecionados = obterIdsSelecionados('container-membros-projecto');
+
                 const dados = {
                     name: document.getElementById('campo-nome-projecto').value.trim(),
                     description: document.getElementById('campo-descricao-projecto').value.trim(),
                     client_id: tipoAssociacao === 'CLIENT' ? document.getElementById('campo-cliente-projecto').value : null,
-                    owner_user_id: tipoAssociacao === 'MEMBER' ? document.getElementById('campo-membro-projecto').value : null
+                    owner_user_ids: tipoAssociacao === 'MEMBER' ? membrosSelecionados : []
                 };
 
                 if (!dados.name) {
@@ -253,11 +286,11 @@ function initPaginaProjectos() {
                     return;
                 }
 
-                if (!dados.client_id && !dados.owner_user_id) {
+                if (!dados.client_id && dados.owner_user_ids.length === 0) {
                     feedback.style.display = 'block';
                     feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
                     feedback.style.color = '#ef4444';
-                    feedback.textContent = 'Selecione um cliente ou membro da equipa.';
+                    feedback.textContent = 'Selecione um cliente ou pelo menos um membro da equipa.';
                     return;
                 }
 
@@ -305,6 +338,7 @@ function initPaginaProjectos() {
         }
 
         const tipoAtual = projecto.client_id ? 'CLIENT' : 'MEMBER';
+        const memberIdsAtuais = projecto.member_ids || [];
 
         const formHTML = `
             <div class="formulario-grid">
@@ -320,7 +354,7 @@ function initPaginaProjectos() {
                     <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Associar a <span style="color: var(--cor-perigo);">*</span></label>
                     <select id="edit-tipo-associacao" class="input-controlo">
                         <option value="CLIENT" ${tipoAtual === 'CLIENT' ? 'selected' : ''}>Cliente</option>
-                        <option value="MEMBER" ${tipoAtual === 'MEMBER' ? 'selected' : ''}>Membro da Equipa Interna</option>
+                        <option value="MEMBER" ${tipoAtual === 'MEMBER' ? 'selected' : ''}>Membro(s) da Equipa Interna</option>
                     </select>
                 </div>
                 <div id="edit-grupo-cliente-projecto" style="${tipoAtual === 'CLIENT' ? '' : 'display:none;'}">
@@ -330,10 +364,8 @@ function initPaginaProjectos() {
                     </select>
                 </div>
                 <div id="edit-grupo-membro-projecto" style="${tipoAtual === 'MEMBER' ? '' : 'display:none;'}">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Membro da Equipa <span style="color: var(--cor-perigo);">*</span></label>
-                    <select id="edit-membro-projecto" class="input-controlo">
-                        <option value="">A carregar...</option>
-                    </select>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Membros da Equipa <span style="color: var(--cor-perigo);">*</span></label>
+                    <div id="edit-container-membros-projecto"><div style="padding: 12px; color: var(--texto-secundario);">A carregar...</div></div>
                 </div>
             </div>
             <div id="modal-feedback-edit-projecto" style="display:none; padding: 12px 16px; border-radius: var(--raio-borda); margin-top: 16px; font-size: 0.9rem;"></div>
@@ -357,13 +389,8 @@ function initPaginaProjectos() {
                     selCliente.innerHTML += `<option value="${c.id}" ${selected}>${escaparHtml(c.name)}</option>`;
                 });
 
-                const selMembro = document.getElementById('edit-membro-projecto');
-                selMembro.innerHTML = '<option value="">Selecionar membro</option>';
-                (data.membros_aksanti || []).forEach(m => {
-                    const selected = (String(m.id) === String(projecto.owner_user_id)) ? 'selected' : '';
-                    const cargo = m.cargo ? ' - ' + m.cargo : '';
-                    selMembro.innerHTML += `<option value="${m.id}" ${selected}>${escaparHtml(m.full_name)}${escaparHtml(cargo)}</option>`;
-                });
+                const membrosDados = data.membros_aksanti || [];
+                renderizarSeletorMultiplo('edit-container-membros-projecto', membrosDados, memberIdsAtuais);
             })
             .catch(() => {});
 
@@ -378,12 +405,14 @@ function initPaginaProjectos() {
         document.getElementById('btn-salvar-edit-projecto').addEventListener('click', () => {
             const feedback = document.getElementById('modal-feedback-edit-projecto');
             const tipoAssociacao = document.getElementById('edit-tipo-associacao').value;
+            const membrosSelecionados = obterIdsSelecionados('edit-container-membros-projecto');
+
             const dados = {
                 id: projectoId,
                 name: document.getElementById('edit-nome-projecto').value.trim(),
                 description: document.getElementById('edit-descricao-projecto').value.trim(),
                 client_id: tipoAssociacao === 'CLIENT' ? document.getElementById('edit-cliente-projecto').value : null,
-                owner_user_id: tipoAssociacao === 'MEMBER' ? document.getElementById('edit-membro-projecto').value : null
+                owner_user_ids: tipoAssociacao === 'MEMBER' ? membrosSelecionados : []
             };
 
             if (!dados.name) {
@@ -394,11 +423,11 @@ function initPaginaProjectos() {
                 return;
             }
 
-            if (!dados.client_id && !dados.owner_user_id) {
+            if (!dados.client_id && dados.owner_user_ids.length === 0) {
                 feedback.style.display = 'block';
                 feedback.style.backgroundColor = 'rgba(239,68,68,0.1)';
                 feedback.style.color = '#ef4444';
-                feedback.textContent = 'Selecione um cliente ou membro da equipa.';
+                feedback.textContent = 'Selecione um cliente ou pelo menos um membro da equipa.';
                 return;
             }
 

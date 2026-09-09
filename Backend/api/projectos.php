@@ -24,19 +24,32 @@ try {
             p.description,
             p.client_id,
             c.name AS client_name,
-            p.owner_user_id,
-            COALESCE(up.full_name, au.email) AS owner_name,
             p.is_active,
             CASE WHEN p.is_active = TRUE THEN 'ACTIVE' ELSE 'INACTIVE' END AS status,
-            p.created_at
+            p.created_at,
+            COALESCE(members.member_names, '') AS member_names,
+            COALESCE(members.member_ids, '[]') AS member_ids
         FROM arms.project p
         LEFT JOIN arms.client c ON p.client_id = c.id
-        LEFT JOIN arms.auth_user au ON p.owner_user_id = au.id
-        LEFT JOIN arms.user_profile up ON au.id = up.user_id
+        LEFT JOIN LATERAL (
+            SELECT 
+                string_agg(COALESCE(up.full_name, au.email), ', ' ORDER BY COALESCE(up.full_name, au.email)) AS member_names,
+                json_agg(pm.user_id)::text AS member_ids
+            FROM arms.project_member pm
+            JOIN arms.auth_user au ON pm.user_id = au.id
+            LEFT JOIN arms.user_profile up ON au.id = up.user_id
+            WHERE pm.project_id = p.id
+        ) members ON TRUE
         ORDER BY p.name ASC
     ");
     
     $projectos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Converter member_ids de string JSON para array PHP
+    foreach ($projectos as &$p) {
+        $p['member_ids'] = json_decode($p['member_ids'] ?? '[]', true) ?: [];
+    }
+    unset($p);
 
     echo json_encode([
         'sucesso' => true,

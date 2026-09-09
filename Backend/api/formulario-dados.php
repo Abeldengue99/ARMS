@@ -82,28 +82,26 @@ try {
         }
     }
     $projectos = [];
-    if ($isAdmin) {
-        $stmtProjectos = $pdo->query("
-            SELECT p.id, p.name FROM arms.project p
-            WHERE p.is_active = TRUE ORDER BY p.name ASC
-        ");
-        $projectos = $stmtProjectos->fetchAll();
-    } elseif ($modoCliente && $clientId) {
-        $stmtProjectos = $pdo->prepare("
-            SELECT p.id, p.name FROM arms.project p
-            WHERE p.is_active = TRUE AND p.client_id = :client_id
-            ORDER BY p.name ASC
-        ");
-        $stmtProjectos->execute([':client_id' => $clientId]);
-        $projectos = $stmtProjectos->fetchAll();
-    } elseif ($userId) {
-        $stmtProjectos = $pdo->prepare("
-            SELECT p.id, p.name FROM arms.project p
-            WHERE p.is_active = TRUE AND p.owner_user_id = :user_id
-            ORDER BY p.name ASC
-        ");
-        $stmtProjectos->execute([':user_id' => $userId]);
-        $projectos = $stmtProjectos->fetchAll();
+    $stmtProjectos = $pdo->query("
+        SELECT 
+            p.id, 
+            p.name, 
+            p.client_id,
+            COALESCE(members.member_ids, '[]') AS member_ids
+        FROM arms.project p
+        LEFT JOIN LATERAL (
+            SELECT json_agg(pm.user_id)::text AS member_ids
+            FROM arms.project_member pm
+            WHERE pm.project_id = p.id
+        ) members ON TRUE
+        WHERE p.is_active = TRUE 
+        ORDER BY p.name ASC
+    ");
+    $projectosDb = $stmtProjectos->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($projectosDb as $proj) {
+        $proj['member_ids'] = json_decode($proj['member_ids'] ?? '[]', true) ?: [];
+        $projectos[] = $proj;
     }
 
     echo json_encode([

@@ -34,7 +34,14 @@ $id = $input['id'] ?? null;
 $nome = trim($input['name'] ?? '');
 $descricao = trim($input['description'] ?? '');
 $clienteId = !empty($input['client_id']) ? $input['client_id'] : null;
-$ownerUserId = !empty($input['owner_user_id']) ? $input['owner_user_id'] : null;
+
+// Suporte ao novo formato (array de IDs) e retrocompatibilidade com o formato antigo (single ID)
+$ownerUserIds = [];
+if (!empty($input['owner_user_ids']) && is_array($input['owner_user_ids'])) {
+    $ownerUserIds = array_filter($input['owner_user_ids']);
+} elseif (!empty($input['owner_user_id'])) {
+    $ownerUserIds = [$input['owner_user_id']];
+}
 
 if (!$id) {
     echo json_encode(['sucesso' => false, 'erro' => 'ID do projeto não fornecido.']);
@@ -46,8 +53,8 @@ if ($nome === '') {
     exit;
 }
 
-if (!$clienteId && !$ownerUserId) {
-    echo json_encode(['sucesso' => false, 'erro' => 'O projeto deve estar associado a um cliente ou a um membro da equipa.']);
+if (!$clienteId && empty($ownerUserIds)) {
+    echo json_encode(['sucesso' => false, 'erro' => 'O projeto deve estar associado a um cliente ou a pelo menos um membro da equipa.']);
     exit;
 }
 
@@ -60,9 +67,12 @@ try {
         exit;
     }
 
+    $pdo->beginTransaction();
+
+    // Atualizar dados base do projeto
     $stmt = $pdo->prepare("
         UPDATE arms.project 
-        SET name = :nome, description = :descricao, client_id = :cliente_id, owner_user_id = :owner_user_id 
+        SET name = :nome, description = :descricao, client_id = :cliente_id
         WHERE id = :id
     ");
 
@@ -70,23 +80,39 @@ try {
         'nome' => $nome,
         'descricao' => $descricao,
         'cliente_id' => $clienteId,
-        'owner_user_id' => $ownerUserId,
         'id' => $id
     ]);
 
-    if ($sucesso && $stmt->rowCount() > 0) {
-        echo json_encode([
-            'sucesso' => true,
-            'mensagem' => 'Projeto atualizado com sucesso!'
-        ]);
-    } else {
-        echo json_encode([
-            'sucesso' => false,
-            'erro' => 'Projeto não encontrado ou nenhuma alteração efetuada.'
-        ]);
+    // Sincronizar membros: apagar os antigos e inserir os novos
+    $pdo->prepare("DELETE FROM arms.project_member WHERE project_id = :project_id")
+        ->execute(['project_id' => $id]);
+
+    if (!empty($ownerUserIds)) {
+        $stmtMembro = $pdo->prepare("
+            INSERT INTO arms.project_member (project_id, user_id)
+            VALUES (:project_id, :user_id)
+            ON CONFLICT (project_id, user_id) DO NOTHING
+        ");
+
+        foreach ($ownerUserIds as $userId) {
+            $stmtMembro->execute([
+                'project_id' => $id,
+                'user_id' => $userId
+            ]);
+        }
     }
 
+    $pdo->commit();
+
+    echo json_encode([
+        'sucesso' => true,
+        'mensagem' => 'Projeto atualizado com sucesso!'
+    ]);
+
 } catch (Exception $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     error_log('[ARMS] Erro ao editar projeto: ' . $e->getMessage());
     echo json_encode([
         'sucesso' => false,

@@ -66,6 +66,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         <label id="label-email-cliente" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Email do Cliente <span style="color: var(--cor-perigo);">*</span></label>
                         <input type="email" id="campo-email-cliente" class="input-controlo" placeholder="financas@empresa.co.ao">
                     </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Projeto</label>
+                        <select id="campo-projecto" class="input-controlo">
+                            <option value="">Nenhum (opcional)</option>
+                        </select>
+                        <span style="display: block; margin-top: 4px; font-size: 0.8rem; color: var(--texto-secundario);">Selecione primeiro o destino para filtrar os projetos disponíveis.</span>
+                    </div>
                     <div class="campo-deadline-destaque">
                         <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Data de Deadline <span style="color: var(--cor-perigo);">*</span></label>
                         <input type="date" id="campo-deadline" class="input-controlo">
@@ -90,10 +97,51 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Preencher os dropdowns com dados reais do PostgreSQL
+            let todosProjectos = [];
+
+            function filtrarProjectosPedido() {
+                const selProjecto = document.getElementById('campo-projecto');
+                if (!selProjecto) return;
+
+                const selDestinoTipo = document.getElementById('campo-destino-tipo');
+                const selCliente = document.getElementById('campo-cliente');
+                const selMembroAksanti = document.getElementById('campo-membro-aksanti');
+
+                const destinoAksanti = modoAdmin && selDestinoTipo && selDestinoTipo.value === 'AKSANTI';
+                const clienteId = selCliente ? selCliente.value : '';
+                const membroId = selMembroAksanti ? selMembroAksanti.value : '';
+
+                let projectosFiltrados = [];
+
+                if (modoAdmin) {
+                    if (destinoAksanti && membroId) {
+                        projectosFiltrados = todosProjectos.filter(p => (p.member_ids || []).map(String).includes(String(membroId)));
+                    } else if (!destinoAksanti && clienteId) {
+                        projectosFiltrados = todosProjectos.filter(p => String(p.client_id) === String(clienteId));
+                    }
+                } else if (data_modo_cliente && clienteId) {
+                    projectosFiltrados = todosProjectos.filter(p => String(p.client_id) === String(clienteId));
+                } else if (data_modo_colaborador && utilizadorAtual.id) {
+                    projectosFiltrados = todosProjectos.filter(p => (p.member_ids || []).map(String).includes(String(utilizadorAtual.id)));
+                }
+
+                selProjecto.innerHTML = '<option value="">Nenhum (opcional)</option>';
+                projectosFiltrados.forEach(p => {
+                    selProjecto.innerHTML += '<option value="' + p.id + '">' + p.name + '</option>';
+                });
+            }
+
+            let data_modo_cliente = false;
+            let data_modo_colaborador = false;
+
             fetch('api/formulario-dados.php')
                 .then(res => res.json())
                 .then(data => {
                     if (data.sucesso) {
+                        data_modo_cliente = data.modo_cliente || false;
+                        data_modo_colaborador = data.modo_colaborador || false;
+                        todosProjectos = data.projectos || [];
+
                         // Preencher Áreas
                         const selArea = document.getElementById('campo-area');
                         selArea.innerHTML = '<option value="">Selecionar departamento</option>';
@@ -145,6 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         selCliente.addEventListener('change', () => {
                             const opcao = selCliente.options[selCliente.selectedIndex];
                             if (opcao.dataset.email) emailInput.value = opcao.dataset.email;
+                            filtrarProjectosPedido();
                         });
 
                         if (selMembroAksanti) {
@@ -158,6 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         selArea.value = areasDoMembro[0];
                                     }
                                 }
+                                filtrarProjectosPedido();
                             });
                         }
 
@@ -183,12 +233,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const opcao = selCliente.options[selCliente.selectedIndex];
                                 emailInput.value = opcao && opcao.dataset.email ? opcao.dataset.email : emailInput.value;
                             }
+                            filtrarProjectosPedido();
                         };
 
                         if (selDestinoTipo) {
                             selDestinoTipo.addEventListener('change', atualizarDestinoPedido);
                             atualizarDestinoPedido();
                         }
+
+                        // Filtrar projetos iniciais
+                        filtrarProjectosPedido();
                     }
                 })
                 .catch(err => {
@@ -218,7 +272,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         destination_type: modoAdmin ? document.getElementById('campo-destino-tipo').value : 'AKSANTI',
                         recipient_user_id: modoAdmin ? document.getElementById('campo-membro-aksanti').value : '',
                         recipient_scope: (modoAdmin && document.getElementById('campo-membro-aksanti').value) ? 'USER' : 'DEPARTMENT',
-                        deadline:     document.getElementById('campo-deadline').value
+                        deadline:     document.getElementById('campo-deadline').value,
+                        project_id:   document.getElementById('campo-projecto').value || null
                     };
 
                     // Validar campos
