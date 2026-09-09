@@ -4,10 +4,17 @@
 O **ARMS (Aksanti Request Management System)** é um sistema web desenvolvido para gerir pedidos, clientes, utilizadores e automações. Foi desenhado para fornecer uma interface rápida e intuitiva, mantendo um backend leve e de fácil manutenção.
 
 ## 🚀 Tecnologias Utilizadas
-- **Frontend:** HTML5, CSS3 (Vanilla / Custom) e JavaScript Nativo (ES6+).
+- **Frontend:** HTML5, CSS3 (Vanilla / Custom) e JavaScript Nativo (ES6+). Efeito Global SPA (Single Page Application) em Glassmorphism integrado na transição de páginas.
 - **Backend:** PHP Nativo (API RESTful sem frameworks pesados).
 - **Banco de Dados:** PostgreSQL (Ficheiros estruturais disponíveis em `/Backend/bd`).
 - **Utilitários:** NodeJS e Puppeteer (para a geração automatizada de relatórios/manuais em PDF).
+
+## ✨ Funcionalidades Principais
+- Gestão de Pedidos (Abertura, Edição, Alteração de Estados).
+- Gestão de Clientes e Departamentos.
+- **Módulo de Projetos:** Criação e agrupamento de pedidos sob Projetos dedicados, com restrição de visibilidade por Cliente/Membro.
+- Sistema de Autenticação e Permissões Globais baseadas no Tipo de Acesso (Administrador, Membro de Equipa, Cliente).
+- Configurações SaaS e Personalização White Label da Interface (Cores e Logótipos).
 
 ## 📁 Estrutura de Diretórios
 O repositório está organizado de forma a separar claramente a lógica de apresentação e a regra de negócios:
@@ -40,6 +47,7 @@ O repositório está organizado de forma a separar claramente a lógica de apres
 3. Importe os ficheiros SQL localizados na pasta `Backend/bd/`:
    - Primeiro: `arms_schema.sql` (Cria a estrutura base)
    - Segundo: `arms_retencao_auditoria.sql` (Cria tabelas de log e auditoria)
+   - Terceiro: `migration_add_project.sql` (Adiciona o Módulo de Projetos e relacionamento com pedidos)
 4. Atualize o ficheiro de conexão (normalmente `Backend/api/db.php` ou similar) com as credenciais locais (host, utilizador `postgres`, senha, etc.).
 
 ### 3. Rodar o Projeto
