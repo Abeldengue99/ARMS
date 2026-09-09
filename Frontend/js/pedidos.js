@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (filtroProjectoAtual) {
-            resultado = resultado.filter((pedido) => pedido.project_id === filtroProjectoAtual);
+            resultado = resultado.filter((pedido) => String(pedido.project_id) === String(filtroProjectoAtual));
         }
 
         if (filtroDataDe) {
@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
             aplicarFiltros();
         });
         
-        fetch('../Backend/api/formulario-dados.php')
+        fetch('api/formulario-dados.php')
             .then(res => res.json())
             .then(data => {
                 if (data.sucesso && data.projectos && data.projectos.length > 0) {
