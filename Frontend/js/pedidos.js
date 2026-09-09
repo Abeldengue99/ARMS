@@ -222,6 +222,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const urlDetalhe = 'pedido-detalhe.html?ref=' + encodeURIComponent(referenciaValor);
             const estadoBadge = `<span class="badge ${classeBadgeEstado(pedido.status, pedido)}">${escaparHtml(obterEstadoLegivel(pedido.status, pedido))}</span>`;
             
+            const iconeDetalhes = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+
             const linhaHTML = `
                 <tr style="border-bottom: 1px solid #f4f4f5; transition: background-color 0.2s; cursor: pointer;" onclick="window.location.href='${urlDetalhe}'" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
                     <td data-label="${window.t('tabela.referencia', 'Referência')}" style="padding: 16px; font-weight: 600;">${referencia}</td>
@@ -231,7 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td data-label="${window.t('tabela.data', 'Data')}" style="padding: 16px;">${escaparHtml(pedido.date || '-')}</td>
                     <td data-label="${window.t('tabela.deadline', 'Deadline')}" style="padding: 16px;">${renderizarDeadline(pedido)}</td>
                     <td data-label="${window.t('tabela.acoes', 'Ações')}" style="padding: 16px; text-align: right;">
-                        <a href="${urlDetalhe}" style="color: var(--aksanti-gold); font-weight: 700; font-size: 0.9rem; text-decoration: none;">${window.t('acoes.ver_detalhes', 'Ver Detalhes')}</a>
+                        <div style="display: flex; gap: 8px; justify-content: flex-end; flex-wrap: nowrap;">
+                            <a href="${urlDetalhe}" title="${window.t('acoes.ver_detalhes', 'Ver Detalhes')}" style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; background:rgba(229,138,19,0.1); color:var(--aksanti-gold); border:none; cursor:pointer; transition:background 0.2s; text-decoration:none;">${iconeDetalhes}</a>
+                        </div>
                     </td>
                 </tr>
             `;

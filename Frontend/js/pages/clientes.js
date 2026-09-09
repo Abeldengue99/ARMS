@@ -81,6 +81,7 @@ function initPaginaClientes() {
             const labelEstado = (typeof window.t === 'function') ? window.t('tabela.status', 'Estado') : 'Estado';
             const labelAcoes = (typeof window.t === 'function') ? window.t('tabela.acoes', 'Ações') : 'Ações';
             const labelEditar = (typeof window.t === 'function') ? window.t('clientes.editar_cliente', 'Editar Conta') : 'Editar Conta';
+            const iconeEditar = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
 
             const linhaHTML = `
                 <tr style="border-bottom: 1px solid #f4f4f5; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
@@ -97,7 +98,9 @@ function initPaginaClientes() {
                         <span class="badge ${corBadge}">${estadoLegivel(cliente)}</span>
                     </td>
                     <td data-label="${labelAcoes}" style="padding: 16px; text-align: right;">
-                        <button type="button" onclick="window.abrirEditarCliente('${escaparHtml(cliente.id)}')" style="color: var(--aksanti-gold); font-weight: 700; font-size: 0.9rem; text-decoration: none; background: transparent; border: 0; cursor: pointer;">${labelEditar}</button>
+                        <div style="display: flex; gap: 8px; justify-content: flex-end; flex-wrap: nowrap;">
+                            <button type="button" onclick="window.abrirEditarCliente('${escaparHtml(cliente.id)}')" title="${labelEditar}" style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; background:rgba(229,138,19,0.1); color:var(--aksanti-gold); border:none; cursor:pointer; transition:background 0.2s; padding:0;">${iconeEditar}</button>
+                        </div>
                     </td>
                 </tr>
             `;
