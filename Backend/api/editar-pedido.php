@@ -52,12 +52,6 @@ try {
         exit;
     }
 
-    $statusEditaveis = ['DRAFT', 'CLIENT_RESPONDED'];
-    if (!in_array($pedido['status'], $statusEditaveis, true)) {
-        echo json_encode(['sucesso' => false, 'erro' => 'Este pedido não está num estado editável.']);
-        exit;
-    }
-
     $userId = (string)($_SESSION['arms_user_id'] ?? '');
     $userType = $_SESSION['arms_user_type'] ?? 'AKSANTI';
     $isAdmin = armsAuthBool($_SESSION['arms_is_admin'] ?? false);
@@ -98,6 +92,10 @@ try {
     if (!empty($deadline)) {
         $sql .= ", deadline_at = :deadline";
         $params['deadline'] = $deadline;
+    }
+    if (array_key_exists('project_id', $input)) {
+        $sql .= ", project_id = :project_id";
+        $params['project_id'] = !empty($input['project_id']) ? $input['project_id'] : null;
     }
 
     $sql .= " WHERE id = :pedido_id";

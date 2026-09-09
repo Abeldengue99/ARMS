@@ -418,10 +418,12 @@ function renderizarTabelaUtilizadores(corpo, utilizadores) {
                 <td class="celula-cargo"><span class="texto-celula-limitado" title="${cargo}">${cargo}</span></td>
                 <td><div class="badges-acesso">${badgeTipo}${badgeAdmin}${badgeEstado}</div></td>
                 <td class="celula-acoes">
-                    <button type="button" class="link-acao js-editar-utilizador" data-id="${id}" data-nome="${nomeCompleto}" data-cargo="${escaparHtml(cargoValor)}" data-email="${email}" data-tipo="${tipo}" data-cliente-id="${clienteId}" data-is-admin="${superAdmin ? '1' : '0'}" data-permissoes="${permissoes}" data-areas="${areasEncoded}">Editar</button>
-                    ${botaoReenviarConvite}
-                    <button type="button" class="link-acao ${classeAcaoEstado} js-alternar-estado-utilizador" data-id="${id}" data-nome-completo="${nomeCompleto}" data-ativo="${ativo ? '1' : '0'}">${textoAcaoEstado}</button>
-                    <button type="button" class="link-acao link-acao-perigo js-eliminar-utilizador" data-id="${id}" data-nome-completo="${nomeCompleto}">Eliminar</button>
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <button type="button" class="link-acao js-editar-utilizador" data-id="${id}" data-nome="${nomeCompleto}" data-cargo="${escaparHtml(cargoValor)}" data-email="${email}" data-tipo="${tipo}" data-cliente-id="${clienteId}" data-is-admin="${superAdmin ? '1' : '0'}" data-permissoes="${permissoes}" data-areas="${areasEncoded}" style="font-weight: 600; padding: 4px 8px; border-radius: 4px; background: rgba(229,138,19,0.1); color: var(--aksanti-gold); border: none; cursor: pointer; transition: background 0.2s;">Editar</button>
+                        ${botaoReenviarConvite ? botaoReenviarConvite.replace('class="', 'style="font-weight: 600; padding: 4px 8px; border-radius: 4px; background: rgba(59,130,246,0.1); color: #3b82f6; border: none; cursor: pointer; transition: background 0.2s;" class="') : ''}
+                        <button type="button" class="link-acao ${classeAcaoEstado} js-alternar-estado-utilizador" data-id="${id}" data-nome-completo="${nomeCompleto}" data-ativo="${ativo ? '1' : '0'}" style="font-weight: 600; padding: 4px 8px; border-radius: 4px; background: ${ativo ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)'}; color: ${ativo ? '#ef4444' : '#22c55e'}; border: none; cursor: pointer; transition: background 0.2s;">${textoAcaoEstado}</button>
+                        <button type="button" class="link-acao link-acao-perigo js-eliminar-utilizador" data-id="${id}" data-nome-completo="${nomeCompleto}" style="font-weight: 600; padding: 4px 8px; border-radius: 4px; background: transparent; color: var(--texto-secundario); border: 1px solid var(--borda-suave); cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'; this.style.color='#ef4444'; this.style.borderColor='transparent';" onmouseout="this.style.background='transparent'; this.style.color='var(--texto-secundario)'; this.style.borderColor='var(--borda-suave)';">Eliminar</button>
+                    </div>
                 </td>
             </tr>
         `;

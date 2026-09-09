@@ -151,8 +151,8 @@ try {
 
     // Inserir o pedido na tabela request (entra sempre como DRAFT inicialmente)
     $stmt = $pdo->prepare("
-        INSERT INTO arms.request (title, description, area_id, client_id, client_email, created_by, deadline_at, destination_type, recipient_user_id, status)
-        VALUES (:titulo, :descricao, :area_id, :client_id, :client_email, :created_by, :deadline, :destination_type, :recipient_user_id, 'DRAFT')
+        INSERT INTO arms.request (title, description, area_id, client_id, client_email, created_by, deadline_at, destination_type, recipient_user_id, status, project_id)
+        VALUES (:titulo, :descricao, :area_id, :client_id, :client_email, :created_by, :deadline, :destination_type, :recipient_user_id, 'DRAFT', :project_id)
         RETURNING id, reference, status, to_char(created_at, 'DD/MM/YYYY') as date
     ");
 
@@ -165,7 +165,8 @@ try {
         'created_by'   => $createdBy,
         'deadline'     => $deadline,
         'destination_type' => $destinationType,
-        'recipient_user_id' => $recipientUserId
+        'recipient_user_id' => $recipientUserId,
+        'project_id'   => !empty($input['project_id']) ? $input['project_id'] : null
     ]);
 
     $novoPedido = $stmt->fetch();

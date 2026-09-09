@@ -16,6 +16,8 @@ try {
             r.reference as id_str,
             r.title,
             r.status,
+            r.project_id,
+            p.name as project_name,
             COALESCE(r.destination_type, 'CLIENT') as destination_type,
             r.recipient_user_id,
             to_char(r.created_at, 'DD/MM/YYYY') as date,
@@ -56,6 +58,7 @@ try {
         LEFT JOIN arms.user_profile up_recipient ON r.recipient_user_id = up_recipient.user_id
         LEFT JOIN arms.auth_user au_creator ON r.created_by = au_creator.id
         LEFT JOIN arms.user_profile up_creator ON r.created_by = up_creator.user_id
+        LEFT JOIN arms.project p ON r.project_id = p.id
         $filtroAcesso
         ORDER BY r.created_at DESC
     ");

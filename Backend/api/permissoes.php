@@ -8,6 +8,8 @@ function armsPermissoesCatalogo() {
         'areas.ver' => 'Ver departamentos',
         'areas.gerir' => 'Criar e editar departamentos',
         'pedidos.ver_todos' => 'Ver todos os pedidos',
+        'projetos.ver' => 'Ver projetos',
+        'projetos.gerir' => 'Criar e editar projetos',
         'relatorios.exportar' => 'Exportar relatórios',
         'qualidade.ver' => 'Ver qualidade de dados',
         'seguranca.gerir' => 'Gerir segurança automatizada',

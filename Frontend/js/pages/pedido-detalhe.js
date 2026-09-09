@@ -763,11 +763,10 @@
                     if (data.respostas) renderRespostasFormais(data.respostas, isClientRole);
                     renderResumoDestinatariosPedido(grupoDestinatarios, p, destinoInternoAksanti);
 
-                    const statusEditaveis = ['DRAFT', 'CLIENT_RESPONDED'];
                     const criadorPodeGerirPedido = pedidoCriadoPeloUtilizador && (!destinoInternoAksanti || pedidoCriadoPeloUtilizador);
                     const adminPodeGerirPedido = isSuperAdmin && (!destinoInternoAksanti || pedidoCriadoPeloUtilizador);
                     const membroAksantiPodeGerirPedido = ud.user_type === 'AKSANTI';
-                    const podeEditarPedido = statusEditaveis.includes(p.status) && (criadorPodeGerirPedido || adminPodeGerirPedido || membroAksantiPodeGerirPedido);
+                    const podeEditarPedido = criadorPodeGerirPedido || adminPodeGerirPedido || membroAksantiPodeGerirPedido;
                     
                     const isClosed = p.status === 'CLOSED';
                     if (isClosed) {
@@ -889,6 +888,15 @@
                         membrosOptions += `<option value="${m.id}" data-email="${escaparHtmlPedido(m.email)}" ${selected}>${escaparHtmlPedido(m.full_name)}${escaparHtmlPedido(cargo)}${escaparHtmlPedido(perfil)}</option>`;
                     });
 
+                    let projectosOptions = '<option value="">Nenhum projecto associado</option>';
+                    const temProjectos = data.projectos && data.projectos.length > 0;
+                    if (temProjectos) {
+                        data.projectos.forEach(p => {
+                            const selected = (String(p.id) === String(pedidoAtual.project_id)) ? 'selected' : '';
+                            projectosOptions += `<option value="${p.id}" ${selected}>${escaparHtmlPedido(p.name)}</option>`;
+                        });
+                    }
+
                     const destinoAtual = String(pedidoAtual.destination_type || '').toUpperCase() === 'AKSANTI' ? 'AKSANTI' : 'CLIENT';
                     const emailAtual = pedidoAtual.raw_client_email || pedidoAtual.client_email || '';
                     
@@ -927,6 +935,13 @@
                                 <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Área / Departamento <span style="color: var(--cor-perigo);">*</span></label>
                                 <select id="edit-area" class="input-controlo">
                                     ${areasOptions}
+                                </select>
+                            </div>
+
+                            <div id="edit-grupo-projecto" style="${temProjectos ? '' : 'display:none;'}">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Projecto (Opcional)</label>
+                                <select id="edit-projecto" class="input-controlo">
+                                    ${projectosOptions}
                                 </select>
                             </div>
 
@@ -1023,7 +1038,8 @@
                                 area_id: areaId,
                                 client_id: clientId,
                                 client_email: email,
-                                deadline: deadline
+                                deadline: deadline,
+                                project_id: document.getElementById('edit-projecto') ? document.getElementById('edit-projecto').value : null
                             })
                         })
                         .then(r => r.json())

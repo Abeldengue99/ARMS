@@ -49,6 +49,12 @@ window.abrirModalNovoPedido = function() {
                                 <option value="">A carregar departamentos...</option>
                             </select>
                         </div>
+                        <div id="grupo-projecto-pedido" style="display:none;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Projecto (Opcional)</label>
+                            <select id="campo-projecto" class="input-controlo">
+                                <option value="">Nenhum projecto associado</option>
+                            </select>
+                        </div>
                         <div class="largura-total" id="bloco-destino-interno" style="${estiloDestinoInterno}">
                             <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--texto-principal);">Destino</label>
                             <div style="border: 1px solid #fed7aa; background: #fff7ed; color: #9a3412; border-radius: 12px; padding: 14px 16px; font-weight: 700;">
@@ -93,6 +99,16 @@ window.abrirModalNovoPedido = function() {
                             data.areas.forEach(a => {
                                 selArea.innerHTML += '<option value="' + a.id + '">' + a.name + ' (' + a.code + ')</option>';
                             });
+
+                            // Preencher Projectos
+                            const selProjecto = document.getElementById('campo-projecto');
+                            const grupoProjecto = document.getElementById('grupo-projecto-pedido');
+                            if (data.projectos && data.projectos.length > 0) {
+                                grupoProjecto.style.display = 'block';
+                                data.projectos.forEach(p => {
+                                    selProjecto.innerHTML += '<option value="' + p.id + '">' + p.name + '</option>';
+                                });
+                            }
 
                             // Preencher clientes
                             const selCliente = document.getElementById('campo-cliente');
@@ -203,6 +219,7 @@ window.abrirModalNovoPedido = function() {
                         area_id:      document.getElementById('campo-area').value,
                         client_id:    document.getElementById('campo-cliente').value,
                         client_email: document.getElementById('campo-email-cliente').value.trim(),
+                        project_id:   document.getElementById('campo-projecto') ? document.getElementById('campo-projecto').value : null,
                         destination_type: modoAdmin ? document.getElementById('campo-destino-tipo').value : 'AKSANTI',
                         recipient_user_id: modoAdmin ? document.getElementById('campo-membro-aksanti').value : '',
                         recipient_scope: (modoAdmin && document.getElementById('campo-membro-aksanti').value) ? 'USER' : 'DEPARTMENT',

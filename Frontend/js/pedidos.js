@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let filtroStatusAtual = '';
     let filtroDataDe = '';
     let filtroDataAte = '';
+    let filtroProjectoAtual = '';
     let filtroEspecialPendencia = '';
     let utilizadorAtual = {};
 
@@ -140,6 +141,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 resultado = resultado.filter((pedido) => pedido.status === filtroStatusAtual);
             }
+        }
+
+        if (filtroProjectoAtual) {
+            resultado = resultado.filter((pedido) => pedido.project_id === filtroProjectoAtual);
         }
 
         if (filtroDataDe) {
@@ -347,6 +352,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const selectProjecto = document.getElementById('filtro-projecto');
+    const blocoProjecto = document.getElementById('bloco-filtro-projecto');
+    
+    if (selectProjecto) {
+        selectProjecto.addEventListener('change', (evento) => {
+            filtroProjectoAtual = evento.target.value;
+            aplicarFiltros();
+        });
+        
+        fetch('../Backend/api/formulario-dados.php')
+            .then(res => res.json())
+            .then(data => {
+                if (data.sucesso && data.projectos && data.projectos.length > 0) {
+                    if (blocoProjecto) blocoProjecto.style.display = 'block';
+                    data.projectos.forEach(proj => {
+                        const option = document.createElement('option');
+                        option.value = proj.id;
+                        option.textContent = proj.name;
+                        selectProjecto.appendChild(option);
+                    });
+                }
+            })
+            .catch(err => console.error('[ARMS] Erro a carregar projetos:', err));
+    }
+
     if (inputDataDe) {
         inputDataDe.addEventListener('change', (evento) => {
             filtroDataDe = evento.target.value;
@@ -368,9 +398,11 @@ document.addEventListener('DOMContentLoaded', () => {
             filtroStatusAtual = '';
             filtroDataDe = '';
             filtroDataAte = '';
+            filtroProjectoAtual = '';
             filtroEspecialPendencia = '';
             if (inputFiltro) inputFiltro.value = '';
             if (selectStatus) selectStatus.value = '';
+            if (selectProjecto) selectProjecto.value = '';
             if (inputDataDe) inputDataDe.value = '';
             if (inputDataAte) inputDataAte.value = '';
             aplicarFiltros();
@@ -410,6 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filtroDataAte = '';
         if (inputFiltro) inputFiltro.value = '';
         if (selectStatus) selectStatus.value = '';
+        if (selectProjecto) selectProjecto.value = '';
         if (inputDataDe) inputDataDe.value = '';
         if (inputDataAte) inputDataAte.value = '';
         

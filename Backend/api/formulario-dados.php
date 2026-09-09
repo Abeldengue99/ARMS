@@ -81,6 +81,30 @@ try {
             $membrosAksanti[] = $m;
         }
     }
+    $projectos = [];
+    if ($isAdmin) {
+        $stmtProjectos = $pdo->query("
+            SELECT p.id, p.name FROM arms.project p
+            WHERE p.is_active = TRUE ORDER BY p.name ASC
+        ");
+        $projectos = $stmtProjectos->fetchAll();
+    } elseif ($modoCliente && $clientId) {
+        $stmtProjectos = $pdo->prepare("
+            SELECT p.id, p.name FROM arms.project p
+            WHERE p.is_active = TRUE AND p.client_id = :client_id
+            ORDER BY p.name ASC
+        ");
+        $stmtProjectos->execute([':client_id' => $clientId]);
+        $projectos = $stmtProjectos->fetchAll();
+    } elseif ($userId) {
+        $stmtProjectos = $pdo->prepare("
+            SELECT p.id, p.name FROM arms.project p
+            WHERE p.is_active = TRUE AND p.owner_user_id = :user_id
+            ORDER BY p.name ASC
+        ");
+        $stmtProjectos->execute([':user_id' => $userId]);
+        $projectos = $stmtProjectos->fetchAll();
+    }
 
     echo json_encode([
         'sucesso' => true,
@@ -93,7 +117,8 @@ try {
         ],
         'areas' => $areas,
         'clientes' => $clientes,
-        'membros_aksanti' => $membrosAksanti
+        'membros_aksanti' => $membrosAksanti,
+        'projectos' => $projectos
     ]);
 } catch (Exception $e) {
     echo json_encode([
