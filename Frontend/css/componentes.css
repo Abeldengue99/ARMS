@@ -236,8 +236,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100vw;
-    min-height: 100vh;
     padding: 24px;
     overflow-y: auto;
     background: rgba(15, 23, 42, 0.75);

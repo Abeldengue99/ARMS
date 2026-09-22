@@ -161,7 +161,7 @@ if (document.readyState === 'loading') {
 
 // Intercetar cliques no botão '+' (Novo Pedido) em qualquer ecrã
 document.addEventListener('click', function(e) {
-    const btnNovo = e.target.closest('a[href*="action=novo"], #btn-criar-pedido');
+    const btnNovo = e.target.closest('a[href*="action=novo"]');
     if (btnNovo) {
         e.preventDefault();
         
