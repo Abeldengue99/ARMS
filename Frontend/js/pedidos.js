@@ -285,6 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const q = urlParams.get('q');
+    const projectoUrl = urlParams.get('project_id');
     const inputFiltro = document.getElementById('filtro-pedidos');
     const selectStatus = document.getElementById('filtro-status');
     const inputDataDe = document.getElementById('filtro-data-de');
@@ -303,6 +304,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (q) {
         termoAtualPesquisa = q.toLowerCase();
         if (inputFiltro) inputFiltro.value = q;
+    }
+
+    if (projectoUrl) {
+        filtroProjectoAtual = projectoUrl;
     }
 
     const urlFiltro = (urlParams.get('filtro') || urlParams.get('estado') || urlParams.get('status') || '').toLowerCase();
@@ -376,6 +381,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         option.textContent = proj.name;
                         selectProjecto.appendChild(option);
                     });
+                    if (filtroProjectoAtual) {
+                        selectProjecto.value = filtroProjectoAtual;
+                        aplicarFiltros();
+                    }
                 }
             })
             .catch(err => console.error('[ARMS] Erro a carregar projetos:', err));

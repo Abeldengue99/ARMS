@@ -144,10 +144,9 @@
 
 /* Estilo para menções renderizadas (fora do textarea) */
 .mencao {
-    background-color: rgba(207, 168, 86, 0.15); /* var(--aksanti-gold) clarinho */
-    color: #9a6d14;
+    color: #2563eb;
     font-weight: 600;
-    padding: 0 4px;
-    border-radius: 4px;
-    display: inline-block;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
 }

@@ -350,6 +350,15 @@
             container.innerHTML = html;
         }
 
+        function formatarTextoComMencoes(texto) {
+            const textoSeguro = escaparHtmlPedido(texto || '');
+
+            return textoSeguro.replace(
+                /@\[([^\]]+)\]\(([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\)/gi,
+                '<span class="mencao">@$1</span>'
+            );
+        }
+
         function renderComentarios(data) {
             const container = document.getElementById('lista-comentarios');
             comentariosAtuais = Array.isArray(data) ? data : [];
@@ -371,7 +380,7 @@
 
                 html += '<div class="comentario-box">' +
                     '<div class="comentario-topo"><strong>' + escaparHtmlPedido(valorPedido(c.author_name)) + '</strong><div class="comentario-acoes">' + acoes + '</div></div>' +
-                    '<p style="margin:4px 0; font-size:0.9rem; word-break:break-word;">' + escaparHtmlPedido(c.body || '') + '</p>' +
+                    '<p style="margin:4px 0; font-size:0.9rem; word-break:break-word;">' + formatarTextoComMencoes(c.body) + '</p>' +
                     '<div class="comentario-meta">Criado em ' + escaparHtmlPedido(valorPedido(c.data_hora)) + auditoria + '</div>' +
                     '</div>';
             });

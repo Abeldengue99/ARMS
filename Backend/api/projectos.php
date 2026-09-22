@@ -16,6 +16,8 @@ require_once 'db.php';
 require_once 'auth.php';
 require_once 'permissoes.php';
 
+armsExigirPermissao($pdo, 'projetos.gerir', 'Não tem permissão para gerir projetos.');
+
 try {
     $stmt = $pdo->query("
         SELECT 
