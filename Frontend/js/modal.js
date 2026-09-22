@@ -2,9 +2,31 @@
 // Estou a guardar a referência do modal que está aberto de momento para poder fechá-lo depois
 let modalAberto = null;
 let modalAoFechar = null;
+let aberturaModalEmCurso = false;
+
+function bloquearRolagemDeFundo() {
+    const raiz = document.documentElement;
+    const larguraBarraRolagem = Math.max(0, window.innerWidth - raiz.clientWidth);
+
+    raiz.style.setProperty('--arms-compensacao-scroll', `${larguraBarraRolagem}px`);
+    raiz.classList.add('modal-aberto');
+    document.body.classList.add('modal-aberto');
+}
+
+function desbloquearRolagemDeFundo() {
+    document.documentElement.classList.remove('modal-aberto');
+    document.documentElement.style.removeProperty('--arms-compensacao-scroll');
+    document.body.classList.remove('modal-aberto');
+}
 
 // Estou a criar a função principal que abre e mostra um modal na tela com título e conteúdo dinâmico
 function abrirModal(titulo, conteudoHTML, opcoes = {}) {
+    if (aberturaModalEmCurso) return;
+    aberturaModalEmCurso = true;
+    queueMicrotask(() => {
+        aberturaModalEmCurso = false;
+    });
+
     const aoFechar = typeof opcoes.aoFechar === 'function' ? opcoes.aoFechar : null;
 
     // Estou a fechar qualquer modal que já esteja aberto antes de criar um novo para evitar sobreposições
@@ -43,6 +65,7 @@ function abrirModal(titulo, conteudoHTML, opcoes = {}) {
     // Estou a juntar a caixa do modal à cortina escura
     fundo.appendChild(caixa);
     // Estou a colocar toda a estrutura no corpo da página para aparecer por cima de tudo
+    bloquearRolagemDeFundo();
     document.body.appendChild(fundo);
     // Estou a guardar a referência do modal aberto para poder fechá-lo depois
     modalAberto = fundo;
@@ -71,6 +94,7 @@ function fecharModal() {
         // Estou a limpar a referência do modal aberto
         modalAberto = null;
     }
+    desbloquearRolagemDeFundo();
     modalAoFechar = null;
     // Estou a remover o ouvinte da tecla Escape para não acumular ouvintes a cada abertura de modal
     document.removeEventListener('keydown', fecharComEscape);

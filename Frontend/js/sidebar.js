@@ -197,7 +197,7 @@ document.addEventListener('click', function(e) {
             } else {
                 // Carregar modal.js primeiro e depois o novo-pedido-global.js
                 const s1 = document.createElement('script');
-                s1.src = 'js/modal.js';
+                s1.src = 'js/modal.js?v=3';
                 s1.onload = carregarNovoPedido;
                 document.body.appendChild(s1);
             }

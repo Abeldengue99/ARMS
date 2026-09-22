@@ -229,6 +229,15 @@
 }
 
 /* Modal reutilizavel */
+html.modal-aberto {
+    overflow: hidden;
+    padding-right: var(--arms-compensacao-scroll, 0px);
+}
+
+body.modal-aberto {
+    overflow: hidden;
+}
+
 .modal-fundo-aksanti {
     position: fixed;
     inset: 0;
@@ -237,7 +246,8 @@
     align-items: center;
     justify-content: center;
     padding: 24px;
-    overflow-y: auto;
+    overflow: hidden;
+    overscroll-behavior: contain;
     background: rgba(15, 23, 42, 0.75);
     backdrop-filter: blur(12px) saturate(180%);
     -webkit-backdrop-filter: blur(12px) saturate(180%);
