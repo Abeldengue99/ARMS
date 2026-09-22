@@ -176,7 +176,7 @@ try {
             [$filtroAcessoPedidos, $params2] = armsPedidosFiltroSql('r', 'rt_pedidos');
 
             $query = "
-                SELECT r.id, r.reference as id_str, r.title, r.status,
+                SELECT r.id, r.reference as id_str, r.title, r.status, r.project_id,
                        to_char(r.created_at, 'DD/MM/YYYY') as date,
                        to_char(r.deadline_at, 'DD/MM/YYYY') as deadline,
                        (r.deadline_at < NOW() AND r.status IN ('SENT', 'RECEIVED')) as deadline_expirado,
