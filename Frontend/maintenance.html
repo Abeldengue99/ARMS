@@ -270,19 +270,97 @@
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
         }
+
+        /* Compact, single-column maintenance layout. */
+        .panel {
+            width: min(100%, 520px);
+            display: flex;
+            flex-direction: column;
+            overflow: visible;
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .visual {
+            order: -1;
+            min-height: 0;
+            padding: 0;
+            display: block;
+            background: transparent;
+            border: 0;
+        }
+
+        .visual-inner {
+            width: 272px;
+            margin: 0 auto 30px;
+        }
+
+        .message {
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .brand {
+            order: 5;
+            margin: 24px 0 0;
+            font-size: 16px;
+        }
+
+        .brand-mark {
+            width: 29px;
+            height: 29px;
+        }
+
+        .eyebrow {
+            margin: 0 0 13px;
+        }
+
+        h1 {
+            max-width: none;
+            font-size: 32px;
+            line-height: 1.16;
+        }
+
+        .copy {
+            max-width: 470px;
+            margin-top: 14px;
+            font-size: 16px;
+        }
+
+        .reassurance {
+            margin-top: 22px;
+            padding-top: 0;
+            border-top: 0;
+            font-size: 13px;
+        }
+
+        .screen { height: 174px; }
+
+        .progress {
+            height: 6px;
+            margin-top: 34px;
+            background: #dce5f1;
+        }
+
+        .progress span { background: var(--orange); }
+
+        .visual-caption { display: none; }
+
+        @media (max-width: 520px) {
+            body { padding: 28px 22px; }
+            .visual-inner { width: 238px; margin-bottom: 28px; }
+            .screen { height: 153px; }
+            h1 { font-size: 28px; }
+            .copy { font-size: 15px; }
+        }
     </style>
 </head>
 <body>
     <main class="panel" aria-labelledby="maintenance-title">
-        <section class="message">
-            <div class="brand" aria-label="ARMS - Aksanti Request Management System">
-                <span class="brand-mark" aria-hidden="true">A</span><span>ARMS</span>
-            </div>
-            <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span>Atualiza&ccedil;&atilde;o em curso</p>
-            <h1 id="maintenance-title">Estamos a melhorar a ARMS.</h1>
-            <p class="copy">A plataforma est&aacute; temporariamente indispon&iacute;vel enquanto conclu&iacute;mos uma atualiza&ccedil;&atilde;o de seguran&ccedil;a. Voltaremos em breve.</p>
-            <p class="reassurance">N&atilde;o &eacute; necess&aacute;ria qualquer a&ccedil;&atilde;o da sua parte. Agradecemos a sua compreens&atilde;o.</p>
-        </section>
         <section class="visual" aria-hidden="true">
             <div class="visual-inner">
                 <div class="computer">
@@ -293,8 +371,16 @@
                     <div class="computer-base"></div>
                 </div>
                 <div class="progress"><span></span></div>
-                <p class="visual-caption">Atualiza&ccedil;&atilde;o de seguran&ccedil;a</p>
             </div>
+        </section>
+        <section class="message">
+            <div class="brand" aria-label="ARMS - Aksanti Request Management System">
+                <span class="brand-mark" aria-hidden="true">A</span><span>ARMS</span>
+            </div>
+            <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span>Atualiza&ccedil;&atilde;o em curso</p>
+            <h1 id="maintenance-title">Estamos em manuten&ccedil;&atilde;o.</h1>
+            <p class="copy">A plataforma est&aacute; temporariamente indispon&iacute;vel enquanto conclu&iacute;mos uma atualiza&ccedil;&atilde;o de seguran&ccedil;a. Voltaremos em breve.</p>
+            <p class="reassurance">N&atilde;o &eacute; necess&aacute;ria qualquer a&ccedil;&atilde;o da sua parte. Agradecemos a sua compreens&atilde;o.</p>
         </section>
     </main>
 </body>
