@@ -1,4 +1,4 @@
-FROM php:8.3-fpm-alpine
+FROM php:8.3.36-fpm-alpine
 
 # Instalar extensões PHP necessárias e nginx
 RUN apk add --no-cache \
