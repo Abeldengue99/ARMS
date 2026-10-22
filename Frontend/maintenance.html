@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#e58a13">
+    <title>Atualiza&ccedil;&atilde;o em curso | ARMS</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --orange: #e58a13;
+            --orange-dark: #ad5708;
+            --ink: #162033;
+            --muted: #5b677a;
+            --line: #dbe3ed;
+            --canvas: #f3f7fb;
+            --teal: #0f766e;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+            display: grid;
+            place-items: center;
+            background: var(--canvas);
+            color: var(--ink);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .panel {
+            width: min(100%, 1040px);
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 390px;
+            overflow: hidden;
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-top: 4px solid var(--orange);
+            border-radius: 8px;
+            box-shadow: 0 18px 46px rgba(22, 32, 51, 0.14);
+        }
+
+        .message {
+            padding: 52px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            width: fit-content;
+            margin-bottom: 52px;
+            color: var(--ink);
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            border-radius: 7px;
+            background: var(--orange);
+            color: #ffffff;
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 16px;
+            color: var(--orange-dark);
+            font-size: 14px;
+            font-weight: 750;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--orange);
+            box-shadow: 0 0 0 0 rgba(229, 138, 19, 0.45);
+            animation: pulse 1.8s ease-out infinite;
+        }
+
+        h1 {
+            max-width: 590px;
+            margin: 0;
+            font-size: 40px;
+            line-height: 1.1;
+            letter-spacing: 0;
+        }
+
+        .copy {
+            max-width: 590px;
+            margin: 20px 0 0;
+            color: var(--muted);
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .reassurance {
+            margin: 28px 0 0;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .visual {
+            min-height: 530px;
+            padding: 48px 34px;
+            display: grid;
+            place-items: center;
+            background: #eaf5f3;
+            border-left: 1px solid var(--line);
+        }
+
+        .visual-inner { width: min(100%, 286px); }
+
+        .computer {
+            animation: computer-float 3.6s ease-in-out infinite;
+        }
+
+        .screen {
+            position: relative;
+            height: 184px;
+            overflow: hidden;
+            padding: 14px;
+            border: 10px solid #243143;
+            border-bottom-width: 13px;
+            border-radius: 8px 8px 4px 4px;
+            background: #172335;
+            box-shadow: 0 18px 0 rgba(22, 32, 51, 0.16);
+        }
+
+        .screen::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -38%;
+            width: 35%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            transform: skewX(-22deg);
+            animation: screen-scan 3.2s ease-in-out infinite;
+        }
+
+        .screen-bar { display: flex; gap: 5px; height: 12px; }
+        .screen-bar span { width: 7px; height: 7px; border-radius: 50%; background: #94a3b8; }
+
+        .screen-content {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            place-items: center;
+            height: calc(100% - 12px);
+        }
+
+        .spinner {
+            width: 66px;
+            height: 66px;
+            border: 7px solid rgba(255, 255, 255, 0.18);
+            border-top-color: var(--orange);
+            border-right-color: #f7c875;
+            border-radius: 50%;
+            animation: spin 1.35s linear infinite;
+        }
+
+        .screen-content i,
+        .screen-content i::before,
+        .screen-content i::after {
+            position: absolute;
+            width: 22px;
+            height: 6px;
+            border-radius: 3px;
+            background: #ffffff;
+        }
+
+        .screen-content i::before,
+        .screen-content i::after { content: ""; left: 0; }
+        .screen-content i::before { top: -15px; }
+        .screen-content i::after { top: 15px; }
+
+        .computer-base {
+            width: 100%;
+            height: 18px;
+            margin-top: 2px;
+            border-radius: 2px 2px 14px 14px;
+            background: #334155;
+            box-shadow: 0 13px 0 rgba(22, 32, 51, 0.14);
+        }
+
+        .computer-base::after {
+            content: "";
+            display: block;
+            width: 84px;
+            height: 5px;
+            margin: 0 auto;
+            border-radius: 0 0 5px 5px;
+            background: #64748b;
+        }
+
+        .progress {
+            height: 8px;
+            margin-top: 42px;
+            overflow: hidden;
+            border-radius: 4px;
+            background: rgba(15, 118, 110, 0.18);
+        }
+
+        .progress span {
+            display: block;
+            width: 42%;
+            height: 100%;
+            border-radius: inherit;
+            background: var(--teal);
+            animation: progress-move 2.1s ease-in-out infinite;
+        }
+
+        .visual-caption {
+            margin: 16px 0 0;
+            color: #24534f;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse {
+            70% { box-shadow: 0 0 0 8px rgba(229, 138, 19, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(229, 138, 19, 0); }
+        }
+        @keyframes computer-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes screen-scan {
+            0%, 28% { transform: translateX(0) skewX(-22deg); }
+            68%, 100% { transform: translateX(-420%) skewX(-22deg); }
+        }
+        @keyframes progress-move {
+            0%, 100% { transform: translateX(-100%); }
+            55% { transform: translateX(375%); }
+        }
+
+        @media (max-width: 760px) {
+            body { padding: 16px; }
+            .panel { grid-template-columns: 1fr; }
+            .message { padding: 36px 28px 32px; }
+            .brand { margin-bottom: 38px; }
+            h1 { font-size: 32px; }
+            .copy { font-size: 16px; }
+            .visual { min-height: 325px; padding: 26px; border-top: 1px solid var(--line); border-left: 0; }
+            .visual-inner { width: 235px; }
+            .screen { height: 152px; }
+            .progress { margin-top: 28px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+        }
+    </style>
+</head>
+<body>
+    <main class="panel" aria-labelledby="maintenance-title">
+        <section class="message">
+            <div class="brand" aria-label="ARMS - Aksanti Request Management System">
+                <span class="brand-mark" aria-hidden="true">A</span><span>ARMS</span>
+            </div>
+            <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span>Atualiza&ccedil;&atilde;o em curso</p>
+            <h1 id="maintenance-title">Estamos a melhorar a ARMS.</h1>
+            <p class="copy">A plataforma est&aacute; temporariamente indispon&iacute;vel enquanto conclu&iacute;mos uma atualiza&ccedil;&atilde;o de seguran&ccedil;a. Voltaremos em breve.</p>
+            <p class="reassurance">N&atilde;o &eacute; necess&aacute;ria qualquer a&ccedil;&atilde;o da sua parte. Agradecemos a sua compreens&atilde;o.</p>
+        </section>
+        <section class="visual" aria-hidden="true">
+            <div class="visual-inner">
+                <div class="computer">
+                    <div class="screen">
+                        <div class="screen-bar"><span></span><span></span><span></span></div>
+                        <div class="screen-content"><div class="spinner"></div><i></i></div>
+                    </div>
+                    <div class="computer-base"></div>
+                </div>
+                <div class="progress"><span></span></div>
+                <p class="visual-caption">Atualiza&ccedil;&atilde;o de seguran&ccedil;a</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

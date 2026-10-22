@@ -1,0 +1,5 @@
+# Runtime files copied into the Linux container must keep Unix line endings.
+Dockerfile text eol=lf
+docker/start.sh text eol=lf
+nginx.conf text eol=lf
+nginx-maintenance.conf text eol=lf

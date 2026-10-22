@@ -25,18 +25,15 @@ RUN apk add --no-cache \
 
 # Copiar a configuração do nginx
 COPY nginx.conf /etc/nginx/http.d/default.conf
+COPY nginx-maintenance.conf /etc/nginx/arms-maintenance.conf
+COPY docker/start.sh /start.sh
 
 # Copiar o código da aplicação
 COPY . /app
 WORKDIR /app
 
 # Garantir permissões
-RUN chown -R www-data:www-data /app
-
-# Criar o script de arranque
-RUN echo '#!/bin/sh' > /start.sh && \
-    echo 'php-fpm -D' >> /start.sh && \
-    echo 'nginx -g "daemon off;"' >> /start.sh && \
+RUN chown -R www-data:www-data /app && \
     chmod +x /start.sh
 
 EXPOSE 80
